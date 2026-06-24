@@ -1,0 +1,5 @@
+{
+  "name": "cosmetics-parser",
+  "private": true,
+  "workspaces": ["parsers", "api", "frontend"]
+}
