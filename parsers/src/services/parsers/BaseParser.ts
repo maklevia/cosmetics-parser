@@ -1,6 +1,6 @@
-import type { Product } from "../../../types/Product.js";
-import type { StoreName } from "../../../types/StoreName.js";
-import { checkProductNamesSimilarity } from "../../../utils/stringUtils.js";
+import type { Product } from "../../types/Product.js";
+import type { StoreName } from "../../types/StoreName.js";
+import { checkProductNamesSimilarity } from "../../utils/stringUtils.js";
 
 export abstract class BaseParser {
     abstract readonly storeName: StoreName;

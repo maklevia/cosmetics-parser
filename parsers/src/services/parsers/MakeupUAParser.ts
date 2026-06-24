@@ -1,8 +1,8 @@
 import axios from "axios";
 import { BaseParser } from "./BaseParser.js";
-import type { Product } from "../../../types/Product.js";
-import type { StoreName } from "../../../types/StoreName.js";
-import { simplifyString, wordCount } from "../../../utils/stringUtils.js";
+import type { Product } from "../../types/Product.js";
+import type { StoreName } from "../../types/StoreName.js";
+import { simplifyString, wordCount } from "../../utils/stringUtils.js";
 
 export class MakeupUAParser extends BaseParser {
     readonly storeName: StoreName = 'makeup';

@@ -1,8 +1,8 @@
-import type { Product } from "../../types/Product.js";
+import type { Product } from "../types/Product.js";
 import { MakeupUAParser } from "./parsers/MakeupUAParser.js";
 import { EvaParser } from "./parsers/EvaParser.js";
 import { NotinoParser } from "./parsers/NotinoParser.js";
-import type { StoreName } from "../../types/StoreName.js";
+import type { StoreName } from "../types/StoreName.js";
 import type { BaseParser } from "./parsers/BaseParser.js";
 
 export class Parser {
@@ -67,7 +67,3 @@ export class Parser {
         return parsedProducts;
     }
 }
-
-const testInstance = new Parser();
-
-testInstance.getProductByLink('https://makeup.com.ua/ua/product/321303/');

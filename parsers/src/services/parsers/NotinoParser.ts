@@ -1,6 +1,6 @@
 import { gotScraping } from 'got-scraping';
-import type { Product } from "../../../types/Product.js";
-import type { StoreName } from "../../../types/StoreName.js";
+import type { Product } from "../../types/Product.js";
+import type { StoreName } from "../../types/StoreName.js";
 import { BaseParser } from "./BaseParser.js";
 
 export class NotinoParser extends BaseParser {

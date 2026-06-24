@@ -1,8 +1,8 @@
 import axios from "axios";
-import type { Product } from "../../../types/Product.js";
-import type { StoreName } from "../../../types/StoreName.js";
+import type { Product } from "../../types/Product.js";
+import type { StoreName } from "../../types/StoreName.js";
 import { BaseParser } from "./BaseParser.js";
-import { simplifyString } from "../../../utils/stringUtils.js";
+import { simplifyString } from "../../utils/stringUtils.js";
 
 export class EvaParser extends BaseParser {
     readonly storeName: StoreName = 'eva';
