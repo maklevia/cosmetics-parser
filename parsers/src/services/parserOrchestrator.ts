@@ -31,12 +31,6 @@ export class Parser {
     async getProductByLink(link: string): Promise<Record<StoreName, Product | null> | null> {
         const primaryStore = this.recognizeStoreName(link);
 
-        const parsedProducts: Record<StoreName, Product | null> = {
-            [StoreName.Eva]: null,
-            [StoreName.Notino]: null,
-            [StoreName.Makeup]: null,
-        }
-
         if (!primaryStore) {
             console.log('Unsupported link!');
             return null;
@@ -50,13 +44,19 @@ export class Parser {
             return null;
         }
 
+        const parsedProducts: Record<StoreName, Product | null> = {
+            [StoreName.Eva]: null,
+            [StoreName.Notino]: null,
+            [StoreName.Makeup]: null,
+        }
+
         parsedProducts[primaryStore] = primaryProduct;
 
         const secondaryFetches = (Object.keys(parsedProducts) as StoreName[])
             .filter(store => !parsedProducts[store])
             .map(async (store) => {
                 const secondaryParser = this.parsers[store];
-                const secondaryProduct: (Product | null) = await secondaryParser.parseByNameAndBrand(primaryProduct.name, primaryProduct.brand);
+                const secondaryProduct = await secondaryParser.parseByNameAndBrand(primaryProduct.name, primaryProduct.brand);
 
                 parsedProducts[store] = secondaryProduct;
             });

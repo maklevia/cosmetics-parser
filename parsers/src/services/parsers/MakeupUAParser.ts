@@ -13,8 +13,8 @@ export class MakeupUAParser extends BaseParser {
     private readonly makeupUrl: string = 'https://makeup.com.ua/ua/product/';
 
     private titleOrSubtitle(title: string, subTitle: string, brand: string): string {
-        const simplyfiedSubTitle: string = simplifyString(subTitle);
-        const simplyfiedBrand: string = simplifyString(brand);
+        const simplyfiedSubTitle = simplifyString(subTitle);
+        const simplyfiedBrand = simplifyString(brand);
 
         if (simplyfiedSubTitle.includes(simplyfiedBrand) && wordCount(simplyfiedSubTitle) > wordCount(simplyfiedBrand)) {
             return subTitle;
