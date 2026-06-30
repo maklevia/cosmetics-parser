@@ -1,12 +1,12 @@
-import type { Product } from "../../../types/Product.js";
-import type { StoreName } from "../../../types/StoreName.js";
-import { checkProductNamesSimilarity } from "../../../utils/stringUtils.js";
+import type { Product } from "@parsers/types/Product.js";
+import type { StoreName } from "@parsers/types/StoreName.js";
+import { checkProductNamesSimilarity } from "@parsers/utils/stringUtils.js";
 
 export abstract class BaseParser {
     abstract readonly storeName: StoreName;
 
     protected abstract fetchByLink(link: string): Promise<Product | null>;
-    protected abstract fetchByName(searchProductName: string, searchProductBrand: string): Promise<Product | null>;
+    protected abstract fetchByNameAndBrand(searchProductName: string, searchProductBrand: string): Promise<Product | null>;
 
     async parseByLink(link: string): Promise<Product | null> {
         try {
@@ -22,12 +22,12 @@ export abstract class BaseParser {
         }
     }
 
-    async parseByName(
+    async parseByNameAndBrand(
         searchProductName: string,
         searchProductBrand: string,
     ): Promise<Product | null> {
         try {
-            const product = await this.fetchByName(searchProductName, searchProductBrand);
+            const product = await this.fetchByNameAndBrand(searchProductName, searchProductBrand);
             if (!product) {
                 console.log(`No matching result on ${this.storeName}`);
                 return null;

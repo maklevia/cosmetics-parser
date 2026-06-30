@@ -1,11 +1,12 @@
 import axios from "axios";
 import { BaseParser } from "./BaseParser.js";
-import type { Product } from "../../../types/Product.js";
-import type { StoreName } from "../../../types/StoreName.js";
-import { simplifyString, wordCount } from "../../../utils/stringUtils.js";
+import type { Product } from "@parsers/types/Product.js";
+import { StoreName } from "@parsers/types/StoreName.js";
+import { simplifyString, wordCount } from "@parsers/utils/stringUtils.js";
+import { MakeupByLinkResponse, MakeupSearchResponse } from "@parsers/types/MakeupApi.js";
 
 export class MakeupUAParser extends BaseParser {
-    readonly storeName: StoreName = 'makeup';
+    readonly storeName = StoreName.Makeup;
 
     private readonly makeupApiUrl: string = 'https://makeup.com.ua/shop/v1/products/';
     private readonly makeupApiSearchUrl: string = 'https://makeup.com.ua/shop/v1/search/products/';
@@ -26,7 +27,7 @@ export class MakeupUAParser extends BaseParser {
         const productId = this.extractIdFromUrl(link, /\/product\/(\d+)/);
         const apiLink = this.makeupApiUrl + productId;
 
-        const response = await axios.get(apiLink, {
+        const response = await axios.get<MakeupByLinkResponse>(apiLink, {
             headers: { 'accept-language': 'uk' },
         });
         const data = response.data;
@@ -38,7 +39,7 @@ export class MakeupUAParser extends BaseParser {
         return {
             name: productName,
             brand: data.brand.title,
-            price: data.price?.current || 0,
+            price: data.price?.current || undefined,
             inStock: data.inStock,
             image: data.meta?.image || null,
             link,
@@ -46,10 +47,10 @@ export class MakeupUAParser extends BaseParser {
         };
     }
 
-    protected async fetchByName(searchProductName: string, searchProductBrand: string): Promise<Product | null> {
+    protected async fetchByNameAndBrand(searchProductName: string, searchProductBrand: string): Promise<Product | null> {
         const cleanSearchProductName = simplifyString(searchProductName);
 
-        const response = await axios.get(this.makeupApiSearchUrl, {
+        const response = await axios.get<MakeupSearchResponse>(this.makeupApiSearchUrl, {
             params: { query: cleanSearchProductName },
             headers: { 'accept-language': 'uk' },
         });
@@ -64,7 +65,7 @@ export class MakeupUAParser extends BaseParser {
                 return {
                     name: product.title,
                     brand: product.brand.title,
-                    price: product.price?.current || 0,
+                    price: product.price?.current || undefined,
                     inStock: product.inStock,
                     image: product.media[0]?.sizes?.sm?.thumbnail || null,
                     link: `${this.makeupUrl}${product.id}/`,
