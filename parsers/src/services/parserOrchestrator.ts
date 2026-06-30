@@ -1,17 +1,17 @@
-import type { Product } from "../types/Product.js";
+import type { Product } from "@parsers/types/Product.js";
 import { MakeupUAParser } from "./parsers/MakeupUAParser.js";
 import { EvaParser } from "./parsers/EvaParser.js";
 import { NotinoParser } from "./parsers/NotinoParser.js";
-import type { StoreName } from "../types/StoreName.js";
+import { StoreName } from "@parsers/types/StoreName.js";
 import type { BaseParser } from "./parsers/BaseParser.js";
 
 export class Parser {
     private readonly parsers: Record<StoreName, BaseParser>;
     constructor() {
         this.parsers = {
-            eva: new EvaParser(),
-            makeup: new MakeupUAParser(),
-            notino: new NotinoParser(),
+            [StoreName.Eva]: new EvaParser(),
+            [StoreName.Makeup]: new MakeupUAParser(),
+            [StoreName.Notino]: new NotinoParser(),
         };
     }
 
@@ -19,22 +19,22 @@ export class Parser {
         const url = new URL(link)
 
         if (url.hostname.endsWith('makeup.com.ua'))
-            return 'makeup';
+            return StoreName.Makeup;
         else if (url.hostname.endsWith('eva.ua')) 
-            return 'eva';
+            return StoreName.Eva;
         else if (url.hostname.endsWith('notino.ua'))
-            return 'notino'
+            return StoreName.Notino;
         else
             return null
     }
 
     async getProductByLink(link: string): Promise<Record<StoreName, Product | null> | null> {
-        const primaryStore: StoreName | null = this.recognizeStoreName(link);
+        const primaryStore = this.recognizeStoreName(link);
 
         const parsedProducts: Record<StoreName, Product | null> = {
-            eva: null,
-            notino: null,
-            makeup: null,
+            [StoreName.Eva]: null,
+            [StoreName.Notino]: null,
+            [StoreName.Makeup]: null,
         }
 
         if (!primaryStore) {
@@ -42,8 +42,8 @@ export class Parser {
             return null;
         }
 
-        const primaryParser: BaseParser = this.parsers[primaryStore];
-        const primaryProduct: (Product | null) = await primaryParser.parseByLink(link);
+        const primaryParser = this.parsers[primaryStore];
+        const primaryProduct = await primaryParser.parseByLink(link);
 
         if (!primaryProduct) {
             console.log('No product parsed from provided link');
@@ -56,11 +56,11 @@ export class Parser {
             .filter(store => !parsedProducts[store])
             .map(async (store) => {
                 const secondaryParser = this.parsers[store];
-                const secondaryProduct: (Product | null) = await secondaryParser.parseByName(primaryProduct.name, primaryProduct.brand);
+                const secondaryProduct: (Product | null) = await secondaryParser.parseByNameAndBrand(primaryProduct.name, primaryProduct.brand);
 
                 parsedProducts[store] = secondaryProduct;
             });
-        await Promise.all(secondaryFetches);
+        await Promise.allSettled(secondaryFetches);
 
         console.log(parsedProducts);
 

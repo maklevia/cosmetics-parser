@@ -1,2 +1,5 @@
-export type StoreName = 'eva' | 'makeup' | 'notino';
-
+export enum StoreName {
+    Makeup = 'makeup',
+    Eva = 'eva',
+    Notino = 'notino'
+}

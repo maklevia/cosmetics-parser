@@ -1,5 +1,9 @@
 import { token_set_ratio } from 'fuzzball'
 
+/**
+ * Simplifies string by removing accents and lower casing it to optimize search
+ * Example: L'Oréal  will be returned as l'oreal 
+ */
 export function simplifyString(str: string): string {
     const symplifyedString = str
     .normalize("NFD") 
@@ -40,4 +44,3 @@ export function checkProductNamesSimilarity(productName1: string, productName2: 
 
     return true;
 }
-

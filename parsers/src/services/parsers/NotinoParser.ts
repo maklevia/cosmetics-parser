@@ -1,10 +1,10 @@
 import { gotScraping } from 'got-scraping';
-import type { Product } from "../../types/Product.js";
-import type { StoreName } from "../../types/StoreName.js";
+import type { Product } from "@parsers/types/Product.js";
+import { StoreName } from "@parsers/types/StoreName.js";
 import { BaseParser } from "./BaseParser.js";
 
 export class NotinoParser extends BaseParser {
-    readonly storeName: StoreName = 'notino';
+    readonly storeName = StoreName.Notino;
 
     private readonly notinoSearchUrl: string = 'https://www.notino.ua/search.asp?exps=';
 
@@ -39,7 +39,7 @@ export class NotinoParser extends BaseParser {
         return {
             name: data.name,
             brand: data.brand.name,
-            price: data?.offers[0]?.price || 0,
+            price: data?.offers[0]?.price || undefined,
             inStock: this.normalizeInStockParam(data.offers[0].availability),
             image: data.image[0] || null,
             link,
@@ -47,7 +47,7 @@ export class NotinoParser extends BaseParser {
         };
     }
 
-    protected async fetchByName(searchProductName: string, searchProductBrand: string): Promise<Product | null> {
+    protected async fetchByNameAndBrand(searchProductName: string, searchProductBrand: string): Promise<Product | null> {
         const { body } = await gotScraping({ url: this.notinoSearchUrl + searchProductName });
 
         const searchResult = this.extractLdJson(body, (p) => p?.description === 'підсумок пошуку');
