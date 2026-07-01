@@ -1,12 +1,12 @@
 import { Pool } from "pg";
-
+import { getEnvOrThrow } from "../utils/getEnvOrThrow";
 
 //pool for now, typeORM for later
-const pool: Pool = new Pool({
-  database: process.env.DB_NAME || "mydb",
-  user: process.env.DB_USER || "myuser",
-  password: process.env.DB_PASSWORD || "pass",
-  port: Number(process.env.DB_PORT) || 5432,
+const pool = new Pool({
+  database: getEnvOrThrow('DB_NAME'),
+  user: getEnvOrThrow('DB_USER'),
+  password: getEnvOrThrow('DB_PASSWORD'),
+  port: Number(getEnvOrThrow('DB_PORT')),
 });
 
 export default pool;

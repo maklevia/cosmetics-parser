@@ -1,12 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { validateAccessToken } from "../utils/jwtUtils";
-
-export interface AuthRequest extends Request {
-  user?: any;
-}
+import AuthService from "@api/services/authServices";
 
 export const authMiddleware = (
-    req: AuthRequest, 
+    req: Request, 
     res: Response, 
     next: NextFunction
 ) => {
@@ -15,11 +11,11 @@ export const authMiddleware = (
         return res.status(401).json({message: 'No access token, not authorised'})
     }
 
-    validateAccessToken(accessToken, (error, decodedUser) => {
-        if (error) {
+    AuthService.validateAccessToken(accessToken, (error, decodedUser) => {
+        if (error || !decodedUser) {
             return res.status(401).json({message: 'Can`t validate access token'});
         }
-        req.user = decodedUser;
+        res.locals.user = decodedUser;
         next();
     });
 }
