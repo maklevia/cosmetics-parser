@@ -1,5 +1,5 @@
 export interface Errors {
     email?: string,
-    password?: string,
+    password?: string[],
     confirmPassword?: string,
 }

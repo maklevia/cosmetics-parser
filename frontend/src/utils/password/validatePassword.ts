@@ -1,6 +1,15 @@
-export function validatePassword(password: string): string | null {
+export function validatePassword(password: string): string[] {
+  const reasons: string[] = [];
+  if (password.length > 0) {
     if (password.length < 6) {
-        return 'Password must be at least 6 characters long!'
+      reasons.push("Password must be at least 6 characters long!");
     }
-    return null;
+    if (!/\d/.test(password)) {
+      reasons.push("Password should contain at least 1 number!");
+    }
+    if (!/[A-Z]/.test(password)) {
+      reasons.push("Password should contain at least one capital letter!");
+    }
+  }
+  return reasons;
 }

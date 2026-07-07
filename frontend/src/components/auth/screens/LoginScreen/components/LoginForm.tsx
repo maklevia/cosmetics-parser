@@ -1,74 +1,65 @@
-import api from "@/api";
+import { useLogin } from "@/components/auth/screens/LoginScreen/hooks/useLogin";
 import { PasswordInput } from "@/components/ui/password-input";
 import { normalizeEmail } from "@/utils/email/normalizeEmail";
+import { validateEmail } from "@/utils/email/validateEmail";
 import { Fieldset, Field, Input, Button } from "@chakra-ui/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function LoginForm() {
+   const nagivator = useNavigate();
+  const navigateToMain = () => {
+    nagivator('/main');
+  }
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const nagivator = useNavigate();
+  const {isLoading, login, errorMessage, clearErrors} = useLogin({email, password, onSuccess: navigateToMain});
 
-  async function handleSubmit(): Promise<void> {
-    const normalizedEmail: string = normalizeEmail(email);
-    
-    if(!email) {
-      alert('Enter email!');
-    }
-    if(!password){
-      alert('Enter password!');
-    }
-
-    try {
-      const response = await api.post(
-        "/auth/login",
-        {
-          email: normalizedEmail,
-          enteredPassword: password,
-        },
-        {
-          validateStatus: (status) => {
-            return status === 401 || status === 200;
-          },
-        },
-      );
-
-      if (response.status === 401) {
-        alert('Email or password are not correct!')
-        return;
-      }
-      nagivator('/main');
-    } catch (error) {
-      console.log("FE: error while user log in: ", error);
-    }
+  const invalidEmailMessage = (): string => {
+    return validateEmail(email)
   }
 
   return (
-    <Fieldset.Root>
+    <Fieldset.Root width='400px' invalid={errorMessage.length > 0}>
       <Fieldset.Legend>Log In</Fieldset.Legend>
       <Fieldset.Content>
-        <Field.Root required>
+        <Field.Root required invalid={errorMessage.length > 0 || invalidEmailMessage().length > 0}>
           <Field.Label>
             Email <Field.RequiredIndicator />
           </Field.Label>
           <Input
             name="email"
             type="email"
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(normalizeEmail(e.target.value));
+              clearErrors();
+            }}
           />
+          <Field.ErrorText>{invalidEmailMessage()}</Field.ErrorText>
+          
         </Field.Root>
 
-        <Field.Root required>
+        <Field.Root required invalid={errorMessage.length > 0}>
           <Field.Label>
             Password <Field.RequiredIndicator />
           </Field.Label>
-          <PasswordInput onChange={(e) => setPassword(e.target.value)} />
+          <PasswordInput onChange={(e) => {
+            setPassword(e.target.value);
+            clearErrors();
+          }} />
         </Field.Root>
 
-        <Button type="submit" onClick={handleSubmit}>
+        <Button 
+        type="submit" 
+        loading={isLoading} 
+        onClick={login}
+        disabled={!email || !password}
+        >
           Log In
         </Button>
+
+        <Fieldset.ErrorText>{errorMessage}</Fieldset.ErrorText>
       </Fieldset.Content>
     </Fieldset.Root>
   );

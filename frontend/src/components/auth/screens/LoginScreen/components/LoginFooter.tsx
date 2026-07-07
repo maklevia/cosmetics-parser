@@ -1,8 +1,8 @@
-import { Link as LinkUI } from "@chakra-ui/react";
+import { Heading, Link as LinkUI } from "@chakra-ui/react";
 export default function LoginFooter() {
   return (
     <>
-      <h2>Do not have an account?</h2>
+      <Heading size='md'>Do not have an account?</Heading>
       <LinkUI href="/signup">
         Sign Up
       </LinkUI>

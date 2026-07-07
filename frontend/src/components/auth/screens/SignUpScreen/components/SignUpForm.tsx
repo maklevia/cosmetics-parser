@@ -1,84 +1,50 @@
 import { PasswordInput } from "@/components/ui/password-input";
 import { Button, Field, Fieldset, Input } from "@chakra-ui/react";
 import { useState } from "react";
-import api from "@/api";
 import { normalizeEmail } from "@/utils/email/normalizeEmail";
 import { useNavigate } from "react-router-dom";
-import { validateEmail } from "@/utils/email/validateEmail";
-import { validatePassword } from "@/utils/password/validatePassword";
-import { confirmPasswordMatch } from "@/utils/password/checkPasswordMatch";
-import type { Errors } from "@/components/auth/screens/SignUpScreen/types/errors";
+import { useRegistration } from "@/components/auth/screens/SignUpScreen/hooks/useRegistration";
+import { useAuthValidation } from "@/components/auth/hooks/useAuthValidation";
 
 export default function SignUpForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmedPassword, setConfirmedPassword] = useState('')
   const navigate = useNavigate();
+  const navigateToHome = () => {
+    navigate("/main");
+  };
 
-  async function handleSubmit(): Promise<void> {
-    const normalizedEmail: string = normalizeEmail(email);
-    const validateEmailMessage: string | null = validateEmail(normalizedEmail);
-    const validatePasswordMessage: string | null = validatePassword(password);
-    const validateConfirmPasswordMessage: string | null = confirmPasswordMatch(password, confirmedPassword);
-    const errors: Errors = {};
-
-    if (validateEmailMessage) {
-      errors.email = validateEmailMessage;
-    }
-    if (validatePasswordMessage) {
-      errors.password = validatePasswordMessage;
-    }
-    if (validateConfirmPasswordMessage) {
-      errors.confirmPassword = validateConfirmPasswordMessage;
-    }
-
-    //alert will be replaced with proper UI
-    if(Object.keys(errors).length > 0) {
-      alert(Object.values(errors));
-      return;
-    }
-    try {
-      const response = await api.post(
-        "/auth/signup",
-        {
-          email: normalizedEmail,
-          password: password,
-        },
-        {
-          validateStatus: (status) => {
-            return status === 201 || status === 409;
-          },
-        },
-      );
-
-      if (response.status === 201) {
-        navigate("/main");
-        console.log("Responce from API: ", response.data);
-      } else if (response.status === 409) {
-        alert(response.data.message);
-      }
-    } catch (error) {
-      console.log("FE: error sign up ", error);
-    }
-  }
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmedPassword, setConfirmedPassword] = useState("");
+  const { register, isLoading } = useRegistration({
+    email,
+    password,
+    onSuccess: navigateToHome,
+  });
+  const { emailStatus, passwordStatus, confirmedPasswordStatus } =
+    useAuthValidation({ email, password, confirmedPassword });
 
   return (
-    <Fieldset.Root>
+    <Fieldset.Root width="400px">
       <Fieldset.Legend>Sign Up Form</Fieldset.Legend>
 
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        register();
+      }}>
       <Fieldset.Content>
-        <Field.Root required>
+        <Field.Root required invalid={!emailStatus.isEmailValid}>
           <Field.Label>
             Email <Field.RequiredIndicator />
           </Field.Label>
           <Input
             name="email"
             type="email"
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setEmail(normalizeEmail(e.target.value))}
           />
+          <Field.ErrorText>{emailStatus.invalidEmailReason}</Field.ErrorText>
         </Field.Root>
 
-        <Field.Root required>
+        <Field.Root required invalid={!passwordStatus.isPasswordValid}>
           <Field.Label>
             Password <Field.RequiredIndicator />
           </Field.Label>
@@ -86,22 +52,43 @@ export default function SignUpForm() {
             name="password"
             onChange={(e) => setPassword(e.target.value)}
           />
+          {passwordStatus.invalidPasswordReasons?.map((reason, index) => (
+            <Field.ErrorText key={index}>{reason}</Field.ErrorText>
+          ))}
         </Field.Root>
 
-        <Field.Root required>
+        <Field.Root
+          required
+          invalid={!confirmedPasswordStatus.isConfirmedPasswordValid}
+        >
           <Field.Label>
             Confirm password <Field.RequiredIndicator />
           </Field.Label>
           <PasswordInput
-          name="repeatPassword"
-          onChange={(e) => setConfirmedPassword(e.target.value)}
+            name="repeatPassword"
+            onChange={(e) => setConfirmedPassword(e.target.value)}
           />
+          <Field.ErrorText>
+            {confirmedPasswordStatus.invalidconfPasswordReasons}
+          </Field.ErrorText>
         </Field.Root>
 
-        <Button type="submit" onClick={handleSubmit}>
+        <Button
+          type="submit"
+          loading={isLoading}
+          disabled={
+            !email ||
+            !password ||
+            !confirmedPassword ||
+            !emailStatus.isEmailValid ||
+            !passwordStatus.isPasswordValid ||
+            !confirmedPasswordStatus.isConfirmedPasswordValid
+          }
+        >
           Sign Up
         </Button>
       </Fieldset.Content>
+      </form>
     </Fieldset.Root>
   );
 }

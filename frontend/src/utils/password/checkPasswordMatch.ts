@@ -1,8 +1,6 @@
-export function confirmPasswordMatch(password: string, confirmPassword: string): string | null {
-    if (!confirmPassword) {
-        return 'Repeat your password'
-    } else if (password !== confirmPassword) {
+export function confirmPasswordMatch(password: string, confirmPassword: string): string {
+    if (password !== confirmPassword && confirmPassword) {
         return 'Passwords do not match!'
     } else 
-        return null;
+        return '';
 }
