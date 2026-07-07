@@ -67,7 +67,3 @@ export class Parser {
         return parsedProducts;
     }
 }
-
-const testInstance = new Parser();
-
-testInstance.getProductByLink('https://makeup.com.ua/ua/product/321303/');
