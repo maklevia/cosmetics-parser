@@ -1,55 +1,92 @@
+import {
+  ParserError,
+  StoreRequestError,
+} from "@api/parsers/errors/customErrorClasses.js";
 import type { Product } from "@parsers/types/Product.js";
 import type { StoreName } from "@parsers/types/StoreName.js";
 import { checkProductNamesSimilarity } from "@parsers/utils/stringUtils.js";
+import axios, { AxiosError } from "axios";
 
 export abstract class BaseParser {
-    abstract readonly storeName: StoreName;
+  abstract readonly storeName: StoreName;
 
-    protected abstract fetchByLink(link: string): Promise<Product | null>;
-    protected abstract fetchByNameAndBrand(searchProductName: string, searchProductBrand: string): Promise<Product | null>;
+  protected abstract fetchByLink(link: string): Promise<Product | null>;
+  protected abstract fetchByNameAndBrand(
+    searchProductName: string,
+    searchProductBrand: string,
+  ): Promise<Product | null>;
 
-    async parseByLink(link: string): Promise<Product | null> {
-        try {
-            const product = await this.fetchByLink(link);
-            if (!product) {
-                console.log(`Empty response from ${this.storeName}`);
-                return null;
-            }
-            return product;
-        } catch (error) {
-            console.log(`Error parsing link from ${this.storeName}: `, error);
-            return null;
-        }
+  async parseByLink(link: string): Promise<Product | null> {
+    try {
+      const product = await this.fetchByLink(link);
+      if (!product) {
+        return null;
+      }
+      return product;
+    } catch (error) {
+      const isAxiosNetworkError = axios.isAxiosError(error);
+      let isGotScrapingError = false;
+      if (error instanceof Error) {
+        isGotScrapingError =
+          error.name === "HTTPError" ||
+          error.name === "RequestError" ||
+          error.name === "TimeoutError";
+      }
+      if (isAxiosNetworkError || isGotScrapingError) {
+        throw new StoreRequestError(this.storeName);
+      }
+
+      throw new ParserError();
     }
+  }
 
-    async parseByNameAndBrand(
-        searchProductName: string,
-        searchProductBrand: string,
-    ): Promise<Product | null> {
-        try {
-            const product = await this.fetchByNameAndBrand(searchProductName, searchProductBrand);
-            if (!product) {
-                console.log(`No matching result on ${this.storeName}`);
-                return null;
-            }
-            return product;
-        } catch (error) {
-            console.log(`Error parsing by name from ${this.storeName}: `, error);
-            return null;
-        }
-    }
+  async parseByNameAndBrand(
+    searchProductName: string,
+    searchProductBrand: string,
+  ): Promise<Product | null> {
+    try {
+      const product = await this.fetchByNameAndBrand(
+        searchProductName,
+        searchProductBrand,
+      );
+      if (!product) {
+        console.log(`No matching result on ${this.storeName}`);
+        return null;
+      }
+      return product;
+    } catch (error) {
+      const isAxiosNetworkError = axios.isAxiosError(error);
+      let isGotScrapingError = false;
+      if (error instanceof Error) {
+        isGotScrapingError =
+          error.name === "HTTPError" ||
+          error.name === "RequestError" ||
+          error.name === "TimeoutError";
+      }
+      if (isAxiosNetworkError || isGotScrapingError) {
+        throw new StoreRequestError(this.storeName);
+      }
 
-    protected extractIdFromUrl(link: string, pattern: RegExp): string | null {
-        const match = link.match(pattern);
-        return match?.[1] ?? null;
+      throw new ParserError();
     }
+  }
 
-    protected validateMatch(
-        searchName: string,
-        searchBrand: string,
-        resultName: string,
-        resultBrand: string,
-    ): boolean {
-        return checkProductNamesSimilarity(searchName, resultName, searchBrand, resultBrand);
-    }
+  protected extractIdFromUrl(link: string, pattern: RegExp): string | null {
+    const match = link.match(pattern);
+    return match?.[1] ?? null;
+  }
+
+  protected validateMatch(
+    searchName: string,
+    searchBrand: string,
+    resultName: string,
+    resultBrand: string,
+  ): boolean {
+    return checkProductNamesSimilarity(
+      searchName,
+      resultName,
+      searchBrand,
+      resultBrand,
+    );
+  }
 }

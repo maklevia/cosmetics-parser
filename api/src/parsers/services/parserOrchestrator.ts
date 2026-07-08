@@ -4,66 +4,78 @@ import { EvaParser } from "./parsers/EvaParser.js";
 import { NotinoParser } from "./parsers/NotinoParser.js";
 import { StoreName } from "@parsers/types/StoreName.js";
 import type { BaseParser } from "./parsers/BaseParser.js";
+import {
+  InvalidLinkError,
+  ParserError,
+} from "@api/parsers/errors/customErrorClasses.js";
 
 export class Parser {
-    private readonly parsers: Record<StoreName, BaseParser>;
-    constructor() {
-        this.parsers = {
-            [StoreName.Eva]: new EvaParser(),
-            [StoreName.Makeup]: new MakeupUAParser(),
-            [StoreName.Notino]: new NotinoParser(),
-        };
+  private readonly parsers: Record<StoreName, BaseParser>;
+  constructor() {
+    this.parsers = {
+      [StoreName.Eva]: new EvaParser(),
+      [StoreName.Makeup]: new MakeupUAParser(),
+      [StoreName.Notino]: new NotinoParser(),
+    };
+  }
+
+  private recognizeStoreName(link: string): StoreName {
+    try {
+      const url = new URL(link);
+      const path = url.pathname;
+      //link is for makeup and for product (contains /product)
+      if (url.hostname.endsWith("makeup.com.ua") && /\/product\/\d+/.test(path))
+        return StoreName.Makeup;
+      //link is for eva and for product (contains /pr)
+      else if (url.hostname.endsWith("eva.ua") && /\/pr\d+/.test(path))
+        return StoreName.Eva;
+      //link is for notino and there are at least 2 parts in the path
+      else if (
+        url.hostname.endsWith("notino.ua") &&
+        path.split("/").filter(Boolean).length >= 2
+      )
+        return StoreName.Notino;
+      else throw new InvalidLinkError();
+    } catch (error) {
+      throw new InvalidLinkError();
+    }
+  }
+
+  async getProductByLink(
+    link: string,
+  ): Promise<Record<StoreName, Product | null> | null> {
+    const primaryStore = this.recognizeStoreName(link);
+
+    const primaryParser = this.parsers[primaryStore];
+    const primaryProduct = await primaryParser.parseByLink(link);
+
+    if (!primaryProduct) {
+      throw new ParserError();
     }
 
-    private recognizeStoreName(link: string): StoreName | null {
-        const url = new URL(link)
+    const parsedProducts: Record<StoreName, Product | null> = {
+      [StoreName.Eva]: null,
+      [StoreName.Notino]: null,
+      [StoreName.Makeup]: null,
+    };
 
-        if (url.hostname.endsWith('makeup.com.ua'))
-            return StoreName.Makeup;
-        else if (url.hostname.endsWith('eva.ua')) 
-            return StoreName.Eva;
-        else if (url.hostname.endsWith('notino.ua'))
-            return StoreName.Notino;
-        else
-            return null
-    }
+    parsedProducts[primaryStore] = primaryProduct;
 
-    async getProductByLink(link: string): Promise<Record<StoreName, Product | null> | null> {
-        const primaryStore = this.recognizeStoreName(link);
+    const secondaryFetches = (Object.keys(parsedProducts) as StoreName[])
+      .filter((store) => !parsedProducts[store])
+      .map(async (store) => {
+        const secondaryParser = this.parsers[store];
+        const secondaryProduct = await secondaryParser.parseByNameAndBrand(
+          primaryProduct.name,
+          primaryProduct.brand,
+        );
 
-        if (!primaryStore) {
-            console.log('Unsupported link!');
-            return null;
-        }
+        parsedProducts[store] = secondaryProduct;
+      });
+    await Promise.allSettled(secondaryFetches);
 
-        const primaryParser = this.parsers[primaryStore];
-        const primaryProduct = await primaryParser.parseByLink(link);
+    console.log(parsedProducts);
 
-        if (!primaryProduct) {
-            console.log('No product parsed from provided link');
-            return null;
-        }
-
-        const parsedProducts: Record<StoreName, Product | null> = {
-            [StoreName.Eva]: null,
-            [StoreName.Notino]: null,
-            [StoreName.Makeup]: null,
-        }
-
-        parsedProducts[primaryStore] = primaryProduct;
-
-        const secondaryFetches = (Object.keys(parsedProducts) as StoreName[])
-            .filter(store => !parsedProducts[store])
-            .map(async (store) => {
-                const secondaryParser = this.parsers[store];
-                const secondaryProduct = await secondaryParser.parseByNameAndBrand(primaryProduct.name, primaryProduct.brand);
-
-                parsedProducts[store] = secondaryProduct;
-            });
-        await Promise.allSettled(secondaryFetches);
-
-        console.log(parsedProducts);
-
-        return parsedProducts;
-    }
+    return parsedProducts;
+  }
 }
