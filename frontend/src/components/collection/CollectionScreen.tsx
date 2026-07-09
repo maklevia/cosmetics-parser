@@ -1,4 +1,4 @@
-import { parseDialog } from "@/components/collection/collectionScreen/components/PopupParseForm";
+import { parseDialog } from "@/components/collection/collectionScreen/parseProductDialog/PopupParseForm";
 import { AbsoluteCenter, Button, Card } from "@chakra-ui/react";
 
 export function CollectionScreen() {

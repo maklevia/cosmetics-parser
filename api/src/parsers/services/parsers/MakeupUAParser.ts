@@ -63,7 +63,7 @@ export class MakeupUAParser extends BaseParser {
 
             const productName = this.titleOrSubtitle(product.title, product.subTitle, product.brand.title);
 
-            if (this.validateMatch(searchProductName, searchProductBrand, product.title, product.brand.title)) {
+            if (this.validateMatch(searchProductName, searchProductBrand, productName, product.brand.title)) {
                 return {
                     name: productName,
                     brand: product.brand.title,

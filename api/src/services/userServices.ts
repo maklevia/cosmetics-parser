@@ -1,6 +1,6 @@
 import { QueryResultRow } from "pg";
-import pool from "@api/config/db";
-import AuthService from "@api/services/authServices";
+import pool from "@api/config/db.js";
+import AuthService from "@api/services/authServices.js";
 
 const UserService = {
   getUserByEmail: async (email: string): Promise<QueryResultRow | null> => {

@@ -1,5 +1,5 @@
 import { compare, hash } from "bcrypt-ts";
-import { getEnvOrThrow } from "@api/utils/getEnvOrThrow";
+import { getEnvOrThrow } from "@api/utils/getEnvOrThrow.js";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
 export interface UserPayload extends JwtPayload {

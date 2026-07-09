@@ -5,7 +5,7 @@ import { Provider } from './components/ui/provider.tsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import LoginScreen from '@/components/auth/screens/LoginScreen/LoginScreen.tsx'
 import SignUpScreen from '@/components/auth/screens/SignUpScreen/SignUpScreen.tsx'
-import { CollectionScreen } from '@/components/collection/collectionScreen/CollectionScreen.tsx'
+import { CollectionScreen } from '@/components/collection/CollectionScreen.tsx'
 
 const router = createBrowserRouter([
   {path: '/', element: <App />},
