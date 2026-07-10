@@ -5,7 +5,7 @@ export interface Product {
     brand: string;
     price?: number | undefined;
     inStock: boolean;
-    image?: string | null;
+    image?: string | undefined;
 
     link: string;
     storeName: StoreName;

@@ -25,7 +25,7 @@ export const parseDialog = createOverlay((props) => {
             ) : errorMessage ? (
               <ErrorView errorMessage={errorMessage} />
             ) : results ? (
-              <ParsedProductsView parsedProducts={results} />
+              <ParsedProductsView parseResult={results} />
             ) : (
               <LinkInputView
                 onChangeFunc={setProductLink}

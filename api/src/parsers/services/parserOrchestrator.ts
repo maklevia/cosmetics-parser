@@ -8,6 +8,7 @@ import {
   InvalidLinkError,
   ParserError,
 } from "@api/parsers/errors/customErrorClasses.js";
+import { ParseResult } from "@api/parsers/types/ParsedResult.js";
 
 export class Parser {
   private readonly parsers: Record<StoreName, BaseParser>;
@@ -43,7 +44,7 @@ export class Parser {
 
   async getProductByLink(
     link: string,
-  ): Promise<Record<StoreName, Product | null> | null> {
+  ): Promise<ParseResult> {
     const primaryStore = this.recognizeStoreName(link);
 
     const primaryParser = this.parsers[primaryStore];
@@ -76,6 +77,6 @@ export class Parser {
 
     console.log(parsedProducts);
 
-    return parsedProducts;
+    return {primaryStore: primaryStore, products: parsedProducts};
   }
 }

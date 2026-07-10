@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import LoginScreen from '@/components/auth/screens/LoginScreen/LoginScreen.tsx'
 import SignUpScreen from '@/components/auth/screens/SignUpScreen/SignUpScreen.tsx'
 import { CollectionScreen } from '@/components/collection/CollectionScreen.tsx'
+import { Toaster } from '@/components/ui/toaster.tsx'
 
 const router = createBrowserRouter([
   {path: '/', element: <App />},
@@ -18,6 +19,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider>
       <RouterProvider router={router} />
+      <Toaster />
     </Provider>
     
   </StrictMode>,
