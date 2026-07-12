@@ -8,7 +8,7 @@ import { useState } from "react";
 
 export const parseDialog = createOverlay((props) => {
   const [productLink, setProductLink] = useState("");
-  const { isLoading, parse, results, errorMessage } = useParserByLink();
+  const { isLoading, parse, results, productId,errorMessage } = useParserByLink();
 
   const handleFetch = () => {
     parse(productLink);
@@ -25,7 +25,7 @@ export const parseDialog = createOverlay((props) => {
             ) : errorMessage ? (
               <ErrorView errorMessage={errorMessage} />
             ) : results ? (
-              <ParsedProductsView parseResult={results} />
+              <ParsedProductsView parseResult={results} productId={productId}/>
             ) : (
               <LinkInputView
                 onChangeFunc={setProductLink}

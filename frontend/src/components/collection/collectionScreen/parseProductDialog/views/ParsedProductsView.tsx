@@ -5,8 +5,10 @@ import { useAddProductToCollection } from "@/components/collection/collectionScr
 import { toaster } from "@/components/ui/toaster";
 export function ParsedProductsView({
   parseResult,
+  productId,
 }: {
   parseResult: ParseResult;
+  productId: number;
 }) {
   const onSuccess = () => {
     toaster.update("add", {
@@ -25,7 +27,7 @@ export function ParsedProductsView({
   };
 
   const { add, isLoading } = useAddProductToCollection({
-    parseResult,
+    productId,
     onSuccess,
     onFailure,
   });

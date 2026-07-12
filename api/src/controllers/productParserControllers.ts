@@ -10,8 +10,10 @@ export const ProductParserController = {
     parse: async (req: Request, res: Response) => {
         try {
             const productLink: string = req.body.url
-            const parsedResults = await productServices.parse(productLink);
-            return res.status(200).json(parsedResults);
+            const result = await productServices.parse(productLink);
+            const productId = result.productId;
+            const parsedResults = result.parseResult
+            return res.status(200).json({productId, parsedResults});
         } catch (error) {
             if (error instanceof InvalidLinkError) {
                 res.status(400).json({error: 'Please, provide valid link.'});
@@ -28,8 +30,8 @@ export const ProductParserController = {
     addProduct: async (req: Request, res: Response) => {
         try {
             const userId: number = res.locals.user.userId;
-            const data: ParseResult = req.body.parseResult;
-            await productServices.addProductToUsersCollection(userId, data);
+            const productId: number = req.body.productId;
+            await productServices.addProductToUsersCollection(userId, productId);
 
             res.status(201).json({message: 'Product created successfully'});
         } catch (error) {

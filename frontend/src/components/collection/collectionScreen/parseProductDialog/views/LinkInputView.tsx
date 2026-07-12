@@ -15,7 +15,7 @@ export function LinkInputView({onChangeFunc, onClickFunc}: ComponentInput) {
         <Stack>
           <Text>Paste the link for your product</Text>
           <Input onChange={(e) => onChangeFunc(e.target.value)} />
-          <Button onClick={onClickFunc}>Fetch</Button>
+          <Button onClick={onClickFunc}>Search product</Button>
         </Stack>
       </Dialog.Body>
     </>

@@ -22,6 +22,10 @@ export interface StoreRecordRow {
     product_store_name: string,
 }
 
+export interface StoreRecordJoinProductRow extends StoreRecordRow {
+    brand: string;
+}
+
 export interface CollectionRow {
     id: number,
     product_id: number, 

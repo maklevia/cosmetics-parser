@@ -7,22 +7,28 @@ interface HookOutput {
   isLoading: boolean;
   parse: (link: string) => Promise<void>;
   results: ParseResult | null;
+  productId: number | null;
   errorMessage?: string;
+}
+interface ParseResponse {
+  productId: number,
+  parsedResults: ParseResult,
 }
 
 export const useParserByLink = (): HookOutput => {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<ParseResult | null>(null);
+  const [productId, setProductId] = useState<number | null>(null)
   const [errorMessage, setErrorMessage] = useState("");
 
   const parse = async (productLink: string) => {
     try {
       setIsLoading(true);
-      const response = await api.post<ParseResult>("/product/parse", {
+      const response = await api.post<ParseResponse>("/product/parse", {
         url: productLink,
       });
-      const parsedProducts = response.data;
-      setResults(parsedProducts);
+      setProductId(response.data.productId);
+      setResults(response.data.parsedResults);
 
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -41,5 +47,5 @@ export const useParserByLink = (): HookOutput => {
     }
   };
 
-  return { isLoading, parse, results, errorMessage };
+  return { isLoading, parse, results, productId,errorMessage };
 };

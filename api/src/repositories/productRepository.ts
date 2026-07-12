@@ -1,10 +1,13 @@
-import { CollectionRow, StoreRecordRow } from "@api/types/ProductTypes.js";
+import { CollectionRow, StoreRecordJoinProductRow, StoreRecordRow } from "@api/types/ProductTypes.js";
 import { StoreName } from "@api/types/StoreName.js";
 import { Pool, PoolClient } from "pg";
 import { QueryResult } from "typeorm";
 
 export const ProductRepository = {
-  getStoreRecordByLink: async (client: PoolClient, link: string): Promise<StoreRecordRow | undefined> => {
+  getStoreRecordByLink: async (
+    client: PoolClient,
+    link: string,
+  ): Promise<StoreRecordRow | undefined> => {
     try {
       const queryText: string = `
             SELECT * FROM Store_Records
@@ -17,7 +20,7 @@ export const ProductRepository = {
     }
   },
 
-  getCollectionRecord: async (
+  getCollectionByUserProductId: async (
     client: PoolClient,
     userId: number,
     productId: number,
@@ -34,7 +37,7 @@ export const ProductRepository = {
     }
   },
 
-  createCollectionRecord: async (
+  createCollection: async (
     client: PoolClient,
     userId: number,
     productId: number,
@@ -93,6 +96,21 @@ export const ProductRepository = {
         productLink,
         productStoreName,
       ]);
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getStoreRecordsWithProductId: async (client: PoolClient, productId: number): Promise<StoreRecordJoinProductRow[]> => {
+    try {
+      const queryText = `
+      SELECT * FROM Store_Records
+      JOIN Products ON Products.id = Store_Records.product_id
+      WHERE Store_Records.product_id = $1
+      `;
+
+      const result = await client.query(queryText, [productId]);
+      return result.rows;
     } catch (error) {
       throw error;
     }

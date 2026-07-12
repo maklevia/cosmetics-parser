@@ -2,21 +2,78 @@ import pool from "@api/config/db.js";
 import { Parser } from "@api/parsers/services/parserOrchestrator.js";
 import { ParseResult } from "@api/types/ParsedResult.js";
 import { ProductRepository } from "@api/repositories/productRepository.js";
-import { DuplicateProductError, InvalidParseData } from "@api/errors/ProductErrors.js";
+import {
+  DuplicateProductError,
+  InvalidParseData,
+} from "@api/errors/ProductErrors.js";
+import { DatePickerWeekNumberHeaderCellProps } from "@chakra-ui/react/date-picker";
+import { PoolClient } from "pg";
+import { StoreName } from "@api/types/StoreName.js";
+import { Product } from "@api/types/ProductTypes.js";
 
 const parser = new Parser();
 
 export class ProductServices {
   async parse(productLink: string) {
-    const parseResult = await parser.getProductByLink(productLink);
-    if (!parseResult) {
-      throw new InvalidParseData();
+    const client = await pool.connect();
+    try {
+      const storeRecord = await ProductRepository.getStoreRecordByLink(
+        client,
+        productLink,
+      );
+
+      //check for last updated required, to be implemented when re-parsing will work
+      if (storeRecord) {
+        const productId = storeRecord.product_id;
+        const primaryStoreName = storeRecord.store_name;
+
+        const existingStoreRecords =
+          await ProductRepository.getStoreRecordsWithProductId(
+            client,
+            productId,
+          );
+
+        let existingProductsObject: Record<StoreName, Product | null> = {
+          eva: null,
+          notino: null,
+          makeup: null,
+        };
+        for (const product of existingStoreRecords) {
+          existingProductsObject[product.store_name] = {
+            name: product.product_store_name,
+            brand: product.brand,
+            price: product.latest_price,
+            inStock: product.in_stock,
+            image: product.image,
+            link: product.link,
+            storeName: product.store_name,
+          };
+        }
+
+        const existingProducts: ParseResult = {
+          primaryStore: primaryStoreName,
+          products: existingProductsObject,
+        };
+
+        //naming it parseResult so frontend will handle it the same as actual parseResult
+        return { productId, parseResult: existingProducts };
+      } else {
+        const parseResult = await parser.getProductByLink(productLink);
+        if (!parseResult) {
+          throw new InvalidParseData();
+        }
+
+        const productId = await this.addNewProduct(client, parseResult);
+        return { productId, parseResult };
+      }
+    } catch (error) {
+      throw error;
+    } finally {
+      client.release();
     }
-    return parseResult;
   }
 
-  async addNewProduct(userId: number, parseResults: ParseResult) {
-    const client = await pool.connect();
+  async addNewProduct(client: PoolClient, parseResults: ParseResult) {
     try {
       await client.query("BEGIN");
 
@@ -27,15 +84,11 @@ export class ProductServices {
         throw new InvalidParseData();
       }
 
-      const primaryProductRes = await ProductRepository.createProduct(
+      const productId = await ProductRepository.createProduct(
         client,
         primaryProduct.name,
         primaryProduct.brand,
       );
-
-      const productId: number = primaryProductRes;
-
-      await ProductRepository.createCollectionRecord(client, userId, productId);
 
       for (const [storeName, product] of Object.entries(
         parseResults.products,
@@ -55,52 +108,33 @@ export class ProductServices {
       }
 
       await client.query("COMMIT");
+      return productId;
     } catch (error) {
       await client.query("ROLLBACK");
       throw error;
-    } finally {
-      client.release();
     }
   }
 
-  async addProductToUsersCollection(userId: number, parseResult: ParseResult) {
+  async addProductToUsersCollection(userId: number, productId: number) {
     const client = await pool.connect();
     try {
-      const primaryProduct = parseResult.products[parseResult.primaryStore];
-      if (!primaryProduct) {
-        throw new InvalidParseData();
-      }
-      const primaryProductLink = primaryProduct.link;
-
-      const storeRecordByLink = await ProductRepository.getStoreRecordByLink(
-        client,
-        primaryProductLink,
-      );
-
-      if (!storeRecordByLink) {
-        await this.addNewProduct(userId, parseResult);
-        return;
-      }
-
-      const collectionRecord = await ProductRepository.getCollectionRecord(
-        client,
-        userId,
-        storeRecordByLink.product_id,
-      );
+      const collectionRecord =
+        await ProductRepository.getCollectionByUserProductId(
+          client,
+          userId,
+          productId,
+        );
 
       if (collectionRecord) {
         throw new DuplicateProductError();
       } else {
-        await ProductRepository.createCollectionRecord(
+        await ProductRepository.createCollection(
           client,
           userId,
-          storeRecordByLink.product_id,
+          productId,
         );
       }
-
-      await client.query("BEGIN");
     } catch (error) {
-      await client.query("ROLLBACK");
       throw error;
     } finally {
       client.release();
