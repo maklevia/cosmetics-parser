@@ -14,5 +14,6 @@ export const cookiesAccessOptions: CookieOptions = {
     httpOnly: true,
     sameSite: 'strict',
     secure: getEnvOrThrow('NODE_ENV') === 'production',
+    path: '/',
     maxAge: 15 * MINUTE
 }

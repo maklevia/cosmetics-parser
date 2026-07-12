@@ -1,11 +1,11 @@
 import {
   ParserError,
   StoreRequestError,
-} from "@api/parsers/errors/customErrorClasses.js";
-import type { Product } from "@parsers/types/Product.js";
-import type { StoreName } from "@parsers/types/StoreName.js";
+} from "@api/parsers/errors/ParserErrors.js";
+import type { Product } from "@api/types/ProductTypes.js";
+import type { StoreName } from "@api/types/StoreName.js";
 import { checkProductNamesSimilarity } from "@parsers/utils/stringUtils.js";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 
 export abstract class BaseParser {
   abstract readonly storeName: StoreName;

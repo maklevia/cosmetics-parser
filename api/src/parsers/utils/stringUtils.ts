@@ -24,7 +24,7 @@ function checkStringSimilarity(str1: string, str2: string): boolean {
     str2 = simplifyString(str2);
     const stringSimilarityCoef: number  = token_set_ratio(str1, str2);
 
-    if (stringSimilarityCoef > 80) {
+    if (stringSimilarityCoef > 90) {
         return true;
     } else {
         return false;

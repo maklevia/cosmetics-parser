@@ -1,14 +1,14 @@
-import type { Product } from "@parsers/types/Product.js";
+import type { Product } from "@api/types/ProductTypes.js";
 import { MakeupUAParser } from "./parsers/MakeupUAParser.js";
 import { EvaParser } from "./parsers/EvaParser.js";
 import { NotinoParser } from "./parsers/NotinoParser.js";
-import { StoreName } from "@parsers/types/StoreName.js";
+import { StoreName } from "@api/types/StoreName.js";
 import type { BaseParser } from "./parsers/BaseParser.js";
 import {
   InvalidLinkError,
   ParserError,
-} from "@api/parsers/errors/customErrorClasses.js";
-import { ParseResult } from "@api/parsers/types/ParsedResult.js";
+} from "@api/parsers/errors/ParserErrors.js";
+import { ParseResult } from "@api/types/ParsedResult.js";
 
 export class Parser {
   private readonly parsers: Record<StoreName, BaseParser>;

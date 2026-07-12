@@ -1,7 +1,7 @@
 import axios from "axios";
-import type { Product } from "@parsers/types/Product.js";
+import type { Product } from "@api/types/ProductTypes.js";
 import type { EvaByLinkResponse, EvaSearchResponse } from "@parsers/types/EvaApi.js";
-import { StoreName } from "@parsers/types/StoreName.js";
+import { StoreName } from "@api/types/StoreName.js";
 import { simplifyString } from "@parsers/utils/stringUtils.js";
 import { BaseParser } from "./BaseParser.js";
 
@@ -57,7 +57,7 @@ export class EvaParser extends BaseParser {
       brand: data.brand,
       price: data.final_price || undefined,
       inStock: data.stock.is_in_stock,
-      image: `${this.evaApiImageUrl}${data.image}` || null,
+      image: `${this.evaApiImageUrl}${data.image}` || undefined,
       link,
       storeName: this.storeName,
     };
@@ -91,7 +91,7 @@ export class EvaParser extends BaseParser {
       brand: data.brand,
       price: data.final_price || undefined,
       inStock: data.stock.is_in_stock,
-      image: `${this.evaApiImageUrl}${data.image}` || null,
+      image: `${this.evaApiImageUrl}${data.image}` || undefined,
       link: `${this.evaUrl}${data.id}/`,
       storeName: this.storeName,
     };

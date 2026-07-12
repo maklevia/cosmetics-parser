@@ -1,4 +1,4 @@
-import { StoreName } from "@api/parsers/types/StoreName.js";
+import { StoreName } from "@api/types/StoreName.js";
 
 export class InvalidLinkError extends Error {
     constructor(message: string = 'Provided link is invalid!') {

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { BaseParser } from "./BaseParser.js";
-import type { Product } from "@parsers/types/Product.js";
-import { StoreName } from "@parsers/types/StoreName.js";
+import type { Product } from "@api/types/ProductTypes.js";
+import { StoreName } from "@api/types/StoreName.js";
 import { simplifyString, wordCount } from "@parsers/utils/stringUtils.js";
 import { MakeupByLinkResponse, MakeupSearchResponse } from "@parsers/types/MakeupApi.js";
 
@@ -41,7 +41,7 @@ export class MakeupUAParser extends BaseParser {
             brand: data.brand.title,
             price: data.price?.current || undefined,
             inStock: data.inStock,
-            image: data.meta?.image || null,
+            image: data.meta?.image || undefined,
             link,
             storeName: this.storeName,
         };
@@ -69,7 +69,7 @@ export class MakeupUAParser extends BaseParser {
                     brand: product.brand.title,
                     price: product.price?.current || undefined,
                     inStock: product.inStock,
-                    image: product.media[0]?.sizes?.sm?.thumbnail || null,
+                    image: product.media[0]?.sizes?.sm?.thumbnail || undefined,
                     link: `${this.makeupUrl}${product.id}/`,
                     storeName: this.storeName,
                 };

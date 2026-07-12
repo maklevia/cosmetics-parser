@@ -15,10 +15,10 @@ export function ParsedProductsView({
     });
   };
 
-  const onFailure = () => {
+  const onFailure = (message: string) => {
     setTimeout(() => {
       toaster.update("add", {
-        title: "Something went wrong. Please, try again later",
+        title: message,
         type: "error",
       });
     });
