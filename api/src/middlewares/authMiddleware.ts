@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import AuthService from "@api/services/authServices.js";
+import {AuthServices} from "@api/services/authServices.js";
+
+const authServices = new AuthServices();
 
 export const authMiddleware = (
     req: Request, 
@@ -11,7 +13,7 @@ export const authMiddleware = (
         return res.status(401).json({message: 'No access token, not authorised'})
     }
 
-    AuthService.validateAccessToken(accessToken, (error, decodedUser) => {
+    authServices.validateAccessToken(accessToken, (error, decodedUser) => {
         if (error || !decodedUser) {
             return res.status(401).json({message: 'Can`t validate access token'});
         }
