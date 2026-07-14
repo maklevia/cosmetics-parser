@@ -1,12 +1,13 @@
-import { ParserController } from "@api/controllers/parserControllers.js";
-import { ProductController } from "@api/controllers/productControllers.js";
+import { ParserControllers } from "@api/controllers/parserControllers.js";
+import { ProductControllers } from "@api/controllers/productControllers.js";
 import { authMiddleware } from "@api/middlewares/authMiddleware.js";
 import { Router } from "express";
 
 export const productRoutes = Router();
 
-const productController = new ProductController();
+const productControllers = new ProductControllers();
+const parserControllers = new ParserControllers();
 
-productRoutes.get('/collection', authMiddleware, productController.getCollection);
-productRoutes.post('/parse', authMiddleware, ParserController.parse);
-productRoutes.post('/add-product-to-collection', authMiddleware, ParserController.addProduct);
+productRoutes.get('/collection', authMiddleware, productControllers.getCollection);
+productRoutes.post('/parse', authMiddleware, parserControllers.parse);
+productRoutes.post('/add-product-to-collection', authMiddleware, parserControllers.addProduct);

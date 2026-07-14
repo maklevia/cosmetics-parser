@@ -11,16 +11,12 @@ export const ProductRepository = {
     client: PoolClient,
     link: string,
   ): Promise<StoreRecordRow | undefined> => {
-    try {
-      const queryText: string = `
+    const queryText: string = `
             SELECT * FROM Store_Records
             WHERE link = $1;
             `;
-      const result = await client.query(queryText, [link]);
-      return result.rows[0];
-    } catch (error) {
-      throw error;
-    }
+    const result = await client.query(queryText, [link]);
+    return result.rows[0];
   },
 
   getCollectionByUserProductId: async (
@@ -28,19 +24,15 @@ export const ProductRepository = {
     userId: number,
     productId: number,
   ): Promise<CollectionRow | undefined> => {
-    try {
-      const queryText: string = `
+    const queryText: string = `
             SELECT * FROM Collections
             WHERE user_id = $1 AND product_id = $2;`;
 
-      const result = await client.query<CollectionRow>(queryText, [
-        userId,
-        productId,
-      ]);
-      return result.rows[0];
-    } catch (error) {
-      throw error;
-    }
+    const result = await client.query<CollectionRow>(queryText, [
+      userId,
+      productId,
+    ]);
+    return result.rows[0];
   },
 
   createCollection: async (
@@ -48,15 +40,11 @@ export const ProductRepository = {
     userId: number,
     productId: number,
   ) => {
-    try {
-      const queryText: string = `
+    const queryText: string = `
             INSERT INTO Collections (user_id, product_id)
             VALUES ($1, $2)`;
 
-      await client.query(queryText, [userId, productId]);
-    } catch (error) {
-      throw error;
-    }
+    await client.query(queryText, [userId, productId]);
   },
 
   createProduct: async (
@@ -65,21 +53,17 @@ export const ProductRepository = {
     productBrand: string,
     productImage?: string,
   ): Promise<number> => {
-    try {
-      const queryText: string = `
+    const queryText: string = `
             INSERT INTO Products (name, brand, image)
             VALUES ($1, $2, $3)
             RETURNING id`;
 
-      const result = await client.query(queryText, [
-        productName,
-        productBrand,
-        productImage,
-      ]);
-      return result.rows[0].id;
-    } catch (error) {
-      throw error;
-    }
+    const result = await client.query(queryText, [
+      productName,
+      productBrand,
+      productImage,
+    ]);
+    return result.rows[0].id;
   },
 
   createStoreRecord: async (
@@ -92,44 +76,36 @@ export const ProductRepository = {
     inStock: boolean,
     image: string | undefined,
   ) => {
-    try {
-      const queryText: string = `
+    const queryText: string = `
            INSERT INTO Store_Records (product_id, store_name, latest_price, 
            in_stock, image, link, product_store_name)
            VALUES ($1, $2, $3, $4, $5, $6, $7)`;
 
-      await client.query(queryText, [
-        productId,
-        storeName,
-        price,
-        inStock,
-        image,
-        productLink,
-        productStoreName,
-      ]);
-    } catch (error) {
-      throw error;
-    }
+    await client.query(queryText, [
+      productId,
+      storeName,
+      price,
+      inStock,
+      image,
+      productLink,
+      productStoreName,
+    ]);
   },
 
   getStoreRecordsWithProductId: async (
     client: PoolClient,
     productId: number,
   ): Promise<StoreRecordJoinProductRow[]> => {
-    try {
-      const queryText: string = `
+    const queryText: string = `
       SELECT * FROM Store_Records
       JOIN Products ON Products.id = Store_Records.product_id
       WHERE Store_Records.product_id = $1
       `;
 
-      const result = await client.query<StoreRecordJoinProductRow>(queryText, [
-        productId,
-      ]);
-      return result.rows;
-    } catch (error) {
-      throw error;
-    }
+    const result = await client.query<StoreRecordJoinProductRow>(queryText, [
+      productId,
+    ]);
+    return result.rows;
   },
 
   getUserCollection: async (
@@ -138,8 +114,7 @@ export const ProductRepository = {
     limit: number,
     offset: number,
   ): Promise<UserCollectionRow[]> => {
-    try {
-      const queryText = `
+    const queryText = `
       SELECT Products.id AS "productId",
       Products.name,
       Products.brand,
@@ -150,10 +125,11 @@ export const ProductRepository = {
       ORDER BY Collections.created_at DESC
       LIMIT $2 OFFSET $3;`;
 
-      const result = await client.query<UserCollectionRow>(queryText, [userId, limit, offset]);
-      return result.rows;
-    } catch (error) {
-      throw error;
-    }
+    const result = await client.query<UserCollectionRow>(queryText, [
+      userId,
+      limit,
+      offset,
+    ]);
+    return result.rows;
   },
 };

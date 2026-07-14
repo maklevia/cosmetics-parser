@@ -1,42 +1,31 @@
-import { QueryResultRow } from "pg";
-import pool from "@api/config/db.js";
-import AuthService from "@api/services/authServices.js";
+import { AuthServices } from "@api/services/authServices.js";
+import { UserRepositories } from "@api/repositories/userRepositories.js";
 
-const UserService = {
-  getUserByEmail: async (email: string): Promise<QueryResultRow | null> => {
-    const queryText: string = `
-            SELECT *
-            FROM Users
-            WHERE email=$1
-            LIMIT 1;
-            `;
+const userRepositories = new UserRepositories();
+const authServices = new AuthServices();
+
+export class UserServices {
+  async getUserByEmail(email: string) {
     try {
-      const user = await pool.query(queryText, [email]);
-      return user.rows[0];
+      const user = await userRepositories.getUserByEmail(email);
+      return user;
     } catch (error) {
       console.log("API UserService: error searching for user in DB: ", error);
       return null;
     }
-  },
+  }
 
-  createUser: async (email: string, password: string): Promise<QueryResultRow | null> => {
+  async createUser(email: string, password: string) {
     try {
-      const hashedPassword = await AuthService.hashPassword(password);
-
-      const queryText: string = `
-      INSERT INTO Users
-      (email, password) 
-      VALUES ($1, $2) 
-      RETURNING id, email
-      `;
-      const createdUser = await pool.query(queryText, [email, hashedPassword])
-      return createdUser.rows[0];
+      const hashedPassword = await authServices.hashPassword(password);
+      const createdUser = await userRepositories.createUser(
+        email,
+        hashedPassword,
+      );
+      return createdUser;
     } catch (error) {
-        console.log('API User Service: error creating new user in DB: ', error);
-        return null;
+      console.log("API User Service: error creating new user in DB: ", error);
+      return null;
     }
-  },
-
-};
-
-export default UserService;
+  }
+}

@@ -9,13 +9,16 @@ import {
   InvalidParseData,
 } from "@api/errors/ProductErrors.js";
 
-const productServices = new ProductServices();
+export class ParserControllers {
+  private productServices: ProductServices;
+  constructor() {
+    this.productServices = new ProductServices();
+  }
 
-export const ParserController = {
-  parse: async (req: Request, res: Response) => {
+  parse = async (req: Request, res: Response) => {
     try {
       const productLink: string = req.body.url;
-      const result = await productServices.parse(productLink);
+      const result = await this.productServices.parse(productLink);
       const productId = result.productId;
       const parsedResults = result.parseResult;
       return res.status(200).json({ productId, parsedResults });
@@ -23,31 +26,26 @@ export const ParserController = {
       if (error instanceof InvalidLinkError) {
         res.status(400).json({ error: "Please, provide valid link." });
       } else if (error instanceof StoreRequestError) {
-        res
-          .status(502)
-          .json({
-            error: "Store is temporaly unavailable. Please, try again later.",
-          });
+        res.status(502).json({
+          error: "Store is temporaly unavailable. Please, try again later.",
+        });
       } else if (error instanceof InvalidParseData) {
-        res
-          .status(400)
-          .json({
-            error:
-              "Cannot find your product. Please, check if your link is correct, or try again later.",
-          });
+        res.status(400).json({
+          error:
+            "Cannot find your product. Please, check if your link is correct, or try again later.",
+        });
       } else {
         res
           .status(500)
           .json({ error: "Something went wrong. Please, try again later." });
       }
     }
-  },
-
-  addProduct: async (req: Request, res: Response) => {
+  }
+  addProduct = async (req: Request, res: Response) => {
     try {
       const userId: number = res.locals.user.userId;
       const productId: number = req.body.productId;
-      await productServices.addProductToUsersCollection(userId, productId);
+      await this.productServices.addProductToUsersCollection(userId, productId);
 
       res.status(201).json({ message: "Product created successfully" });
     } catch (error) {
@@ -62,5 +60,5 @@ export const ParserController = {
           .json({ error: "Something went wrong. Please, try again later." });
       }
     }
-  },
-};
+  }
+}

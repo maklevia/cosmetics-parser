@@ -1,12 +1,11 @@
 import pool from "@api/config/db.js";
 import { Parser } from "@api/parsers/services/parserOrchestrator.js";
 import { ParseResult } from "@api/types/ParsedResult.js";
-import { ProductRepository } from "@api/repositories/productRepository.js";
+import { ProductRepository } from "@api/repositories/productRepositories.js";
 import {
   DuplicateProductError,
   InvalidParseData,
 } from "@api/errors/ProductErrors.js";
-import { DatePickerWeekNumberHeaderCellProps } from "@chakra-ui/react/date-picker";
 import { PoolClient } from "pg";
 import { StoreName } from "@api/types/StoreName.js";
 import { Product } from "@api/types/ProductTypes.js";
@@ -129,11 +128,7 @@ export class ProductServices {
       if (collectionRecord) {
         throw new DuplicateProductError();
       } else {
-        await ProductRepository.createCollection(
-          client,
-          userId,
-          productId,
-        );
+        await ProductRepository.createCollection(client, userId, productId);
       }
     } catch (error) {
       throw error;
@@ -145,7 +140,12 @@ export class ProductServices {
   async getCollection(userId: number, limit: number, offset: number) {
     const client = await pool.connect();
     try {
-      const collection = await ProductRepository.getUserCollection(client, userId, limit, offset);
+      const collection = await ProductRepository.getUserCollection(
+        client,
+        userId,
+        limit,
+        offset,
+      );
       return collection;
     } catch (error) {
       throw error;
@@ -153,5 +153,4 @@ export class ProductServices {
       client.release();
     }
   }
-
 }
