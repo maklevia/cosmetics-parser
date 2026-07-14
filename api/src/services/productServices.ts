@@ -88,6 +88,7 @@ export class ProductServices {
         client,
         primaryProduct.name,
         primaryProduct.brand,
+        primaryProduct.image,
       );
 
       for (const [storeName, product] of Object.entries(
@@ -140,4 +141,17 @@ export class ProductServices {
       client.release();
     }
   }
+
+  async getCollection(userId: number, limit: number, offset: number) {
+    const client = await pool.connect();
+    try {
+      const collection = await ProductRepository.getUserCollection(client, userId, limit, offset);
+      return collection;
+    } catch (error) {
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
 }

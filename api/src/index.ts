@@ -4,7 +4,7 @@ import { authRoutes } from "./routes/authRoutes.js";
 import cookieParser from "cookie-parser";
 import { authMiddleware } from "./middlewares/authMiddleware.js";
 import { getEnvOrThrow } from "./utils/getEnvOrThrow.js";
-import { productParserRoutes } from "@api/routes/productParserRoutes.js";
+import { productRoutes } from "@api/routes/productRoutes.js";
 
 const app = express();
 const port = getEnvOrThrow('API_PORT');
@@ -19,7 +19,7 @@ app.use(cors(corsOptions));
 app.use(cookieParser())
 
 app.use('/auth', authRoutes);
-app.use('/product', productParserRoutes)
+app.use('/product', productRoutes)
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);

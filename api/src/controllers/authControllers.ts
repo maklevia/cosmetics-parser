@@ -71,6 +71,7 @@ const AuthController = {
       return res.status(200).json({ message: "User logged in" });
     } catch (error) {
       console.log("API AuthController: login error: ", error);
+      return res.status(500).json({error: 'Internal server error'})
     }
   },
 

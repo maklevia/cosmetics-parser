@@ -1,16 +1,19 @@
-import { ParsedProductCard } from "@/components/collection/collectionScreen/parseProductDialog/views/ParsedProductCard";
-import type { ParseResult } from "@/components/collection/collectionScreen/parseProductDialog/types/parsedProduct";
+import { ParsedProductCard } from "@/components/collection/screens/ParsePopupForm/components/ParsedProductCard";
+import type { ParseResult } from "@/components/collection/screens/ParsePopupForm/types/parsedProduct";
 import { Button, Dialog, HStack } from "@chakra-ui/react";
-import { useAddProductToCollection } from "@/components/collection/collectionScreen/parseProductDialog/hooks/useAddProductToCollection";
+import { useAddProductToCollection } from "@/components/collection/screens/ParsePopupForm/hooks/useAddProductToCollection";
 import { toaster } from "@/components/ui/toaster";
 export function ParsedProductsView({
   parseResult,
   productId,
+  setRefreshCount,
 }: {
   parseResult: ParseResult;
   productId: number;
+  setRefreshCount: React.Dispatch<React.SetStateAction<number>>
 }) {
   const onSuccess = () => {
+    setRefreshCount((prevCount) => prevCount+1)
     toaster.update("add", {
       title: "Product successfully saved in your Collection",
       type: "success",
