@@ -23,7 +23,7 @@ export function CollectionScreen() {
         </Card.Root>
         <parseDialog.Viewport />
 
-        <CollectionArea refreshCount={refreshCount}/>
+        <CollectionArea refreshCount={refreshCount} setRefreshCount={setRefreshCount}/>
       </VStack>
     </Center>
   );

@@ -182,4 +182,13 @@ export class ProductServices {
       client.release();
     }
   }
+
+  async deleteProductFromCollection(userId: number, productId: number) {
+    try {
+      await ProductRepository.deleteCollectionRecord(userId, productId);
+    } catch (error) {
+      console.log('API: error deleting product from db: ', error)
+      throw error;
+    }
+  }
 }

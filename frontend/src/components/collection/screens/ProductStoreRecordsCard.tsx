@@ -7,7 +7,7 @@ interface ProductRecordProp {
   storeName: string;
 }
 
-export function ParsedProductCard({ product, storeName }: ProductRecordProp) {
+export function ProductStoreRecordsCard({ product, storeName }: ProductRecordProp) {
   const inStockText = () => {
     const text: string = product?.inStock ? "In stock" : "Out of stock";
     return text;

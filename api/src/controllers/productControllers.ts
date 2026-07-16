@@ -36,4 +36,15 @@ export class ProductControllers {
       res.status(400).json({error: `Error getting product ${productId}`});
     }
   }
+
+  deleteProductFromCollection = async (req: Request, res: Response) => {
+    const productId: number = parseInt(req.params.productId, 10);
+    const userId: number = res.locals.user.userId
+    try {
+      await this.productServices.deleteProductFromCollection(userId, productId);
+      res.status(204).json({message: 'Product deleted successfully'});
+    } catch (error) {
+      res.status(400).json({error: 'Error deleting product from collection'});
+    }
+  }
 }

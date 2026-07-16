@@ -1,3 +1,4 @@
+import pool from "@api/config/db.js";
 import {
   CollectionRow,
   StoreRecordJoinProductRow,
@@ -13,7 +14,7 @@ export const ProductRepository = {
     link: string,
   ): Promise<StoreRecordRow | undefined> => {
     const queryText: string = `
-            SELECT product_id AS productId,
+            SELECT product_id AS "productId",
             id,
             store_name AS "storeName",
             latest_price AS price,
@@ -108,11 +109,14 @@ export const ProductRepository = {
   ): Promise<StoreRecordJoinProductRow[]> => {
     const queryText: string = `
       SELECT  Store_Records.id as id,
+      product_id AS "productId",
       store_name AS "storeName",
       latest_price AS price,
       in_stock AS "inStock",
-      product_store_name AS "productStoreName",
-      brand
+      product_store_name AS "name",
+      brand,
+      link,
+      Store_Records.image
       FROM Store_Records
       JOIN Products ON Products.id = Store_Records.product_id
       WHERE Store_Records.product_id = $1
@@ -148,4 +152,12 @@ export const ProductRepository = {
     ]);
     return result.rows;
   },
+
+  deleteCollectionRecord: async (userId: number, productId: number) => {
+    const queryText: string = `
+    DELETE FROM Collections
+    WHERE user_id = $1 AND product_id = $2` 
+
+    await pool.query(queryText, [userId, productId]);
+  }
 };

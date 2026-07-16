@@ -1,4 +1,4 @@
-import { ParsedProductCard } from "@/components/collection/screens/ParsePopupForm/components/ParsedProductCard";
+import { ProductStoreRecordsCard } from "@/components/collection/screens/ProductStoreRecordsCard";
 import type { ParseResult } from "@/components/collection/screens/ParsePopupForm/types/parsedProduct";
 import { Button, Dialog, HStack } from "@chakra-ui/react";
 import { useAddProductToCollection } from "@/components/collection/screens/ParsePopupForm/hooks/useAddProductToCollection";
@@ -54,18 +54,18 @@ export function ParsedProductsView({
       </Dialog.Header>
       <Dialog.Body gap="2">
         <HStack alignItems="stretch" width="100%">
-          <ParsedProductCard
+          <ProductStoreRecordsCard
             product={parseResult.products.eva}
             storeName="Eva.ua"
-          ></ParsedProductCard>
-          <ParsedProductCard
+          ></ProductStoreRecordsCard>
+          <ProductStoreRecordsCard
             product={parseResult.products.makeup}
             storeName="Makeup.ua"
-          ></ParsedProductCard>
-          <ParsedProductCard
+          ></ProductStoreRecordsCard>
+          <ProductStoreRecordsCard
             product={parseResult.products.notino}
             storeName="Notino.ua"
-          ></ParsedProductCard>
+          ></ProductStoreRecordsCard>
         </HStack>
         <Dialog.Footer>
           <Button onClick={handleClick} disabled={isLoading}>
