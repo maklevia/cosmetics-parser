@@ -6,13 +6,20 @@ import {
 } from "@api/types/ProductTypes.js";
 import { StoreName } from "@api/types/StoreName.js";
 import { PoolClient } from "pg";
+
 export const ProductRepository = {
   getStoreRecordByLink: async (
     client: PoolClient,
     link: string,
   ): Promise<StoreRecordRow | undefined> => {
     const queryText: string = `
-            SELECT * FROM Store_Records
+            SELECT product_id AS productId,
+            id,
+            store_name AS "storeName",
+            latest_price AS price,
+            in_stock AS "inStock",
+            product_store_name AS "name"
+            FROM Store_Records
             WHERE link = $1;
             `;
     const result = await client.query(queryText, [link]);
@@ -25,7 +32,10 @@ export const ProductRepository = {
     productId: number,
   ): Promise<CollectionRow | undefined> => {
     const queryText: string = `
-            SELECT * FROM Collections
+            SELECT id, 
+            product_id AS "productId",
+            user_id AS userId  
+            FROM Collections
             WHERE user_id = $1 AND product_id = $2;`;
 
     const result = await client.query<CollectionRow>(queryText, [
@@ -97,7 +107,13 @@ export const ProductRepository = {
     productId: number,
   ): Promise<StoreRecordJoinProductRow[]> => {
     const queryText: string = `
-      SELECT * FROM Store_Records
+      SELECT  Store_Records.id as id,
+      store_name AS "storeName",
+      latest_price AS price,
+      in_stock AS "inStock",
+      product_store_name AS "productStoreName",
+      brand
+      FROM Store_Records
       JOIN Products ON Products.id = Store_Records.product_id
       WHERE Store_Records.product_id = $1
       `;

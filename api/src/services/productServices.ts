@@ -23,8 +23,8 @@ export class ProductServices {
 
       //check for last updated required, to be implemented when re-parsing will work
       if (storeRecord) {
-        const productId = storeRecord.product_id;
-        const primaryStoreName = storeRecord.store_name;
+        const productId = storeRecord.productId;
+        const primaryStoreName = storeRecord.storeName;
 
         const existingStoreRecords =
           await ProductRepository.getStoreRecordsWithProductId(
@@ -38,14 +38,14 @@ export class ProductServices {
           makeup: null,
         };
         for (const product of existingStoreRecords) {
-          existingProductsObject[product.store_name] = {
-            name: product.product_store_name,
+          existingProductsObject[product.storeName] = {
+            name: product.name,
             brand: product.brand,
-            price: product.latest_price,
-            inStock: product.in_stock,
+            price: product.price,
+            inStock: product.inStock,
             image: product.image,
             link: product.link,
-            storeName: product.store_name,
+            storeName: product.storeName,
           };
         }
 
@@ -148,6 +148,35 @@ export class ProductServices {
       );
       return collection;
     } catch (error) {
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  async getProductStoreRecords(productId: number) {
+    const client = await pool.connect();
+    try {
+      const storeRecords = await ProductRepository.getStoreRecordsWithProductId(
+        client,
+        productId,
+      );
+      if (storeRecords.length === 0) {
+        throw new Error(
+          "API: No store records found for the product (something is really wrong..)",
+        );
+      }
+      const responceObject: Record<StoreName, Product | null> = {
+        eva: null,
+        notino: null,
+        makeup: null,
+      };
+      for (const product of storeRecords) {
+        responceObject[product.storeName] = product;
+      }
+      return responceObject;
+    } catch (error) {
+      console.log('API: error in store records service: ', error);
       throw error;
     } finally {
       client.release();

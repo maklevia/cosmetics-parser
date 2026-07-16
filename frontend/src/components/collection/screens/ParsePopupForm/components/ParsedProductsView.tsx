@@ -3,6 +3,9 @@ import type { ParseResult } from "@/components/collection/screens/ParsePopupForm
 import { Button, Dialog, HStack } from "@chakra-ui/react";
 import { useAddProductToCollection } from "@/components/collection/screens/ParsePopupForm/hooks/useAddProductToCollection";
 import { toaster } from "@/components/ui/toaster";
+
+
+//props interface
 export function ParsedProductsView({
   parseResult,
   productId,

@@ -11,3 +11,4 @@ const parserControllers = new ParserControllers();
 productRoutes.get('/collection', authMiddleware, productControllers.getCollection);
 productRoutes.post('/parse', authMiddleware, parserControllers.parse);
 productRoutes.post('/add-product-to-collection', authMiddleware, parserControllers.addProduct);
+productRoutes.get('/:productId/details', productControllers.getProductStoreRecords);

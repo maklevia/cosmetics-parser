@@ -26,4 +26,14 @@ export class ProductControllers {
       console.log(error);
     }
   }
+
+  getProductStoreRecords = async (req: Request, res: Response) => {
+    const productId: number = parseInt(req.params.productId, 10);
+    try {
+      const storeRecords = await this.productServices.getProductStoreRecords(productId);
+      res.status(200).json({message: `Got product details for product ${productId}`, storeRecords})
+    } catch {
+      res.status(400).json({error: `Error getting product ${productId}`});
+    }
+  }
 }
