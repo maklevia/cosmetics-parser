@@ -198,7 +198,8 @@ export class ProductRepositories {
     UPDATE Store_Records 
     SET in_stock = $2, 
     latest_price = $3, 
-    image = COALESCE($4, image)
+    image = COALESCE($4, image),
+    updated_at = NOW()
     WHERE id = $1;`;
 
     await pool.query(queryText, [id, inStock, price, image]);
