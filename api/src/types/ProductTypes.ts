@@ -39,3 +39,10 @@ export interface UserCollectionRow {
     image?: string | undefined;
     notifyOnPriceDrop: boolean;
 }
+
+export interface StoreRecordsForCronRow {
+    recordId: number;
+    link: string;
+    storeName: StoreName;
+    productId: number;
+}

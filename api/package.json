@@ -15,6 +15,7 @@
     "express": "^4.21.0",
     "fuzzball": "^2.2.6",
     "got-scraping": "^4.2.1",
+    "node-cron": "^4.6.0",
     "pg": "^8.22.0"
   },
   "devDependencies": {

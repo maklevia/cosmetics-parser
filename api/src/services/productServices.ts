@@ -1,7 +1,7 @@
 import pool from "@api/config/db.js";
 import { Parser } from "@api/parsers/services/parserOrchestrator.js";
 import { ParseResult } from "@api/types/ParsedResult.js";
-import { ProductRepository } from "@api/repositories/productRepositories.js";
+import { ProductRepositories } from "@api/repositories/productRepositories.js";
 import {
   DuplicateProductError,
   InvalidParseData,
@@ -11,12 +11,13 @@ import { StoreName } from "@api/types/StoreName.js";
 import { Product } from "@api/types/ProductTypes.js";
 
 const parser = new Parser();
+const productRepositories = new ProductRepositories();
 
 export class ProductServices {
   async parse(productLink: string) {
     const client = await pool.connect();
     try {
-      const storeRecord = await ProductRepository.getStoreRecordByLink(
+      const storeRecord = await productRepositories.getStoreRecordByLink(
         client,
         productLink,
       );
@@ -27,7 +28,7 @@ export class ProductServices {
         const primaryStoreName = storeRecord.storeName;
 
         const existingStoreRecords =
-          await ProductRepository.getStoreRecordsWithProductId(
+          await productRepositories.getStoreRecordsWithProductId(
             client,
             productId,
           );
@@ -83,7 +84,7 @@ export class ProductServices {
         throw new InvalidParseData();
       }
 
-      const productId = await ProductRepository.createProduct(
+      const productId = await productRepositories.createProduct(
         client,
         primaryProduct.name,
         primaryProduct.brand,
@@ -95,7 +96,7 @@ export class ProductServices {
       )) {
         if (!product) continue;
 
-        await ProductRepository.createStoreRecord(
+        await productRepositories.createStoreRecord(
           client,
           productId,
           product.name,
@@ -119,7 +120,7 @@ export class ProductServices {
     const client = await pool.connect();
     try {
       const collectionRecord =
-        await ProductRepository.getCollectionByUserProductId(
+        await productRepositories.getCollectionByUserProductId(
           client,
           userId,
           productId,
@@ -128,7 +129,7 @@ export class ProductServices {
       if (collectionRecord) {
         throw new DuplicateProductError();
       } else {
-        await ProductRepository.createCollection(client, userId, productId);
+        await productRepositories.createCollection(client, userId, productId);
       }
     } catch (error) {
       throw error;
@@ -140,7 +141,7 @@ export class ProductServices {
   async getCollection(userId: number, limit: number, offset: number) {
     const client = await pool.connect();
     try {
-      const collection = await ProductRepository.getUserCollection(
+      const collection = await productRepositories.getUserCollection(
         client,
         userId,
         limit,
@@ -157,7 +158,7 @@ export class ProductServices {
   async getProductStoreRecords(productId: number) {
     const client = await pool.connect();
     try {
-      const storeRecords = await ProductRepository.getStoreRecordsWithProductId(
+      const storeRecords = await productRepositories.getStoreRecordsWithProductId(
         client,
         productId,
       );
@@ -185,7 +186,7 @@ export class ProductServices {
 
   async deleteProductFromCollection(userId: number, productId: number) {
     try {
-      await ProductRepository.deleteCollectionRecord(userId, productId);
+      await productRepositories.deleteCollectionRecord(userId, productId);
     } catch (error) {
       console.log('API: error deleting product from db: ', error)
       throw error;

@@ -3,16 +3,17 @@ import {
   CollectionRow,
   StoreRecordJoinProductRow,
   StoreRecordRow,
+  StoreRecordsForCronRow,
   UserCollectionRow,
 } from "@api/types/ProductTypes.js";
 import { StoreName } from "@api/types/StoreName.js";
 import { PoolClient } from "pg";
 
-export const ProductRepository = {
-  getStoreRecordByLink: async (
+export class ProductRepositories {
+  async getStoreRecordByLink(
     client: PoolClient,
     link: string,
-  ): Promise<StoreRecordRow | undefined> => {
+  ): Promise<StoreRecordRow | undefined> {
     const queryText: string = `
             SELECT product_id AS "productId",
             id,
@@ -25,13 +26,13 @@ export const ProductRepository = {
             `;
     const result = await client.query(queryText, [link]);
     return result.rows[0];
-  },
+  }
 
-  getCollectionByUserProductId: async (
+  async getCollectionByUserProductId(
     client: PoolClient,
     userId: number,
     productId: number,
-  ): Promise<CollectionRow | undefined> => {
+  ): Promise<CollectionRow | undefined> {
     const queryText: string = `
             SELECT id, 
             product_id AS "productId",
@@ -44,26 +45,26 @@ export const ProductRepository = {
       productId,
     ]);
     return result.rows[0];
-  },
+  }
 
-  createCollection: async (
+  async createCollection(
     client: PoolClient,
     userId: number,
     productId: number,
-  ) => {
+  ) {
     const queryText: string = `
             INSERT INTO Collections (user_id, product_id)
             VALUES ($1, $2)`;
 
     await client.query(queryText, [userId, productId]);
-  },
+  }
 
-  createProduct: async (
+  async createProduct(
     client: PoolClient,
     productName: string,
     productBrand: string,
     productImage?: string,
-  ): Promise<number> => {
+  ): Promise<number> {
     const queryText: string = `
             INSERT INTO Products (name, brand, image)
             VALUES ($1, $2, $3)
@@ -75,9 +76,9 @@ export const ProductRepository = {
       productImage,
     ]);
     return result.rows[0].id;
-  },
+  }
 
-  createStoreRecord: async (
+  async createStoreRecord(
     client: PoolClient,
     productId: number,
     productStoreName: string,
@@ -86,7 +87,7 @@ export const ProductRepository = {
     price: number | undefined,
     inStock: boolean,
     image: string | undefined,
-  ) => {
+  ) {
     const queryText: string = `
            INSERT INTO Store_Records (product_id, store_name, latest_price, 
            in_stock, image, link, product_store_name)
@@ -101,12 +102,12 @@ export const ProductRepository = {
       productLink,
       productStoreName,
     ]);
-  },
+  }
 
-  getStoreRecordsWithProductId: async (
+  async getStoreRecordsWithProductId(
     client: PoolClient,
     productId: number,
-  ): Promise<StoreRecordJoinProductRow[]> => {
+  ): Promise<StoreRecordJoinProductRow[]> {
     const queryText: string = `
       SELECT  Store_Records.id as id,
       product_id AS "productId",
@@ -126,14 +127,14 @@ export const ProductRepository = {
       productId,
     ]);
     return result.rows;
-  },
+  }
 
-  getUserCollection: async (
+  async getUserCollection(
     client: PoolClient,
     userId: number,
     limit: number,
     offset: number,
-  ): Promise<UserCollectionRow[]> => {
+  ): Promise<UserCollectionRow[]> {
     const queryText = `
       SELECT Products.id AS "productId",
       Products.name,
@@ -151,13 +152,55 @@ export const ProductRepository = {
       offset,
     ]);
     return result.rows;
-  },
+  }
 
-  deleteCollectionRecord: async (userId: number, productId: number) => {
+  async deleteCollectionRecord(userId: number, productId: number) {
     const queryText: string = `
     DELETE FROM Collections
-    WHERE user_id = $1 AND product_id = $2` 
+    WHERE user_id = $1 AND product_id = $2`;
 
     await pool.query(queryText, [userId, productId]);
   }
-};
+
+  async getProductsFromCollections(): Promise<number[]> {
+    const queryText: string = `
+    SELECT DISTINCT product_id
+    FROM Collections`;
+
+    const result = await pool.query<{ product_id: number }>(queryText);
+    return result.rows.map((row) => row.product_id); //array of pure id's
+  }
+
+  async getStoreRecordsForCron(
+    productsIds: number[],
+  ): Promise<StoreRecordsForCronRow[]> {
+    const queryText: string = `
+    SELECT id as "recordId",
+    product_id AS "productId",
+    link,
+    store_name AS "storeName"
+    FROM Store_Records
+    WHERE product_id = ANY($1)`;
+
+    const result = await pool.query<StoreRecordsForCronRow>(queryText, [
+      productsIds,
+    ]);
+    return result.rows;
+  }
+
+  async updateStoreRecordsCron(
+    id: number,
+    inStock: boolean,
+    price?: number,
+    image?: string,
+  ) {
+    const queryText: string = `
+    UPDATE Store_Records 
+    SET in_stock = $2, 
+    latest_price = $3, 
+    image = COALESCE($4, image)
+    WHERE id = $1;`;
+
+    await pool.query(queryText, [id, inStock, price, image]);
+  }
+}
