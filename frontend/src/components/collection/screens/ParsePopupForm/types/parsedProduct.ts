@@ -8,6 +8,7 @@ export interface ProductRecord {
   image?: string | undefined;
   link: string;
   storeName: StoreName;
+  lowest30DayPrice?: number;
 }
 export interface ParsedProducts {
   eva: ProductRecord | null;

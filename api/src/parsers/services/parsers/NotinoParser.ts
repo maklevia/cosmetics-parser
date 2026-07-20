@@ -7,8 +7,6 @@ export class NotinoParser extends BaseParser {
     readonly storeName = StoreName.Notino;
 
     private readonly notinoSearchUrl: string = 'https://www.notino.ua/search.asp?exps=';
-    // private maxRetries: number = 3;
-    // private delayBase: number = 10000; //in ms, 10 seconds
 
     private normalizeInStockParam(link: string): boolean {
         return link.includes('InStock');
@@ -37,6 +35,8 @@ export class NotinoParser extends BaseParser {
 
         const data = this.extractLdJson(body, (p) => p?.['@type'] === 'Product');
         if (!data) return null;
+
+        console.log(data);
 
         return {
             name: data.name,

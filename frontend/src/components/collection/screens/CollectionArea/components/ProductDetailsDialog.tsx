@@ -27,7 +27,7 @@ export const productDetailsDialog = createOverlay((props: Props) => {
 
   return (
     <AbsoluteCenter>
-      <Dialog.Root {...props} size="xl">
+      <Dialog.Root {...props} size="4xl">
         <Portal>
           <Dialog.Backdrop />
 

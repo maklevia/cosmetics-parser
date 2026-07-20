@@ -133,7 +133,26 @@ export class ProductRepositories {
       product_store_name AS "name",
       brand,
       link,
-      Store_Records.image
+      Store_Records.image,
+
+      (
+        SELECT MIN(p) FROM (
+          SELECT price AS p
+          FROM Price_History
+          WHERE store_record_id = Store_Records.id
+            AND recorded_at >= NOW() - INTERVAL '30 days'
+          UNION ALL
+          (
+            SELECT price AS p
+            FROM Price_History
+            WHERE store_record_id = Store_Records.id
+              AND recorded_at < NOW() - INTERVAL '30 days'
+            ORDER BY recorded_at DESC
+            LIMIT 1
+          )
+        ) AS history_window
+      ) AS "lowest30DayPrice"
+
       FROM Store_Records
       JOIN Products ON Products.id = Store_Records.product_id
       WHERE Store_Records.product_id = $1

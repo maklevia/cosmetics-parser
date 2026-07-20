@@ -7,14 +7,17 @@ interface ProductRecordProp {
   storeName: string;
 }
 
-export function ProductStoreRecordsCard({ product, storeName }: ProductRecordProp) {
+export function ProductStoreRecordsCard({
+  product,
+  storeName,
+}: ProductRecordProp) {
   const inStockText = () => {
     const text: string = product?.inStock ? "In stock" : "Out of stock";
     return text;
   };
 
   return (
-    <Card.Root flex="1" height="450px">
+    <Card.Root flex="1" minHeight="450px">
       <Card.Header>
         <Card.Title>{storeName} Result</Card.Title>
       </Card.Header>
@@ -23,11 +26,11 @@ export function ProductStoreRecordsCard({ product, storeName }: ProductRecordPro
           <Image
             src={product.image}
             alt="Product Image"
-            height="200px"
+            height="180px"
             width="100%"
             objectFit="contain"
           />
-          <Card.Title>{product.name}</Card.Title>
+          <Card.Title fontSize="md" lineClamp={3}>{product.name}</Card.Title>
           <Card.Description>{product.brand}</Card.Description>
           <Card.Description>
             <Link to={product.link}>
@@ -38,6 +41,13 @@ export function ProductStoreRecordsCard({ product, storeName }: ProductRecordPro
             <Text>{product.price}₴</Text>
             <Text>{inStockText()}</Text>
           </HStack>
+
+            {product.lowest30DayPrice && (
+              <Card.Description>
+                The lowest price for the 30 days: ₴{product.lowest30DayPrice}
+              </Card.Description>
+            )}
+            
         </Card.Body>
       ) : (
         <Card.Body>
