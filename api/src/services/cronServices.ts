@@ -68,12 +68,18 @@ export class CronServices {
         return;
       }
 
+
+
       await productRepositories.updateStoreRecordsCron(
         record.recordId,
         product.inStock,
         product.price,
         product.image,
       );
+
+      if (record.price !== product.price) {
+        await productRepositories.createPriceHistory(record.recordId, product.storeName, product.inStock, product.price);
+      }
     } catch (error) {
       console.log(`API CRON: error parsing/updating `, error);
     }

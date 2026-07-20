@@ -45,4 +45,5 @@ export interface StoreRecordsForCronRow {
     link: string;
     storeName: StoreName;
     productId: number;
+    price?: number;
 }

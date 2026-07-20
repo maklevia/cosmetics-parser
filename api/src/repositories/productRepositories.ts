@@ -7,7 +7,7 @@ import {
   UserCollectionRow,
 } from "@api/types/ProductTypes.js";
 import { StoreName } from "@api/types/StoreName.js";
-import { PoolClient } from "pg";
+import { Pool, PoolClient } from "pg";
 
 export class ProductRepositories {
   async getStoreRecordByLink(
@@ -59,6 +59,20 @@ export class ProductRepositories {
     await client.query(queryText, [userId, productId]);
   }
 
+  async createPriceHistory(
+    storeRecordId: number,
+    storeName: StoreName,
+    inStock: boolean,
+    price?: number,
+    client: PoolClient | Pool = pool,
+  ) {
+    const queryText: string = `
+    INSERT INTO Price_History (store_record_id, store_name, price, in_stock)
+    VALUES ($1, $2, $3, $4)`;
+
+    await client.query(queryText, [storeRecordId, storeName, price, inStock]);
+  }
+
   async createProduct(
     client: PoolClient,
     productName: string,
@@ -87,13 +101,14 @@ export class ProductRepositories {
     price: number | undefined,
     inStock: boolean,
     image: string | undefined,
-  ) {
+  ): Promise<number> {
     const queryText: string = `
            INSERT INTO Store_Records (product_id, store_name, latest_price, 
-           in_stock, image, link, product_store_name)
-           VALUES ($1, $2, $3, $4, $5, $6, $7)`;
+           in_stock, image, link, product_store_name, updated_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+           RETURNING id`;
 
-    await client.query(queryText, [
+    const storeRecordId = await client.query(queryText, [
       productId,
       storeName,
       price,
@@ -102,6 +117,7 @@ export class ProductRepositories {
       productLink,
       productStoreName,
     ]);
+    return storeRecordId.rows[0].id;
   }
 
   async getStoreRecordsWithProductId(
@@ -178,7 +194,8 @@ export class ProductRepositories {
     SELECT id as "recordId",
     product_id AS "productId",
     link,
-    store_name AS "storeName"
+    store_name AS "storeName",
+    latest_price AS price
     FROM Store_Records
     WHERE product_id = ANY($1)`;
 
