@@ -33,7 +33,7 @@ export function ProductStoreRecordsCard({
           <Card.Title fontSize="md" lineClamp={3}>{product.name}</Card.Title>
           <Card.Description>{product.brand}</Card.Description>
           <Card.Description>
-            <Link to={product.link}>
+            <Link to={product.link} target="_blank">
               <Em>Link to the store</Em>
             </Link>
           </Card.Description>

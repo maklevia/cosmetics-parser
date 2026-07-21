@@ -36,14 +36,12 @@ export class NotinoParser extends BaseParser {
         const data = this.extractLdJson(body, (p) => p?.['@type'] === 'Product');
         if (!data) return null;
 
-        console.log(data);
-
         return {
             name: data.name,
             brand: data.brand.name,
             price: data?.offers[0]?.price || undefined,
             inStock: this.normalizeInStockParam(data.offers[0].availability),
-            image: data.image[0] || null,
+            image: data.image[0] ? data.image[0].replace('order_2k', 'detail_main_uhq') : null,
             link,
             storeName: this.storeName,
         };

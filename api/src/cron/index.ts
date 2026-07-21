@@ -4,7 +4,7 @@ import cron from 'node-cron'
 const cronServices = new CronServices();
 
 export const cronJob = () => {
-    cron.schedule('0 7 * * *', () => cronServices.dailyReparsing(), {
+    cron.schedule('21 11 * * *', () => cronServices.dailyReparsing(), {
         timezone: 'Europe/Kyiv'
     })
 }

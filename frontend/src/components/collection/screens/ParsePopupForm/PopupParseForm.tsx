@@ -15,6 +15,10 @@ export const parseDialog = createOverlay((props) => {
     parse(productLink);
   };
 
+  const handleClose = () => {
+    parseDialog.close('a');
+  }
+
   return (
     <DialogRoot {...props} placement="center" size={results ? "xl" : "md"}>
       <Portal>
@@ -26,7 +30,7 @@ export const parseDialog = createOverlay((props) => {
             ) : errorMessage ? (
               <ErrorView errorMessage={errorMessage} />
             ) : results && productId ? (
-              <ParsedProductsView parseResult={results} productId={productId} setRefreshCount={setRefreshCount}/>
+              <ParsedProductsView parseResult={results} productId={productId} setRefreshCount={setRefreshCount} handleClose={handleClose}/>
             ) : (
               <LinkInputView
                 onChangeFunc={setProductLink}
