@@ -1,9 +1,11 @@
 import { Parser } from "@api/parsers/services/parserOrchestrator.js";
+import { NotificationRepositories } from "@api/repositories/notificationRepositories.js";
 import { ProductRepositories } from "@api/repositories/productRepositories.js";
 import { StoreRecordsForCronRow } from "@api/types/ProductTypes.js";
 import { StoreName } from "@api/types/StoreName.js";
 
 const productRepositories = new ProductRepositories();
+const notifRepositories = new NotificationRepositories();
 const parser = new Parser();
 
 interface GroupedRecords {
@@ -11,7 +13,7 @@ interface GroupedRecords {
   slowStores: StoreRecordsForCronRow[]; //now it's Notino
 }
 
-export class CronServices {
+export class CronParsingServices {
   async dailyReparsing(): Promise<void> {
     try {
       console.log("Re-parsing products starting...");
@@ -20,8 +22,8 @@ export class CronServices {
       console.log("Fetched links succsessfully...");
 
       await Promise.all([
-        this.processQueue(groupedRecords.fastStores, 2000, "Makeup and Eva"),
-        this.processQueue(groupedRecords.slowStores, 8000, "Notino"),
+        this.processQueue(groupedRecords.fastStores, 2000),
+        this.processQueue(groupedRecords.slowStores, 8000),
       ]);
 
       console.log("Re-parsing products finished.");
@@ -59,26 +61,42 @@ export class CronServices {
   }
 
   private async parseAndUpdateRecords(
-    record: StoreRecordsForCronRow,
+    oldRecord: StoreRecordsForCronRow,
   ): Promise<void> {
     try {
-      const product = await parser.parseSingleProduct(record.link);
-      if (!product) {
-        console.log(`API CRON: Got null response for ${record.link}`);
+      const newRecordData = await parser.parseSingleProduct(oldRecord.link);
+      if (!newRecordData) {
+        console.log(`API CRON: Got null response for ${oldRecord.link}`);
         return;
       }
 
-
-
       await productRepositories.updateStoreRecordsCron(
-        record.recordId,
-        product.inStock,
-        product.price,
-        product.image,
+        oldRecord.recordId,
+        newRecordData.inStock,
+        newRecordData.price,
+        newRecordData.image,
       );
 
-      if (record.price !== product.price) {
-        await productRepositories.createPriceHistory(record.recordId, product.storeName, product.inStock, product.price);
+      if (oldRecord.price !== newRecordData.price) {
+        await productRepositories.createPriceHistory(
+          oldRecord.recordId,
+          newRecordData.storeName,
+          newRecordData.inStock,
+          newRecordData.price,
+        );
+
+        if (
+          oldRecord.price &&
+          newRecordData.price &&
+          oldRecord.price * 0.9 >= newRecordData.price
+        ) {
+          await notifRepositories.createPriceDropQueue(
+            oldRecord.recordId,
+            oldRecord.productId,
+            oldRecord.price,
+            newRecordData.price,
+          );
+        }
       }
     } catch (error) {
       console.log(`API CRON: error parsing/updating `, error);
@@ -91,7 +109,6 @@ export class CronServices {
   private async processQueue(
     records: StoreRecordsForCronRow[],
     delayMs: number,
-    label: string,
   ): Promise<void> {
     for (const record of records) {
       await this.parseAndUpdateRecords(record);
