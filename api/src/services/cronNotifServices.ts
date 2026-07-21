@@ -6,7 +6,9 @@ const notifRepositories = new NotificationRepositories();
 export class CronNotifServices {
   async sendNotifications() {
     try {
+      console.log('Starting to send notifications')
       const notifData = await notifRepositories.getPendingNotificationsData();
+      console.log(notifData);
       const processedQueueIds: number[] = [];
 
       for (const user of notifData) {
@@ -44,6 +46,7 @@ export class CronNotifServices {
         }
       }
       await notifRepositories.updatePriceDropQueue(processedQueueIds);
+      console.log('Finished to send notifications')
     } catch (error) {
       console.log("API: CronNotifServices error: ", error);
     }

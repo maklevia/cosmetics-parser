@@ -84,12 +84,14 @@ export class CronParsingServices {
           newRecordData.inStock,
           newRecordData.price,
         );
+        console.log(`Creating price history repo for ${newRecordData.name}`)
 
         if (
           oldRecord.price &&
           newRecordData.price &&
-          oldRecord.price * 0.9 >= newRecordData.price
+          (oldRecord.price * 0.9 >= newRecordData.price)
         ) {
+          console.log(`Creating notif record for ${newRecordData.name}`)
           await notifRepositories.createPriceDropQueue(
             oldRecord.recordId,
             oldRecord.productId,

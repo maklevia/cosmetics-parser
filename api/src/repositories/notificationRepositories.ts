@@ -1,5 +1,5 @@
 import pool from "@api/config/db.js";
-import { PendingNotifDataRow } from "@api/types/NotifTypes.js";
+import { NotificationRow, PendingNotifDataRow } from "@api/types/NotifTypes.js";
 
 export class NotificationRepositories {
   async createPriceDropQueue(
@@ -57,7 +57,7 @@ export class NotificationRepositories {
 
   async createUserNotification(userId: number, productId: number, title: string, message: string, image?: string) {
     const queryText: string = `
-    INSERT INTO User_Notifications (user_id, productId, title, message, image)
+    INSERT INTO User_Notifications (user_id, product_id, title, message, image)
     VALUES ($1, $2, $3, $4, $5)`
 
     await pool.query(queryText, [userId, productId, title, message, image])
@@ -75,5 +75,21 @@ export class NotificationRepositories {
     WHERE created_at < NOW() - INTERVAL '30 days'`
 
     await pool.query(queryTextNotifs);
+  }
+
+  async getNotificationsByUserId(userId: number): Promise<NotificationRow[]> {
+    const queryText: string = `
+    SELECT id AS "notifId",
+    product_id AS "productId",
+    image,
+    title,
+    message,
+    is_read AS "isRead"
+    FROM User_Notifications
+    WHERE user_id = $1`
+
+    const result = await pool.query<NotificationRow>(queryText, [userId]);
+
+    return result.rows;
   }
 }

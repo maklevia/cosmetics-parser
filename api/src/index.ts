@@ -6,6 +6,7 @@ import { authMiddleware } from "./middlewares/authMiddleware.js";
 import { getEnvOrThrow } from "./utils/getEnvOrThrow.js";
 import { productRoutes } from "@api/routes/productRoutes.js";
 import { startCronJob } from "@api/cron/index.js";
+import { notificationRoutes } from "@api/routes/notificationRoutes.js";
 
 const app = express();
 const port = getEnvOrThrow('API_PORT');
@@ -23,6 +24,7 @@ app.use(cookieParser())
 
 app.use('/auth', authRoutes);
 app.use('/product', productRoutes)
+app.use('/notification', notificationRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);

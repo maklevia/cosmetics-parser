@@ -14,3 +14,12 @@ export interface PendingNotifDataRow {
     image?: string;
   }[];
 }
+
+export interface NotificationRow {
+    notifId: number,
+    productId: number,
+    image?: string,
+    title: string,
+    message: string,
+    isRead: boolean
+}

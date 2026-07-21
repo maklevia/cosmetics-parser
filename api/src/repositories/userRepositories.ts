@@ -4,9 +4,9 @@ import { NewUserRow, UserRow } from "@api/types/UserTypes.js";
 export class UserRepositories {
   async createUser(userEmail: string, userPassword: string) {
     const queryText = `
-        INSERT INTO Users (user_email, user_password)
+        INSERT INTO Users (email, password)
         VALUES ($1, $2)
-        RETURNING id AS userId, email AS userEmail`;
+        RETURNING id AS "userId", email AS "userEmail"`;
 
     const result = await pool.query<NewUserRow>(queryText, [
       userEmail,
@@ -21,7 +21,7 @@ export class UserRepositories {
             name,
             email AS "userEmail",
             telegram_account_id AS "telegamAccountId",
-            password AS passwordHash
+            password AS "passwordHash"
             FROM Users
             WHERE email=$1
             LIMIT 1;
