@@ -14,4 +14,14 @@ export class NotificationControllers {
             res.status(400).json({error: 'Something went wrong.'});
         }
     }
+
+    markNotifAsRead = async (req: Request, res: Response) => {
+        try {
+            const notifId = parseInt(req.params.notifId, 10);
+            await notificationServices.markNotifAsRead(notifId);
+            res.status(200).json({message: 'Norification marked as read'});
+        } catch (error) {
+            res.status(400).json({error: 'Something went wrong.'});
+        }
+    }
 }

@@ -92,4 +92,13 @@ export class NotificationRepositories {
 
     return result.rows;
   }
+
+  async markNotifAsRead(notifId: number): Promise<void> {
+    const queryText: string = `
+    UPDATE User_Notifications
+    SET is_read = true
+    WHERE id = $1`
+
+    await pool.query(queryText, [notifId]);
+  }
 }

@@ -6,10 +6,15 @@ export class NotificationServices {
     async getUsersNotifications(userId: number) {
         try {
             const userNotifications = await notifRepositories.getNotificationsByUserId(userId);
-            if (userNotifications.length === 0) {
-                return null;
-            }
             return userNotifications;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async markNotifAsRead(notifId: number) {
+        try {
+            await notifRepositories.markNotifAsRead(notifId);
         } catch (error) {
             throw error;
         }

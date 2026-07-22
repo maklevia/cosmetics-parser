@@ -13,7 +13,7 @@ import { useEffect } from "react";
 
 interface Props {
   productId: number;
-  setRefreshCount: React.Dispatch<React.SetStateAction<number>>
+  setRefreshCount?: React.Dispatch<React.SetStateAction<number>>
 }
 
 export const productDetailsDialog = createOverlay((props: Props) => {
