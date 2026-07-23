@@ -1,32 +1,23 @@
 import { NotificationRepositories } from "@api/repositories/notificationRepositories.js";
-import { TelegramBot } from "@api/telegramBot/index.js";
-import { StoreName } from "@api/types/StoreName.js";
+import { getAllGateways } from "@api/getaways/getGetaway.js";
 
 const notifRepositories = new NotificationRepositories();
-const telegramBot = new TelegramBot();
+const gateways = getAllGateways();
 
-export default class CronNotifServices {
+export class CronNotifServices {
   async sendNotifications() {
     try {
       console.log('Starting to send notifications')
       const notifData = await notifRepositories.getPendingNotificationsData();
-      console.log(notifData);
       const processedQueueIds: number[] = [];
 
       for (const user of notifData) {
-        let telegramMessage: string = `🚨 Price Drop Alerts 🚨\n`;
+        const channelAccountIds: Record<string, number | null> = {
+          telegram: user.telegramId,
+        };
 
+        //create notification in db for web app
         for (const priceDropData of user.priceDropsData) {
-          if (user.telegramId) {
-            telegramMessage += this.getTelegramMessage(
-            priceDropData.productName,
-            priceDropData.oldPrice,
-            priceDropData.newPrice,
-            priceDropData.productLink,
-            priceDropData.storeName
-          );
-          }
-
           const title: string = "🚨 Price Drop";
           const message = this.getNotifMessage(
             priceDropData.productName,
@@ -43,13 +34,23 @@ export default class CronNotifServices {
           );
 
           processedQueueIds.push(priceDropData.queueId);
-        }
 
-        if (user.telegramId) {
-          try {
-            await telegramBot.sendTelegramMessage(user.telegramId, telegramMessage);
-          } catch (error) {
-            console.error(`Failed to send telegram message to user ${user.userId}:`, error);
+          //send notification through all connected gateways
+          for (const [channelName, gateway] of gateways) {
+            const accountId = channelAccountIds[channelName];
+            if (accountId) {
+              try {
+                await gateway.sendPriceDropNotification(accountId, {
+                  name: priceDropData.productName,
+                  oldPrice: priceDropData.oldPrice,
+                  newPrice: priceDropData.newPrice,
+                  link: priceDropData.productLink,
+                  image: priceDropData.image,
+                });
+              } catch (error) {
+                console.error(`Failed to send ${channelName} notification to user ${user.userId}:`, error);
+              }
+            }
           }
         }
       }
@@ -59,17 +60,6 @@ export default class CronNotifServices {
     } catch (error) {
       console.log("API: CronNotifServices error: ", error);
     }
-  }
-
-  private getTelegramMessage(
-    productName: string,
-    oldPrice: number,
-    newPrice: number,
-    link: string,
-    storeName: StoreName,
-  ) {
-    const priceInfo = this.getNotifMessage(productName, oldPrice, newPrice);
-    return priceInfo + ` (${storeName})\n${link}`;
   }
 
   private getNotifMessage(

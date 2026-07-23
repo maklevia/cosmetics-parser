@@ -50,11 +50,10 @@ async function checkIsUserBinded(ctx: Context) {
 
   if (telegramId) {
     try {
-      // The API currently returns { isConnected: boolean }, so we use that property
-      const response = await axios.get<{ isConnected: boolean }>(
+      const response = await axios.get<{ isBinded: boolean }>(
         `${API_URL}/channel/telegram/status/${telegramId}`
       );
-      return response.data.isConnected;
+      return response.data.isBinded;
     } catch (error) {
       console.log("Bot: Error checking user status:", error);
       ctx.reply("Something went wrong. Please try again later. 💖");

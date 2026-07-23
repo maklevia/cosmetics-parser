@@ -1,6 +1,6 @@
 import { ChannelBindingError } from "@api/errors/ChannelErrors.js";
+import { getGetaway } from "@api/getaways/getGetaway.js";
 import { ChannelRepositories } from "@api/repositories/channelRepositories.js";
-import { getEnvOrThrow } from "@api/utils/getEnvOrThrow.js";
 
 const channelRepositories = new ChannelRepositories();
 
@@ -24,28 +24,19 @@ export class ChannelServices {
     }
   }
 
-  async generateChannelLink(userId: number, channelName: string): Promise<string> {
+  async generateChannelLink(
+    userId: number,
+    channelName: string,
+  ): Promise<string> {
     try {
       const userUuid = await channelRepositories.createChannelToken(
         userId,
         channelName,
       );
-
-      const link = this.linkCreating(userUuid, channelName);
-      return link;
+      const gateway = getGetaway(channelName);
+      return gateway.generateBindingLink(userUuid);
     } catch (error) {
       throw error;
-    }
-  }
-
-  private linkCreating(userUuid: string, channelName: string): string {
-    switch (channelName) {
-      case "telegram":
-        return `${getEnvOrThrow("TELEGRAM_BOT_LINK")}?start=${userUuid}`;
-      default:
-        throw new Error(
-          `Unsupported channel for link generation: ${channelName}`,
-        );
     }
   }
 

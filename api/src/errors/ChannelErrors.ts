@@ -4,3 +4,10 @@ export class ChannelBindingError extends Error {
     this.name = "ChannelBindingError";
   }
 }
+
+export class ChannelNotificationError extends Error {
+  constructor(message: string = "Could not send notification to user") {
+    super(message);
+    this.name = "ChannelNotificationError"
+  }
+}
