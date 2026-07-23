@@ -6,8 +6,10 @@ import { Box, ScrollArea, Text, VStack } from "@chakra-ui/react";
 export function NotificationDashboard() {
   const { notifications, markAsRead } = useNotifications();
 
-  const onClick = async (productId: number, notifId: number, isRead: boolean) => {
-    productDetailsDialog.open('a', { productId });
+  const onClick = async (productId: number | null, notifId: number, isRead: boolean) => {
+    if (productId) {
+      productDetailsDialog.open('a', { productId });
+    }
     if (!isRead) {
       markAsRead(notifId);
     }

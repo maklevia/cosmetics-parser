@@ -39,4 +39,16 @@ export class ChannelRepositories {
 
         await pool.query(queryText);
     }
+
+    //now this binds specificly to telegram. if new Channles table to-be created, this repository should
+    //update that table instead of users and have no idea about diff types of channels.
+    //that is why channelName unused here.
+    async disconnectChannelAccount(userId: number, channelName: string): Promise<void> {
+        const queryText: string = `
+        UPDATE Users
+        SET telegram_account_id = NULL
+        WHERE id = $1`
+
+        await pool.query(queryText, [userId])
+    }
 }

@@ -55,7 +55,7 @@ export class NotificationRepositories {
     return result.rows;
   }
 
-  async createUserNotification(userId: number, productId: number, title: string, message: string, image?: string) {
+  async createUserNotification(userId: number, title: string, message: string, productId?: number, image?: string) {
     const queryText: string = `
     INSERT INTO User_Notifications (user_id, product_id, title, message, image)
     VALUES ($1, $2, $3, $4, $5)`

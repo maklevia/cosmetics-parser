@@ -4,7 +4,7 @@ import { FiTag } from "react-icons/fi";
 
 interface Props {
   notification: NotificationData;
-  onClick: (productId: number) => void;
+  onClick: (productId: number | null) => void;
 }
 
 export function NotificationItem({ notification, onClick }: Props) {

@@ -1,5 +1,6 @@
 import { ChannelNotificationError } from "@api/errors/ChannelErrors.js";
 import { BaseGateway, PriceDropItem } from "@api/getaways/BaseGateway.js";
+import { formatStoreName } from "@api/utils/formatStoreName.js";
 import { getEnvOrThrow } from "@api/utils/getEnvOrThrow.js";
 
 export class TelegramGateway implements BaseGateway {
@@ -21,7 +22,7 @@ export class TelegramGateway implements BaseGateway {
     const message =
       `🚨 <b>Price Drop Alert!</b>\n\n` +
       `💄 <b>${item.name}</b>\n` +
-      `📉 Price: <s>${item.oldPrice} UAH</s> ➡️ <b>${item.newPrice} UAH</b>\n\n` +
+      `📉 Price: <s>${item.oldPrice} UAH</s> ➡️ <b>${item.newPrice} UAH on ${formatStoreName(item.storeName)}</b>\n\n` +
       `<i><a href="${item.link}">Tap here to view the product</a></i>`;
 
       try {
