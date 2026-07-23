@@ -38,4 +38,13 @@ export class UserServices {
       throw error;
     }
   }
+
+  async isTelegramAccountBinded(telegramAccountId: number): Promise<boolean> {
+    try {
+      return await userRepositories.isTelegramAccountBinded(telegramAccountId);
+    } catch (error) {
+      console.log('API: Error checking telegram account registration: ', error);
+      return false;
+    }
+  }
 }

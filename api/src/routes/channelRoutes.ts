@@ -8,3 +8,4 @@ const channelControllers = new ChannelControllers();
 
 channelRoutes.post('/:channel/bind', channelControllers.bindChannelAccount);
 channelRoutes.get('/:channel/generateLink', authMiddleware, channelControllers.generateChannelLink);
+channelRoutes.get('/telegram/status/:telegramAccountId', channelControllers.checkTelegramStatus);

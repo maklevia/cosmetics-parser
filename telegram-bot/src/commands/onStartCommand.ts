@@ -8,11 +8,15 @@ interface CommandContext extends Context {
   payload: string;
 }
 
+interface StatusResponce {
+  isBinded: boolean;
+}
+
 export async function onStartCommand(ctx: CommandContext) {
   const payloadUuid = ctx.payload;
+  const telegramId = ctx.from?.id;
 
   if (payloadUuid) {
-    const telegramId = ctx.from?.id;
     try {
       await axios.post(`${API_URL}/channel/telegram/bind`, {
         uuid: payloadUuid,
@@ -28,8 +32,35 @@ export async function onStartCommand(ctx: CommandContext) {
       );
     }
   } else {
-    ctx.reply(
-      "Please, use link on the website to recieve notifications via this bot 💖",
-    );
+    const isBinded = await checkIsUserBinded(ctx);
+    if (isBinded) {
+      ctx.reply(
+        "Welcome back! Your account is already linked and you are actively receiving notifications 💖",
+      );
+    } else {
+      ctx.reply(
+        "Please, use link on the website to recieve notifications via this bot 💖",
+      );
+    }
   }
+}
+
+async function checkIsUserBinded(ctx: Context) {
+  const telegramId = ctx.from?.id;
+
+  if (telegramId) {
+    try {
+      // The API currently returns { isConnected: boolean }, so we use that property
+      const response = await axios.get<{ isConnected: boolean }>(
+        `${API_URL}/channel/telegram/status/${telegramId}`
+      );
+      return response.data.isConnected;
+    } catch (error) {
+      console.log("Bot: Error checking user status:", error);
+      ctx.reply("Something went wrong. Please try again later. 💖");
+      return false;
+    }
+  }
+  
+  return false;
 }

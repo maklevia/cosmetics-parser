@@ -33,7 +33,7 @@ export class UserRepositories {
     return user.rows[0];
   }
 
-  async getUserById(userId: number) {
+  async getUserById(userId: number): Promise<UserRow> {
     const queryText: string = `
     SELECT name, email,
     id AS "userId",
@@ -42,6 +42,18 @@ export class UserRepositories {
     WHERE id = $1`
 
     const result = await pool.query<UserRow>(queryText, [userId]);
-    return result.rows[0]
+    return result.rows[0];
+  }
+
+  //method is specific to Telegram channel
+  async isTelegramAccountBinded(telegramAccountId: number): Promise<boolean> {
+    const queryText: string = `
+    SELECT 1 
+    FROM Users
+    WHERE telegram_account_id = $1
+    LIMIT 1;`
+
+    const response = await pool.query(queryText, [telegramAccountId]);
+    return response.rowCount !== null && response.rowCount > 0;
   }
 }

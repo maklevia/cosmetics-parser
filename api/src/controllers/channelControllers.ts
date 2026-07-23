@@ -2,7 +2,10 @@ import { ChannelBindingError } from "@api/errors/ChannelErrors.js";
 import { ChannelServices } from "@api/services/channelServices.js";
 import { Request, Response } from "express";
 
+import { UserServices } from "@api/services/userServices.js";
+
 const channelServices = new ChannelServices();
+const userServices = new UserServices();
 
 interface ChannelRequest extends Request {
   body: {
@@ -44,6 +47,22 @@ export class ChannelControllers {
     } catch (error) {
       console.log(error);
       res.status(400).json({error: 'Error generating link for channel'});
+    }
+  }
+
+  checkTelegramStatus = async (req: Request, res: Response) => {
+    const telegramAccountId = parseInt(req.params.telegramAccountId, 10);
+
+    if (isNaN(telegramAccountId)) {
+      return res.status(400).json({ error: "Invalid telegram account ID" });
+    }
+
+    try {
+      const isBinded = await userServices.isTelegramAccountBinded(telegramAccountId);
+      res.status(200).json({ isBinded });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: 'Error checking telegram status' });
     }
   }
 }
