@@ -16,8 +16,27 @@ export class ChannelRepositories {
         RETURNING id;`
 
         const result = await pool.query(queryText, [channelAccountId, userUuid])
-        const userId: number | undefined = result.rows[0].id;
+        const userId: number | undefined = result.rows[0]?.id;
 
         return userId;
+    }
+
+    async createChannelToken(userId: number, channelName: string): Promise<string> {
+        const queryText: string = `
+        INSERT INTO Channel_Tokens (user_id, channel)
+        VALUES ($1, $2)
+        RETURNING uuid`
+
+        const result = await pool.query(queryText, [userId, channelName]);
+        const userUuid: string = result.rows[0].uuid;
+        return userUuid;
+    }
+
+    async clearChanellTokens(): Promise<void> {
+        const queryText: string = `
+        DELETE FROM Channel_Tokens
+        WHERE expires_at < NOW()`;
+
+        await pool.query(queryText);
     }
 }

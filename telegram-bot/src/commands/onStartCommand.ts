@@ -14,14 +14,13 @@ export async function onStartCommand(ctx: CommandContext) {
   if (payloadUuid) {
     const telegramId = ctx.from?.id;
     try {
-      await axios.post(`${API_URL}/channels/telegram/bind`, {
+      await axios.post(`${API_URL}/channel/telegram/bind`, {
         uuid: payloadUuid,
         channelAccountId: telegramId,
       });
 
       ctx.reply(
-        `Your account was successfully linked. You will recieve notifications about price drops 
-        on tracked products from now on 💖`,
+        `Your account was successfully linked. You will recieve notifications about price drops on tracked products from now on 💖`,
       );
     } catch {
       ctx.reply(

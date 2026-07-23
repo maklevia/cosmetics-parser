@@ -33,4 +33,17 @@ export class ChannelControllers {
       }
     }
   };
+
+  generateChannelLink = async (req: Request, res: Response) => {
+    const {channel: channelName} = req.params;
+    const userId: number = res.locals.user.userId;
+
+    try {
+      const channelLink = await channelServices.generateChannelLink(userId, channelName);
+      res.status(201).json({channelLink});
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({error: 'Error generating link for channel'});
+    }
+  }
 }
