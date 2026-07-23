@@ -1,5 +1,5 @@
 import pool from "@api/config/db.js";
-import { NewUserRow, UserRow } from "@api/types/UserTypes.js";
+import { NewUserRow, AuthUserRow, UserRow } from "@api/types/UserTypes.js";
 
 export class UserRepositories {
   async createUser(userEmail: string, userPassword: string) {
@@ -26,10 +26,22 @@ export class UserRepositories {
             WHERE email=$1
             LIMIT 1;
             `;
-    const user = await pool.query<UserRow>(queryText, [userEmail]);
+    const user = await pool.query<AuthUserRow>(queryText, [userEmail]);
     if (user.rows.length === 0) {
         return null;
     }
     return user.rows[0];
+  }
+
+  async getUserById(userId: number) {
+    const queryText: string = `
+    SELECT name, email,
+    id AS "userId",
+    telegram_account_id IS NOT NULL AS "isTelegramConnected"
+    FROM Users
+    WHERE id = $1`
+
+    const result = await pool.query<UserRow>(queryText, [userId]);
+    return result.rows[0]
   }
 }

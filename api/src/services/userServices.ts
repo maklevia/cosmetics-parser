@@ -28,4 +28,14 @@ export class UserServices {
       return null;
     }
   }
+
+  async getUserInfo(userId: number) {
+    try {
+      const user = await userRepositories.getUserById(userId);
+      return user;
+    } catch (error) {
+      console.log('API: Error getting user info: ', error)
+      throw error;
+    }
+  }
 }
