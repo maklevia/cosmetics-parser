@@ -1,9 +1,11 @@
 import { NotificationRepositories } from "@api/repositories/notificationRepositories.js";
+import { TelegramBot } from "@api/telegramBot/index.js";
 import { StoreName } from "@api/types/StoreName.js";
 
 const notifRepositories = new NotificationRepositories();
+const telegramBot = new TelegramBot();
 
-export class CronNotifServices {
+export default class CronNotifServices {
   async sendNotifications() {
     try {
       console.log('Starting to send notifications')
@@ -25,8 +27,6 @@ export class CronNotifServices {
           );
           }
 
-          //send tg message here: when implemented
-
           const title: string = "🚨 Price Drop";
           const message = this.getNotifMessage(
             priceDropData.productName,
@@ -44,7 +44,16 @@ export class CronNotifServices {
 
           processedQueueIds.push(priceDropData.queueId);
         }
+
+        if (user.telegramId) {
+          try {
+            await telegramBot.sendTelegramMessage(user.telegramId, telegramMessage);
+          } catch (error) {
+            console.error(`Failed to send telegram message to user ${user.userId}:`, error);
+          }
+        }
       }
+      
       await notifRepositories.updatePriceDropQueue(processedQueueIds);
       console.log('Finished to send notifications')
     } catch (error) {

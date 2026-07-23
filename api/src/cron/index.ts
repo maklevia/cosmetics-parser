@@ -1,4 +1,4 @@
-import { CronNotifServices } from '@api/services/cronNotifServices.js';
+import CronNotifServices from '@api/services/cronNotifServices.js';
 import { CronParsingServices } from '@api/services/cronParsingServices.js'
 import cron from 'node-cron'
 
