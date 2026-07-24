@@ -9,7 +9,7 @@ const productControllers = new ProductControllers();
 const parserControllers = new ParserControllers();
 
 productRoutes.get('/collection', authMiddleware, productControllers.getCollection);
-productRoutes.post('/parse', parserControllers.parse);
+productRoutes.post('/parse', authMiddleware, parserControllers.parse);
 productRoutes.post('/add-product-to-collection', authMiddleware, parserControllers.addProduct);
 productRoutes.get('/:productId/details', authMiddleware, productControllers.getProductStoreRecords);
 productRoutes.delete('/:productId/delete', authMiddleware, productControllers.deleteProductFromCollection)

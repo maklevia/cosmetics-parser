@@ -13,7 +13,7 @@ import { useEffect } from "react";
 
 interface Props {
   productId: number;
-  setRefreshCount: React.Dispatch<React.SetStateAction<number>>
+  setRefreshCount?: React.Dispatch<React.SetStateAction<number>>
 }
 
 export const productDetailsDialog = createOverlay((props: Props) => {
@@ -27,7 +27,7 @@ export const productDetailsDialog = createOverlay((props: Props) => {
 
   return (
     <AbsoluteCenter>
-      <Dialog.Root {...props} size="xl">
+      <Dialog.Root {...props} size="4xl">
         <Portal>
           <Dialog.Backdrop />
 

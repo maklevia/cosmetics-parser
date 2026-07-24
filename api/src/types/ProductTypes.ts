@@ -6,9 +6,10 @@ export interface Product {
     price?: number | undefined;
     inStock: boolean;
     image?: string | undefined;
-
     link: string;
     storeName: StoreName;
+
+    lowest30DayPrice?: number;
 }
 
 export interface StoreRecordRow {
@@ -24,6 +25,7 @@ export interface StoreRecordRow {
 
 export interface StoreRecordJoinProductRow extends StoreRecordRow {
     brand: string;
+    lowest30DayPrice?: number;
 }
 
 export interface CollectionRow {
@@ -45,4 +47,5 @@ export interface StoreRecordsForCronRow {
     link: string;
     storeName: StoreName;
     productId: number;
+    price?: number;
 }

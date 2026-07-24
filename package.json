@@ -3,7 +3,8 @@
   "private": true,
   "workspaces": [
     "api",
-    "frontend"
+    "frontend",
+    "telegram-bot"
   ],
   "dependencies": {
     "@chakra-ui/react": "^3.36.0",

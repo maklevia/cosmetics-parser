@@ -15,6 +15,10 @@ export const parseDialog = createOverlay((props) => {
     parse(productLink);
   };
 
+  const handleClose = () => {
+    parseDialog.close('a');
+  }
+
   return (
     <DialogRoot {...props} placement="center" size={results ? "xl" : "md"}>
       <Portal>

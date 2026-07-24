@@ -7,20 +7,20 @@ import { toaster } from "@/components/ui/toaster";
 interface Props {
   parseResult: ParseResult;
   productId: number;
-  setRefreshCount: React.Dispatch<React.SetStateAction<number>>
+  setRefreshCount: React.Dispatch<React.SetStateAction<number>>;
+  handleClose: () => void;
 }
 
-export function ParsedProductsView({
-  parseResult,
-  productId,
-  setRefreshCount,
-}: Props) {
+export function ParsedProductsView(props: Props) {
+  const {parseResult, productId, setRefreshCount, handleClose } = props;
+
   const onSuccess = () => {
     setRefreshCount((prevCount) => prevCount+1)
     toaster.update("add", {
       title: "Product successfully saved in your Collection",
       type: "success",
     });
+    handleClose()
   };
 
   const onFailure = (message: string) => {

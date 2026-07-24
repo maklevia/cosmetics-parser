@@ -1,7 +1,7 @@
 import { PasswordInput } from "@/components/ui/password-input";
 import { Button, Field, Fieldset, Input } from "@chakra-ui/react";
 import { useState } from "react";
-import { normalizeEmail } from "@/utils/email/normalizeEmail";
+import { normalizeEmail } from "@/utils/emailUtils";
 import { useNavigate } from "react-router-dom";
 import { useRegistration } from "@/components/auth/screens/SignUpScreen/hooks/useRegistration";
 import { useAuthValidation } from "@/components/auth/hooks/useAuthValidation";

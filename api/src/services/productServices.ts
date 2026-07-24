@@ -96,15 +96,24 @@ export class ProductServices {
       )) {
         if (!product) continue;
 
-        await productRepositories.createStoreRecord(
-          client,
-          productId,
-          product.name,
+        const storeRecordId: number =
+          await productRepositories.createStoreRecord(
+            client,
+            productId,
+            product.name,
+            product.storeName,
+            product.link,
+            product.price,
+            product.inStock,
+            product.image,
+          );
+
+        await productRepositories.createPriceHistory(
+          storeRecordId,
           product.storeName,
-          product.link,
-          product.price,
           product.inStock,
-          product.image,
+          product.price,
+          client,
         );
       }
 
@@ -158,10 +167,11 @@ export class ProductServices {
   async getProductStoreRecords(productId: number) {
     const client = await pool.connect();
     try {
-      const storeRecords = await productRepositories.getStoreRecordsWithProductId(
-        client,
-        productId,
-      );
+      const storeRecords =
+        await productRepositories.getStoreRecordsWithProductId(
+          client,
+          productId,
+        );
       if (storeRecords.length === 0) {
         throw new Error(
           "API: No store records found for the product (something is really wrong..)",
@@ -177,7 +187,7 @@ export class ProductServices {
       }
       return responceObject;
     } catch (error) {
-      console.log('API: error in store records service: ', error);
+      console.log("API: error in store records service: ", error);
       throw error;
     } finally {
       client.release();
@@ -188,7 +198,7 @@ export class ProductServices {
     try {
       await productRepositories.deleteCollectionRecord(userId, productId);
     } catch (error) {
-      console.log('API: error deleting product from db: ', error)
+      console.log("API: error deleting product from db: ", error);
       throw error;
     }
   }

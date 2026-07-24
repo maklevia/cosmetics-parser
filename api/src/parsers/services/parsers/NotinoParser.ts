@@ -7,8 +7,6 @@ export class NotinoParser extends BaseParser {
     readonly storeName = StoreName.Notino;
 
     private readonly notinoSearchUrl: string = 'https://www.notino.ua/search.asp?exps=';
-    // private maxRetries: number = 3;
-    // private delayBase: number = 10000; //in ms, 10 seconds
 
     private normalizeInStockParam(link: string): boolean {
         return link.includes('InStock');
@@ -43,7 +41,7 @@ export class NotinoParser extends BaseParser {
             brand: data.brand.name,
             price: data?.offers[0]?.price || undefined,
             inStock: this.normalizeInStockParam(data.offers[0].availability),
-            image: data.image[0] || null,
+            image: data.image[0] ? data.image[0].replace('order_2k', 'detail_main_uhq') : null,
             link,
             storeName: this.storeName,
         };

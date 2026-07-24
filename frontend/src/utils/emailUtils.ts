@@ -5,3 +5,8 @@ export function validateEmail(email: string): string {
     return "Provide a valid email!";
   } else return "";
 }
+
+export function normalizeEmail(email: string): string {
+    const normalizedEmail: string = email.trim().toLowerCase();
+    return normalizedEmail;
+}
