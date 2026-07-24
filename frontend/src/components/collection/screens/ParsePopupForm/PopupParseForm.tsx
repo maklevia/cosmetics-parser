@@ -24,20 +24,24 @@ export const parseDialog = createOverlay((props) => {
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
+
           <Dialog.Content>
-            {isLoading ? (
-              <ParseLoadingView />
-            ) : errorMessage ? (
-              <ErrorView errorMessage={errorMessage} />
-            ) : results && productId ? (
-              <ParsedProductsView parseResult={results} productId={productId} setRefreshCount={setRefreshCount} handleClose={handleClose}/>
-            ) : (
+            {isLoading && <ParseLoadingView />}
+
+            {errorMessage && <ErrorView errorMessage={errorMessage} />}
+
+            {results && productId && !errorMessage && (
+              <ParsedProductsView parseResult={results} productId={productId} setRefreshCount={setRefreshCount} />
+            )}
+
+            {!results && !errorMessage && (
               <LinkInputView
                 onChangeFunc={setProductLink}
                 onClickFunc={handleFetch}
               ></LinkInputView>
             )}
           </Dialog.Content>
+
           <Dialog.CloseTrigger />
         </Dialog.Positioner>
       </Portal>

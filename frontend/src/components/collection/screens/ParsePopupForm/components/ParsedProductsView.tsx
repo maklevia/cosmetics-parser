@@ -52,27 +52,29 @@ export function ParsedProductsView(props: Props) {
       <Dialog.Header>
         <Dialog.Title>Search Result</Dialog.Title>
       </Dialog.Header>
+
       <Dialog.Body gap="2">
         <HStack alignItems="stretch" width="100%">
-          <ProductStoreRecordsCard
-            product={parseResult.products.eva}
-            storeName="Eva.ua"
-          ></ProductStoreRecordsCard>
-          <ProductStoreRecordsCard
-            product={parseResult.products.makeup}
-            storeName="Makeup.ua"
-          ></ProductStoreRecordsCard>
-          <ProductStoreRecordsCard
-            product={parseResult.products.notino}
-            storeName="Notino.ua"
-          ></ProductStoreRecordsCard>
+          
+          {Object.values(parseResult.products)
+          .filter((product) => product !== null)
+          .map((product, index) => (
+            <ProductStoreRecordsCard
+            key={index}
+            product={product}
+            storeName="Something"
+            />
+          ))
+         }
+
         </HStack>
-        <Dialog.Footer>
-          <Button onClick={handleClick} disabled={isLoading}>
-            Add to My Collection
-          </Button>
-        </Dialog.Footer>
       </Dialog.Body>
+
+      <Dialog.Footer>
+        <Button onClick={handleClick} disabled={isLoading}>
+          Add to My Collection
+        </Button>
+      </Dialog.Footer>
     </>
   );
 }
