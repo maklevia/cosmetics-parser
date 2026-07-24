@@ -1,5 +1,5 @@
 import { ChannelBindingError } from "@api/errors/ChannelErrors.js";
-import { getGetaway } from "@api/getaways/getGetaway.js";
+import { getGetaway } from "@api/gateways/getGetaway.js";
 import { ChannelRepository } from "@api/repositories/channelRepository.js";
 
 const channelRepository = new ChannelRepository();

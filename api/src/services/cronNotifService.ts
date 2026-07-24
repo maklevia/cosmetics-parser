@@ -1,5 +1,5 @@
 import { NotificationRepository } from "@api/repositories/notificationRepository.js";
-import { getAllGateways } from "@api/getaways/getGetaway.js";
+import { getAllGateways } from "@api/gateways/getGetaway.js";
 import { ChannelNotificationError } from "@api/errors/ChannelErrors.js";
 import { ChannelRepository } from "@api/repositories/channelRepository.js";
 

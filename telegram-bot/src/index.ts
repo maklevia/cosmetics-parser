@@ -1,10 +1,13 @@
 import { Telegraf } from "telegraf";
-import { getEnvOrThrow } from "./utils/getEnvOrThrow.js";
-import { onStartCommand } from "./commands/onStartCommand.js";
+import { getEnvOrThrow } from "@bot/utils/getEnvOrThrow.js";
+import { onStartCommand } from "@bot/handlers/onStartCommand.js";
+import { onMessage } from "@bot/handlers/onMessage.js";
 
 const bot = new Telegraf(getEnvOrThrow("TELEGRAM_BOT_TOKEN"));
 
 bot.start(onStartCommand);
+
+bot.on("message", onMessage);
 
 console.log("Telegram bot is running...");
 bot.launch().catch((error) => {

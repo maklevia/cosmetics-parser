@@ -1,5 +1,5 @@
-import { BaseGateway } from "@api/getaways/BaseGateway.js";
-import { TelegramGateway } from "@api/getaways/TelegramGateway.js";
+import { BaseGateway } from "@api/gateways/BaseGateway.js";
+import { TelegramGateway } from "@api/gateways/TelegramGateway.js";
 
 const gateways: Record<string, BaseGateway> = {
   telegram: new TelegramGateway(),

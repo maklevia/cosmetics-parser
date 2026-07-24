@@ -1,5 +1,5 @@
 import { ChannelNotificationError } from "@api/errors/ChannelErrors.js";
-import { BaseGateway, PriceDropItem } from "@api/getaways/BaseGateway.js";
+import { BaseGateway, PriceDropItem } from "@api/gateways/BaseGateway.js";
 import { formatStoreName } from "@api/utils/formatStoreName.js";
 import { getEnvOrThrow } from "@api/utils/getEnvOrThrow.js";
 

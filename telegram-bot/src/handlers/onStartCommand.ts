@@ -1,6 +1,6 @@
 import { Context } from "telegraf";
 import axios from "axios";
-import { getEnvOrThrow } from "../utils/getEnvOrThrow.js";
+import { getEnvOrThrow } from "@bot/utils/getEnvOrThrow.js";
 
 const API_URL = getEnvOrThrow("API_ORIGIN");
 
@@ -12,13 +12,13 @@ interface StatusResponce {
   isBinded: boolean;
 }
 
-export async function onStartCommand(ctx: CommandContext) {
+export async function onStartCommand(ctx: CommandContext): Promise<void> {
   const payloadUuid = ctx.payload;
   const telegramId = ctx.from?.id;
 
   if (payloadUuid) {
     try {
-      await axios.post(`${API_URL}/channel/telegram/bind`, {
+      const response = await axios.post(`${API_URL}/channel/telegram/bind`, {
         uuid: payloadUuid,
         channelAccountId: telegramId,
       });
@@ -26,17 +26,26 @@ export async function onStartCommand(ctx: CommandContext) {
       ctx.reply(
         `Your account was successfully linked. You will recieve notifications about price drops on tracked products from now on 💖`,
       );
-    } catch {
-      ctx.reply(
-        "Your link is expired or invalid. Please, generate new one on the website 💖",
-      );
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 403) {
+        // This is an expected error (expired/invalid UUID), no need to log it.
+        ctx.reply(
+          "Your link is expired or invalid. Please, generate new one on the website 💖",
+        );
+
+      } else {
+        console.error("BOT: Unexpected error while binding account:", error);
+        ctx.reply("Something went wrong. Please try again later 💖");
+      }
     }
   } else {
     const isBinded = await checkIsUserBinded(ctx);
+
     if (isBinded) {
       ctx.reply(
         "Welcome back! Your account is already linked and you are actively receiving notifications 💖",
       );
+
     } else {
       ctx.reply(
         "Please, use link on the website to recieve notifications via this bot 💖",
@@ -45,18 +54,19 @@ export async function onStartCommand(ctx: CommandContext) {
   }
 }
 
-async function checkIsUserBinded(ctx: Context) {
+async function checkIsUserBinded(ctx: Context): Promise<boolean> {
   const telegramId = ctx.from?.id;
 
   if (telegramId) {
     try {
-      const response = await axios.get<{ isBinded: boolean }>(
+      const response = await axios.get<StatusResponce>(
         `${API_URL}/channel/telegram/status/${telegramId}`
       );
       return response.data.isBinded;
+
     } catch (error) {
-      console.log("Bot: Error checking user status:", error);
-      ctx.reply("Something went wrong. Please try again later. 💖");
+      console.log("BOT: Unexpected error while checking user binded status:", error);
+      ctx.reply("Something went wrong. Please try again later 💖");
       return false;
     }
   }
