@@ -16,6 +16,5 @@ export interface ParsedProducts {
 }
 
 export interface ParseResult {
-  primaryStore: StoreName;
   products: ParsedProducts
 }

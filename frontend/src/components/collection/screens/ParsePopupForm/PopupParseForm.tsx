@@ -1,15 +1,15 @@
-import { ErrorView } from "@/components/collection/collectionScreen/parseProductDialog/views/ErrorView";
-import { LinkInputView } from "@/components/collection/collectionScreen/parseProductDialog/views/LinkInputView";
-import { ParsedProductsView } from "@/components/collection/collectionScreen/parseProductDialog/views/ParsedProductsView";
-import { ParseLoadingView } from "@/components/collection/collectionScreen/parseProductDialog/views/ParseLoadingView";
-import { useParserByLink } from "@/components/collection/collectionScreen/parseProductDialog/hooks/useParserByLink";
+import { ErrorView } from "@/components/collection/screens/ParsePopupForm/components/ErrorView";
+import { LinkInputView } from "@/components/collection/screens/ParsePopupForm/components/LinkInputView";
+import { ParsedProductsView } from "@/components/collection/screens/ParsePopupForm/components/ParsedProductsView";
+import { ParseLoadingView } from "@/components/collection/screens/ParsePopupForm/components/ParseLoadingView";
+import { useParserByLink } from "@/components/collection/screens/ParsePopupForm/hooks/useParserByLink";
 import { createOverlay, Dialog, DialogRoot, Portal } from "@chakra-ui/react";
 import { useState } from "react";
 
 export const parseDialog = createOverlay((props) => {
   const [productLink, setProductLink] = useState("");
-  const { isLoading, parse, results, productId, errorMessage } =
-    useParserByLink();
+  const { isLoading, parse, results, productId, errorMessage } = useParserByLink();
+  const setRefreshCount = props.setRefreshCount;
 
   const handleFetch = () => {
     parse(productLink);
@@ -26,8 +26,8 @@ export const parseDialog = createOverlay((props) => {
 
             {errorMessage && <ErrorView errorMessage={errorMessage} />}
 
-            {results && !errorMessage && productId && (
-              <ParsedProductsView parseResult={results} productId={productId} />
+            {results && productId && !errorMessage && (
+              <ParsedProductsView parseResult={results} productId={productId} setRefreshCount={setRefreshCount} />
             )}
 
             {!results && !errorMessage && (

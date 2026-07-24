@@ -1,16 +1,22 @@
-import { ParsedProductCard } from "@/components/collection/collectionScreen/parseProductDialog/views/ParsedProductCard";
-import type { ParseResult } from "@/components/collection/collectionScreen/parseProductDialog/types/parsedProduct";
+import { ProductStoreRecordsCard } from "@/components/collection/screens/ProductStoreRecordsCard";
+import type { ParseResult } from "@/components/collection/screens/ParsePopupForm/types/parsedProduct";
 import { Button, Dialog, HStack } from "@chakra-ui/react";
-import { useAddProductToCollection } from "@/components/collection/collectionScreen/parseProductDialog/hooks/useAddProductToCollection";
+import { useAddProductToCollection } from "@/components/collection/screens/ParsePopupForm/hooks/useAddProductToCollection";
 import { toaster } from "@/components/ui/toaster";
 
 interface Props {
   parseResult: ParseResult;
   productId: number;
+  setRefreshCount: React.Dispatch<React.SetStateAction<number>>
 }
 
-export function ParsedProductsView({ parseResult, productId }: Props) {
+export function ParsedProductsView({
+  parseResult,
+  productId,
+  setRefreshCount,
+}: Props) {
   const onSuccess = () => {
+    setRefreshCount((prevCount) => prevCount+1)
     toaster.update("add", {
       title: "Product successfully saved in your Collection",
       type: "success",
@@ -53,7 +59,7 @@ export function ParsedProductsView({ parseResult, productId }: Props) {
           {Object.values(parseResult.products)
           .filter((product) => product !== null)
           .map((product, index) => (
-            <ParsedProductCard
+            <ProductStoreRecordsCard
             key={index}
             product={product}
             storeName="Something"

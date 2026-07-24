@@ -8,7 +8,6 @@ COPY package*.json ./
 
 # Because we are using npm workspaces, we also need the package.jsons of all sub-packages
 COPY api/package.json ./api/
-COPY parsers/package.json ./parsers/
 
 # Install dependencies (this uses the lockfile for exact versions)
 RUN npm install

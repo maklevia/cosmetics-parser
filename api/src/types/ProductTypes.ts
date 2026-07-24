@@ -12,14 +12,14 @@ export interface Product {
 }
 
 export interface StoreRecordRow {
-    id: number,
-    product_id: number, 
-    store_name: StoreName,
-    latest_price: number | undefined,
-    in_stock: boolean,
-    image: string | undefined,
-    link: string,
-    product_store_name: string,
+    id: number;
+    productId: number;
+    storeName: StoreName;
+    price: number | undefined;
+    inStock: boolean;
+    image: string | undefined;
+    link: string;
+    name: string;
 }
 
 export interface StoreRecordJoinProductRow extends StoreRecordRow {
@@ -27,7 +27,15 @@ export interface StoreRecordJoinProductRow extends StoreRecordRow {
 }
 
 export interface CollectionRow {
-    id: number,
-    product_id: number, 
-    user_id: number,
+    id: number;
+    productId: number; 
+    userId: number;
+}
+
+export interface UserCollectionRow {
+    productId: number;
+    name: string;
+    brand: string;
+    image?: string | undefined;
+    notifyOnPriceDrop: boolean;
 }

@@ -1,4 +1,4 @@
-import type { ProductRecord } from "@/components/collection/collectionScreen/parseProductDialog/types/parsedProduct";
+import type { ProductRecord } from "@/components/collection/screens/ParsePopupForm/types/parsedProduct";
 import { Card, Em, HStack, Image, Text } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 
@@ -7,7 +7,7 @@ interface ProductRecordProp {
   storeName: string;
 }
 
-export function ParsedProductCard({ product, storeName }: ProductRecordProp) {
+export function ProductStoreRecordsCard({ product, storeName }: ProductRecordProp) {
   const inStockText = () => {
     const text: string = product?.inStock ? "In stock" : "Out of stock";
     return text;
