@@ -5,8 +5,9 @@
     "moduleResolution": "Bundler",
     "skipLibCheck": true,
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@fe/*": ["./src/*"], 
+    },
+    "composite": true,
   },
   "files": [],
   "references": [

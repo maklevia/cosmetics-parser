@@ -1,4 +1,4 @@
-import type { StoreName } from "./StoreName.js";
+import type { StoreName } from "@api/types/StoreName.js";
 
 export interface Product {
     name: string;

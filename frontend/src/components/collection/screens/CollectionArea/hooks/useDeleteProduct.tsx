@@ -1,4 +1,4 @@
-import { api } from "@/api"
+import { api } from "@fe/api"
 import { useState } from "react";
 
 interface HookInput {
@@ -7,7 +7,7 @@ interface HookInput {
 
 interface HookOutput {
     isLoading: boolean;
-    deleteProduct: () => void
+    deleteProduct: () => Promise<void>
 }
 
 export function useDeleteProducts(props: HookInput): HookOutput {

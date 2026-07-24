@@ -1,6 +1,6 @@
-import { validateEmail } from "@/utils/emailUtils";
-import { confirmPasswordMatch } from "@/utils/passwordUtils";
-import { validatePassword } from "@/utils/passwordUtils";
+import { validateEmail } from "@fe/utils/emailUtils";
+import { confirmPasswordMatch } from "@fe/utils/passwordUtils";
+import { validatePassword } from "@fe/utils/passwordUtils";
 
 interface EmailStatus {
   isEmailValid: boolean;

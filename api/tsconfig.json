@@ -5,7 +5,6 @@
     "rootDir": "./src",
     "paths": {
       "@api/*": ["./src/*"],
-      "@parsers/*": ["./src/parsers/*"]
     },
     "composite": true
   },

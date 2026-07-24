@@ -1,4 +1,4 @@
-import type { NotificationData } from "@/components/collection/screens/NotificationDashboard/types/NotificationType";
+import type { NotificationData } from "@fe/components/collection/screens/NotificationDashboard/types/NotificationType";
 import { Box, Card, Circle, Flex, Image, Stack, Text } from "@chakra-ui/react";
 import { FiTag } from "react-icons/fi";
 

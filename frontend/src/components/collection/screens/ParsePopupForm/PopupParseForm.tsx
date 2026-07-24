@@ -1,8 +1,8 @@
-import { ErrorView } from "@/components/collection/screens/ParsePopupForm/components/ErrorView";
-import { LinkInputView } from "@/components/collection/screens/ParsePopupForm/components/LinkInputView";
-import { ParsedProductsView } from "@/components/collection/screens/ParsePopupForm/components/ParsedProductsView";
-import { ParseLoadingView } from "@/components/collection/screens/ParsePopupForm/components/ParseLoadingView";
-import { useParserByLink } from "@/components/collection/screens/ParsePopupForm/hooks/useParserByLink";
+import { ErrorView } from "@fe/components/collection/screens/ParsePopupForm/components/ErrorView";
+import { LinkInputView } from "@fe/components/collection/screens/ParsePopupForm/components/LinkInputView";
+import { ParsedProductsView } from "@fe/components/collection/screens/ParsePopupForm/components/ParsedProductsView";
+import { ParseLoadingView } from "@fe/components/collection/screens/ParsePopupForm/components/ParseLoadingView";
+import { useParserByLink } from "@fe/components/collection/screens/ParsePopupForm/hooks/useParserByLink";
 import { createOverlay, Dialog, DialogRoot, Portal } from "@chakra-ui/react";
 import { useState } from "react";
 
@@ -31,7 +31,7 @@ export const parseDialog = createOverlay((props) => {
             {errorMessage && <ErrorView errorMessage={errorMessage} />}
 
             {results && productId && !errorMessage && (
-              <ParsedProductsView parseResult={results} productId={productId} setRefreshCount={setRefreshCount} />
+              <ParsedProductsView parseResult={results} productId={productId} setRefreshCount={setRefreshCount} handleClose={handleClose} />
             )}
 
             {!results && !errorMessage && (

@@ -1,8 +1,10 @@
-import { ProductStoreRecordsCard } from "@/components/collection/screens/ProductStoreRecordsCard";
-import type { ParseResult } from "@/components/collection/screens/ParsePopupForm/types/parsedProduct";
+import { ProductStoreRecordsCard } from "@fe/components/collection/screens/ProductStoreRecordsCard";
+import type { ParseResult, ProductRecord } from "@fe/components/collection/screens/ParsePopupForm/types/parsedProduct";
 import { Button, Dialog, HStack } from "@chakra-ui/react";
-import { useAddProductToCollection } from "@/components/collection/screens/ParsePopupForm/hooks/useAddProductToCollection";
-import { toaster } from "@/components/ui/toaster";
+import { useAddProductToCollection } from "@fe/components/collection/screens/ParsePopupForm/hooks/useAddProductToCollection";
+import { toaster } from "@fe/components/ui/toaster";
+import { formatStoreName } from "@fe/utils/stringUtils";
+import type { StoreName } from "@fe/types/store.typedefs";
 
 interface Props {
   parseResult: ParseResult;
@@ -56,13 +58,12 @@ export function ParsedProductsView(props: Props) {
       <Dialog.Body gap="2">
         <HStack alignItems="stretch" width="100%">
           
-          {Object.values(parseResult.products)
-          .filter((product) => product !== null)
-          .map((product, index) => (
+          {(Object.entries(parseResult.products) as [StoreName, ProductRecord | null][])
+          .map(([storeName, product]) => (
             <ProductStoreRecordsCard
-            key={index}
+            key={storeName}
             product={product}
-            storeName="Something"
+            storeName={formatStoreName(storeName)}
             />
           ))
          }

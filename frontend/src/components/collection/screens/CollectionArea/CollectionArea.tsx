@@ -1,7 +1,7 @@
-import { deleteProductDialog } from "@/components/collection/screens/CollectionArea/components/DeleteProductDialog";
-import { ProductCard } from "@/components/collection/screens/CollectionArea/components/ProductCard";
-import { productDetailsDialog } from "@/components/collection/screens/CollectionArea/components/ProductDetailsDialog";
-import { useCollection } from "@/components/collection/screens/CollectionArea/hooks/useCollection";
+import { deleteProductDialog } from "@fe/components/collection/screens/CollectionArea/components/DeleteProductDialog";
+import { ProductCard } from "@fe/components/collection/screens/CollectionArea/components/ProductCard";
+import { productDetailsDialog } from "@fe/components/collection/screens/CollectionArea/components/ProductDetailsDialog";
+import { useCollection } from "@fe/components/collection/screens/CollectionArea/hooks/useCollection";
 import { Box, Button, Grid, Heading, HStack, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 

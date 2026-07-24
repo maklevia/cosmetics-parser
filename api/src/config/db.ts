@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { getEnvOrThrow } from "../utils/getEnvOrThrow.js";
+import { getEnvOrThrow } from "@api/utils/getEnvOrThrow.js";
 
 //pool for now, typeORM for later
 const pool = new Pool({

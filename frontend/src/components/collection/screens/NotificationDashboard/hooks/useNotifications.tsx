@@ -1,5 +1,5 @@
-import { api } from "@/api";
-import type { NotificationData } from "@/components/collection/screens/NotificationDashboard/types/NotificationType";
+import { api } from "@fe/api";
+import type { NotificationData } from "@fe/components/collection/screens/NotificationDashboard/types/NotificationType";
 import type { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
 

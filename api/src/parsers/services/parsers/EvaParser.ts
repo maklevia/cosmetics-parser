@@ -1,9 +1,9 @@
 import axios from "axios";
 import type { Product } from "@api/types/ProductTypes.js";
-import type { EvaByLinkResponse, EvaSearchResponse } from "@parsers/types/EvaApi.js";
+import type { EvaByLinkResponse, EvaSearchResponse } from "@api/parsers/types/EvaApi.js";
 import { StoreName } from "@api/types/StoreName.js";
-import { simplifyString } from "@parsers/utils/stringUtils.js";
-import { BaseParser } from "./BaseParser.js";
+import { simplifyString } from "@api/parsers/utils/stringUtils.js";
+import { BaseParser } from "@api/parsers/services/parsers/BaseParser.js";
 
 export class EvaParser extends BaseParser {
   readonly storeName = StoreName.Eva;

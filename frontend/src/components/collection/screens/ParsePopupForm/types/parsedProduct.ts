@@ -1,4 +1,4 @@
-import type { StoreName } from "@/types/store.typedefs";
+import type { StoreName } from "@fe/types/store.typedefs";
 
 export interface ProductRecord {
   name: string;

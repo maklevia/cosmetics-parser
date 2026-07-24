@@ -4,7 +4,7 @@ import {
 } from "@api/parsers/errors/ParserErrors.js";
 import type { Product } from "@api/types/ProductTypes.js";
 import type { StoreName } from "@api/types/StoreName.js";
-import { checkProductNamesSimilarity } from "@parsers/utils/stringUtils.js";
+import { checkProductNamesSimilarity } from "@api/parsers/utils/stringUtils.js";
 import axios from "axios";
 
 export abstract class BaseParser {

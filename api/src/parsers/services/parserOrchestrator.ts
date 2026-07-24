@@ -1,9 +1,9 @@
 import type { Product } from "@api/types/ProductTypes.js";
-import { MakeupUAParser } from "./parsers/MakeupUAParser.js";
-import { EvaParser } from "./parsers/EvaParser.js";
-import { NotinoParser } from "./parsers/NotinoParser.js";
+import { MakeupUAParser } from "@api/parsers/services/parsers/MakeupUAParser.js";
+import { EvaParser } from "@api/parsers/services/parsers/EvaParser.js";
+import { NotinoParser } from "@api/parsers/services/parsers/NotinoParser.js";
 import { StoreName } from "@api/types/StoreName.js";
-import type { BaseParser } from "./parsers/BaseParser.js";
+import type { BaseParser } from "@api/parsers/services/parsers/BaseParser.js";
 import {
   InvalidLinkError,
   ParserError,

@@ -1,5 +1,5 @@
-import { api } from "@/api";
-import type { CollectionProduct } from "@/components/collection/screens/CollectionArea/types/CollectionProduct";
+import { api } from "@fe/api";
+import type { CollectionProduct } from "@fe/components/collection/screens/CollectionArea/types/CollectionProduct";
 import { useEffect, useState } from "react";
 
 interface HookOutput {

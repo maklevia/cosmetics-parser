@@ -1,5 +1,3 @@
-import { Product } from "@api/types/ProductTypes.js";
-
 interface EvaProduct {
     name: string;
     brand: string;

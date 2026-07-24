@@ -1,9 +1,9 @@
 import axios from "axios";
-import { BaseParser } from "./BaseParser.js";
+import { BaseParser } from "@api/parsers/services/parsers/BaseParser.js";
 import type { Product } from "@api/types/ProductTypes.js";
 import { StoreName } from "@api/types/StoreName.js";
-import { simplifyString, wordCount } from "@parsers/utils/stringUtils.js";
-import { MakeupByLinkResponse, MakeupSearchResponse } from "@parsers/types/MakeupApi.js";
+import { simplifyString, wordCount } from "@api/parsers/utils/stringUtils.js";
+import { MakeupByLinkResponse, MakeupSearchResponse } from "@api/parsers/types/MakeupApi.js";
 
 export class MakeupUAParser extends BaseParser {
     readonly storeName = StoreName.Makeup;

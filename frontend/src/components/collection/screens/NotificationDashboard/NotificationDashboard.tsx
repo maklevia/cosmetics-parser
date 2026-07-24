@@ -1,6 +1,6 @@
-import { productDetailsDialog } from "@/components/collection/screens/CollectionArea/components/ProductDetailsDialog";
-import { NotificationItem } from "@/components/collection/screens/NotificationDashboard/components/NotificationItem";
-import { useNotifications } from "@/components/collection/screens/NotificationDashboard/hooks/useNotifications";
+import { productDetailsDialog } from "@fe/components/collection/screens/CollectionArea/components/ProductDetailsDialog";
+import { NotificationItem } from "@fe/components/collection/screens/NotificationDashboard/components/NotificationItem";
+import { useNotifications } from "@fe/components/collection/screens/NotificationDashboard/hooks/useNotifications";
 import { Box, ScrollArea, Text, VStack } from "@chakra-ui/react";
 
 export function NotificationDashboard() {

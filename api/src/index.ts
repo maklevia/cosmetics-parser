@@ -1,9 +1,9 @@
 import express from "express";
 import cors from "cors";
-import { authRoutes } from "./routes/authRoutes.js";
+import { authRoutes } from "@api/routes/authRoutes.js";
 import cookieParser from "cookie-parser";
-import { authMiddleware } from "./middlewares/authMiddleware.js";
-import { getEnvOrThrow } from "./utils/getEnvOrThrow.js";
+import { authMiddleware } from "@api/middlewares/authMiddleware.js";
+import { getEnvOrThrow } from "@api/utils/getEnvOrThrow.js";
 import { productRoutes } from "@api/routes/productRoutes.js";
 import { startCronJob } from "@api/cron/index.js";
 import { notificationRoutes } from "@api/routes/notificationRoutes.js";
