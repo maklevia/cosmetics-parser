@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 export default function LoginForm() {
    const nagivator = useNavigate();
   const navigateToMain = () => {
-    nagivator('/main');
+    nagivator('/collection');
   }
 
   const [email, setEmail] = useState("");

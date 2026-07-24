@@ -1,4 +1,4 @@
-import { Product } from "@parsers/types/Product.js";
+import { Product } from "@api/types/ProductTypes.js";
 
 interface EvaProduct {
     name: string;

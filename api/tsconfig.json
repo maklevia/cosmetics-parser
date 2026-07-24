@@ -4,12 +4,10 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "paths": {
-      "@api/*": ["./src/*"]
+      "@api/*": ["./src/*"],
+      "@parsers/*": ["./src/parsers/*"]
     },
-    "composite": true,
+    "composite": true
   },
-  "include": ["src"],
-  "references": [
-    { "path": "../parsers" }
-  ]
+  "include": ["src"]
 }

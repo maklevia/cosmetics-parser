@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import AuthService from "@api/services/authServices";
+import AuthService from "@api/services/authServices.js";
 
 export const authMiddleware = (
     req: Request, 

@@ -4,4 +4,4 @@ dist/
 *.js.map
 *.d.ts.map
 .env
-PRODUCT_SYSTEM_DESIGN.md
+docs/

@@ -1,11 +1,10 @@
 import { Request, Response } from "express";
-import UserService from "@api/services/userServices";
-import AuthService from "@api/services/authServices";
-import type { UserPayload } from "@api/services/authServices";
+import UserService from "@api/services/userServices.js";
+import AuthService from "@api/services/authServices.js";
 import {
   cookiesAccessOptions,
   cookiesRefreshOptions,
-} from "@api/utils/cookieUtils";
+} from "@api/utils/cookieUtils.js";
 
 const AuthController = {
   signup: async (req: Request, res: Response) => {

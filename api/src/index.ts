@@ -1,15 +1,16 @@
 import express from "express";
-import cors, { CorsOptions } from "cors";
-import authRoutes from "./routes/authRoutes";
+import cors from "cors";
+import { authRoutes } from "./routes/authRoutes.js";
 import cookieParser from "cookie-parser";
-import { authMiddleware } from "./middlewares/authMiddleware";
-import { getEnvOrThrow } from "./utils/getEnvOrThrow";
+import { authMiddleware } from "./middlewares/authMiddleware.js";
+import { getEnvOrThrow } from "./utils/getEnvOrThrow.js";
+import { productParserRoutes } from "@api/routes/productParserRoutes.js";
 
 const app = express();
 const port = getEnvOrThrow('API_PORT');
 
 const corsOptions = {
-  origin: [getEnvOrThrow('FE_ORIGIN')],
+  origin: [getEnvOrThrow('FE_ORIGIN'), 'https://web.postman.co'],
   credentials: true,
 };
 
@@ -17,7 +18,8 @@ app.use(express.json());
 app.use(cors(corsOptions));
 app.use(cookieParser())
 
-app.use('/auth', authRoutes)
+app.use('/auth', authRoutes);
+app.use('/product', productParserRoutes)
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);

@@ -1,5 +1,5 @@
-import { getEnvOrThrow } from "@api/utils/getEnvOrThrow";
-import { DAY, MINUTE } from "@api/utils/time";
+import { getEnvOrThrow } from "@api/utils/getEnvOrThrow.js";
+import { DAY, MINUTE } from "@api/utils/time.js";
 import { CookieOptions } from "express";
 
 export const cookiesRefreshOptions: CookieOptions = {
@@ -14,5 +14,6 @@ export const cookiesAccessOptions: CookieOptions = {
     httpOnly: true,
     sameSite: 'strict',
     secure: getEnvOrThrow('NODE_ENV') === 'production',
+    path: '/',
     maxAge: 15 * MINUTE
 }

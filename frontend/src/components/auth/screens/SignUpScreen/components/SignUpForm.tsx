@@ -9,7 +9,7 @@ import { useAuthValidation } from "@/components/auth/hooks/useAuthValidation";
 export default function SignUpForm() {
   const navigate = useNavigate();
   const navigateToHome = () => {
-    navigate("/main");
+    navigate("/collection");
   };
 
   const [email, setEmail] = useState("");

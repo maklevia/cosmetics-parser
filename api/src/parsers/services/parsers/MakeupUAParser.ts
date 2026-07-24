@@ -1,7 +1,7 @@
 import axios from "axios";
 import { BaseParser } from "./BaseParser.js";
-import type { Product } from "@parsers/types/Product.js";
-import { StoreName } from "@parsers/types/StoreName.js";
+import type { Product } from "@api/types/ProductTypes.js";
+import { StoreName } from "@api/types/StoreName.js";
 import { simplifyString, wordCount } from "@parsers/utils/stringUtils.js";
 import { MakeupByLinkResponse, MakeupSearchResponse } from "@parsers/types/MakeupApi.js";
 
@@ -41,7 +41,7 @@ export class MakeupUAParser extends BaseParser {
             brand: data.brand.title,
             price: data.price?.current || undefined,
             inStock: data.inStock,
-            image: data.meta?.image || null,
+            image: data.meta?.image || undefined,
             link,
             storeName: this.storeName,
         };
@@ -61,13 +61,15 @@ export class MakeupUAParser extends BaseParser {
         for (const product of responseData) {
             if (product.type !== 'product') continue;
 
-            if (this.validateMatch(searchProductName, searchProductBrand, product.title, product.brand.title)) {
+            const productName = this.titleOrSubtitle(product.title, product.subTitle, product.brand.title);
+
+            if (this.validateMatch(searchProductName, searchProductBrand, productName, product.brand.title)) {
                 return {
-                    name: product.title,
+                    name: productName,
                     brand: product.brand.title,
                     price: product.price?.current || undefined,
                     inStock: product.inStock,
-                    image: product.media[0]?.sizes?.sm?.thumbnail || null,
+                    image: product.media[0]?.sizes?.sm?.thumbnail || undefined,
                     link: `${this.makeupUrl}${product.id}/`,
                     storeName: this.storeName,
                 };
