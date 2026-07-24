@@ -1,5 +1,5 @@
-import { Context } from "telegraf";
 import axios from "axios";
+import { Context } from "telegraf";
 import { getEnvOrThrow } from "@bot/utils/getEnvOrThrow.js";
 
 const API_URL = getEnvOrThrow("API_ORIGIN");
