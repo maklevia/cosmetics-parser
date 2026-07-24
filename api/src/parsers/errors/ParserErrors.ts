@@ -1,5 +1,6 @@
 import { StoreName } from "@api/types/StoreName.js";
 
+//on invalid link input
 export class InvalidLinkError extends Error {
     constructor(message: string = 'Provided link is invalid!') {
         super(message);
@@ -7,6 +8,7 @@ export class InvalidLinkError extends Error {
     }
 };
 
+//on store refused collection
 export class StoreRequestError extends Error {
     constructor(storeName: StoreName, message: string = 'Error parsing product from') {
         super(message = `${message} ${storeName}`);
@@ -14,6 +16,7 @@ export class StoreRequestError extends Error {
     }
 }
 
+//on psrser code error
 export class ParserError extends Error {
     constructor(message: string = 'Parser error') {
         super(message);

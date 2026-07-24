@@ -19,7 +19,6 @@ export class ProductControllers {
         limit,
         offset,
       );
-      console.log(collection);
       res.status(200).json({ collection });
     } catch (error) {
       res.status(500).json({ error: "Something went wrong." });

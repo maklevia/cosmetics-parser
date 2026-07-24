@@ -75,8 +75,17 @@ export class Parser {
       });
     await Promise.allSettled(secondaryFetches);
 
-    console.log(parsedProducts);
-
     return {primaryStore: primaryStore, products: parsedProducts};
+  }
+
+  async parseSingleProduct(link: string): Promise<Product | null> {
+    const storeName = this.recognizeStoreName(link);
+
+    try {
+      const product = await this.parsers[storeName].parseByLink(link);
+      return product;
+    } catch (error) {
+      throw error;
+    }
   }
 }
