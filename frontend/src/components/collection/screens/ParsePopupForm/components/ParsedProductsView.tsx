@@ -4,17 +4,17 @@ import { Button, Dialog, HStack } from "@chakra-ui/react";
 import { useAddProductToCollection } from "@/components/collection/screens/ParsePopupForm/hooks/useAddProductToCollection";
 import { toaster } from "@/components/ui/toaster";
 
+interface Props {
+  parseResult: ParseResult;
+  productId: number;
+  setRefreshCount: React.Dispatch<React.SetStateAction<number>>
+}
 
-//props interface
 export function ParsedProductsView({
   parseResult,
   productId,
   setRefreshCount,
-}: {
-  parseResult: ParseResult;
-  productId: number;
-  setRefreshCount: React.Dispatch<React.SetStateAction<number>>
-}) {
+}: Props) {
   const onSuccess = () => {
     setRefreshCount((prevCount) => prevCount+1)
     toaster.update("add", {
@@ -52,27 +52,29 @@ export function ParsedProductsView({
       <Dialog.Header>
         <Dialog.Title>Search Result</Dialog.Title>
       </Dialog.Header>
+
       <Dialog.Body gap="2">
         <HStack alignItems="stretch" width="100%">
-          <ProductStoreRecordsCard
-            product={parseResult.products.eva}
-            storeName="Eva.ua"
-          ></ProductStoreRecordsCard>
-          <ProductStoreRecordsCard
-            product={parseResult.products.makeup}
-            storeName="Makeup.ua"
-          ></ProductStoreRecordsCard>
-          <ProductStoreRecordsCard
-            product={parseResult.products.notino}
-            storeName="Notino.ua"
-          ></ProductStoreRecordsCard>
+          
+          {Object.values(parseResult.products)
+          .filter((product) => product !== null)
+          .map((product, index) => (
+            <ProductStoreRecordsCard
+            key={index}
+            product={product}
+            storeName="Something"
+            />
+          ))
+         }
+
         </HStack>
-        <Dialog.Footer>
-          <Button onClick={handleClick} disabled={isLoading}>
-            Add to My Collection
-          </Button>
-        </Dialog.Footer>
       </Dialog.Body>
+
+      <Dialog.Footer>
+        <Button onClick={handleClick} disabled={isLoading}>
+          Add to My Collection
+        </Button>
+      </Dialog.Footer>
     </>
   );
 }
