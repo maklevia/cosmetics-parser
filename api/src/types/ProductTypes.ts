@@ -3,9 +3,9 @@ import type { StoreName } from "@api/types/StoreName.js";
 export interface Product {
     name: string;
     brand: string;
-    price?: number | undefined;
+    price?: number;
     inStock: boolean;
-    image?: string | undefined;
+    image?: string;
     link: string;
     storeName: StoreName;
 
@@ -16,9 +16,9 @@ export interface StoreRecordRow {
     id: number;
     productId: number;
     storeName: StoreName;
-    price: number | undefined;
+    price?: number;
     inStock: boolean;
-    image: string | undefined;
+    image?: string;
     link: string;
     name: string;
 }
@@ -38,7 +38,7 @@ export interface UserCollectionRow {
     productId: number;
     name: string;
     brand: string;
-    image?: string | undefined;
+    image?: string;
     notifyOnPriceDrop: boolean;
 }
 

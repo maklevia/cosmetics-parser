@@ -34,9 +34,7 @@ export function CollectionArea(props: Props) {
           <Button onClick={handleClick}>{seeAll ? "Hide" : "See all"}</Button>
         </HStack>
 
-        {isLoading ? (
-          <></>
-        ) : (
+        {!isLoading && (
           <Grid gap="3" templateColumns="repeat(4, 1fr)">
             {products?.map((product) => (
               <ProductCard key={product.productId} product={product} 

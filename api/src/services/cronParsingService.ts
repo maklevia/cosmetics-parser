@@ -1,11 +1,11 @@
 import { Parser } from "@api/parsers/services/parserOrchestrator.js";
-import { NotificationRepositories } from "@api/repositories/notificationRepositories.js";
-import { ProductRepositories } from "@api/repositories/productRepositories.js";
+import { NotificationRepository } from "@api/repositories/notificationRepository.js";
+import { ProductRepository } from "@api/repositories/productRepository.js";
 import { StoreRecordsForCronRow } from "@api/types/ProductTypes.js";
 import { StoreName } from "@api/types/StoreName.js";
 
-const productRepositories = new ProductRepositories();
-const notifRepositories = new NotificationRepositories();
+const productRepository = new ProductRepository();
+const notifRepositories = new NotificationRepository();
 const parser = new Parser();
 
 interface GroupedRecords {
@@ -13,7 +13,7 @@ interface GroupedRecords {
   slowStores: StoreRecordsForCronRow[]; //now it's Notino
 }
 
-export class CronParsingServices {
+export class CronParsingService {
   async dailyReparsing(): Promise<void> {
     try {
       console.log("Re-parsing products starting...");
@@ -42,9 +42,9 @@ export class CronParsingServices {
     };
 
     try {
-      const productId = await productRepositories.getProductsFromCollections();
+      const productId = await productRepository.getProductsFromCollections();
       const storeRecordsToParse =
-        await productRepositories.getStoreRecordsForCron(productId);
+        await productRepository.getStoreRecordsForCron(productId);
 
       for (const record of storeRecordsToParse) {
         if (record.storeName === StoreName.Notino) {
@@ -59,6 +59,15 @@ export class CronParsingServices {
       throw error;
     }
   }
+  private async processQueue(
+    records: StoreRecordsForCronRow[],
+    delayMs: number,
+  ): Promise<void> {
+    for (const record of records) {
+      await this.parseAndUpdateRecords(record);
+      await this.sleep(delayMs);
+    }
+  }
 
   private async parseAndUpdateRecords(
     oldRecord: StoreRecordsForCronRow,
@@ -70,7 +79,7 @@ export class CronParsingServices {
         return;
       }
 
-      await productRepositories.updateStoreRecordsCron(
+      await productRepository.updateStoreRecordsCron(
         oldRecord.recordId,
         newRecordData.inStock,
         newRecordData.price,
@@ -78,7 +87,7 @@ export class CronParsingServices {
       );
 
       if (oldRecord.price !== newRecordData.price) {
-        await productRepositories.createPriceHistory(
+        await productRepository.createPriceHistory(
           oldRecord.recordId,
           newRecordData.storeName,
           newRecordData.inStock,
@@ -108,13 +117,4 @@ export class CronParsingServices {
   private sleep = (delayMs: number) =>
     new Promise((resolve) => setTimeout(resolve, delayMs));
 
-  private async processQueue(
-    records: StoreRecordsForCronRow[],
-    delayMs: number,
-  ): Promise<void> {
-    for (const record of records) {
-      await this.parseAndUpdateRecords(record);
-      await this.sleep(delayMs);
-    }
-  }
 }

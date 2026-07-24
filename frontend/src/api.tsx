@@ -1,8 +1,9 @@
+import { getEnvOrThrow } from "@fe/utils/getEnvOrThrow";
 import axios from "axios";
 import type { AxiosInstance } from "axios";
 
 export const api: AxiosInstance = axios.create({
-  baseURL: "http://localhost:3001",
+  baseURL: getEnvOrThrow('API_ORIGIN'),
   headers: { "Content-Type": "application/json" },
   timeout: 10000,
   withCredentials: true,

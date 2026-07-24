@@ -1,11 +1,11 @@
-import { ChannelControllers } from "@api/controllers/channelControllers.js";
+import { ChannelController } from "@api/controllers/channelController.js";
 import { authMiddleware } from "@api/middlewares/authMiddleware.js";
 import { Router } from "express";
 
 export const channelRoutes = Router();
 
-const channelControllers = new ChannelControllers();
+const channelController = new ChannelController();
 
-channelRoutes.post('/:channel/bind', channelControllers.bindChannelAccount);
-channelRoutes.get('/:channel/generateLink', authMiddleware, channelControllers.generateChannelLink);
-channelRoutes.get('/telegram/status/:telegramAccountId', channelControllers.checkTelegramStatus);
+channelRoutes.post('/:channel/bind', channelController.bindChannelAccount);
+channelRoutes.get('/:channel/generateLink', authMiddleware, channelController.generateChannelLink);
+channelRoutes.get('/telegram/status/:telegramAccountId', channelController.checkTelegramStatus);

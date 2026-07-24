@@ -4,8 +4,8 @@ export interface ProductRecord {
   name: string;
   brand: string;
   inStock: boolean;
-  price?: number | undefined;
-  image?: string | undefined;
+  price?: number;
+  image?: string;
   link: string;
   storeName: StoreName;
   lowest30DayPrice?: number;
@@ -17,5 +17,5 @@ export interface ParsedProducts {
 }
 
 export interface ParseResult {
-  products: ParsedProducts
+  products: ParsedProducts;
 }

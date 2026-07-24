@@ -1,13 +1,13 @@
-import { UserServices } from "@api/services/userServices.js";
+import { UserService } from "@api/services/userService.js";
 import { Request, Response } from "express";
 
-const userServices = new UserServices();
+const userService = new UserService();
 
-export class UserControllers {
+export class UserController {
   getUserInfo = async (req: Request, res: Response) => {
     const userId: number = res.locals.user.userId;
     try {
-      const userInfo = await userServices.getUserInfo(userId);
+      const userInfo = await userService.getUserInfo(userId);
 
       res.status(200).json(userInfo);
     } catch (error) {

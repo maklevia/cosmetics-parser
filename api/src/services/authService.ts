@@ -7,16 +7,18 @@ export interface UserPayload extends JwtPayload {
   userEmail: string;
 }
 
-export class AuthServices {
-  async hashPassword(password: string) {
+export class AuthService {
+  async hashPassword(password: string): Promise<string> {
     const saltRounds: number = 10;
     const result: string = await hash(password, saltRounds);
     return result;
   }
-  async verifyPassword(passwordHash: string, password: string) {
+
+  async verifyPassword(passwordHash: string, password: string): Promise<boolean> {
     const match: boolean = await compare(password, passwordHash);
     return match;
   }
+
   createAccessToken(userId: number, userEmail: string): string {
     const accessTokenSecret = getEnvOrThrow("ACCESS_TOKEN_SECRET");
     const accessToken: string = jwt.sign(
@@ -29,6 +31,7 @@ export class AuthServices {
     );
     return accessToken;
   }
+
   createRefreshToken(userId: number, userEmail: string): string {
     const refreshTokenSecret = getEnvOrThrow("REFRESH_TOKEN_SECRET");
     const refreshToken: string = jwt.sign(
@@ -41,6 +44,7 @@ export class AuthServices {
     );
     return refreshToken;
   }
+
   validateAccessToken(
     accessToken: string,
     callback: (

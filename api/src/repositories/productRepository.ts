@@ -9,9 +9,19 @@ import {
 import { StoreName } from "@api/types/StoreName.js";
 import { Pool, PoolClient } from "pg";
 
-export class ProductRepositories {
-  async getStoreRecordByLink(
+interface CreateStoreRecordOptions {
     client: PoolClient,
+    productId: number,
+    productStoreName: string,
+    storeName: StoreName,
+    productLink: string,
+    price?: number,
+    inStock: boolean,
+    image?: string ,
+  }
+
+export class ProductRepository {
+  async findStoreRecordByLink(
     link: string,
   ): Promise<StoreRecordRow | undefined> {
     const queryText: string = `
@@ -24,12 +34,11 @@ export class ProductRepositories {
             FROM Store_Records
             WHERE link = $1;
             `;
-    const result = await client.query(queryText, [link]);
+    const result = await pool.query(queryText, [link]);
     return result.rows[0];
   }
 
-  async getCollectionByUserProductId(
-    client: PoolClient,
+  async findCollectionByUserProductId(
     userId: number,
     productId: number,
   ): Promise<CollectionRow | undefined> {
@@ -40,7 +49,7 @@ export class ProductRepositories {
             FROM Collections
             WHERE user_id = $1 AND product_id = $2;`;
 
-    const result = await client.query<CollectionRow>(queryText, [
+    const result = await pool.query<CollectionRow>(queryText, [
       userId,
       productId,
     ]);
@@ -48,15 +57,14 @@ export class ProductRepositories {
   }
 
   async createCollection(
-    client: PoolClient,
     userId: number,
     productId: number,
-  ) {
+  ): Promise<void> {
     const queryText: string = `
             INSERT INTO Collections (user_id, product_id)
             VALUES ($1, $2)`;
 
-    await client.query(queryText, [userId, productId]);
+    await pool.query(queryText, [userId, productId]);
   }
 
   async createPriceHistory(
@@ -65,7 +73,7 @@ export class ProductRepositories {
     inStock: boolean,
     price?: number,
     client: PoolClient | Pool = pool,
-  ) {
+  ): Promise<void> {
     const queryText: string = `
     INSERT INTO Price_History (store_record_id, store_name, price, in_stock)
     VALUES ($1, $2, $3, $4)`;
@@ -92,16 +100,11 @@ export class ProductRepositories {
     return result.rows[0].id;
   }
 
-  async createStoreRecord(
-    client: PoolClient,
-    productId: number,
-    productStoreName: string,
-    storeName: StoreName,
-    productLink: string,
-    price: number | undefined,
-    inStock: boolean,
-    image: string | undefined,
-  ): Promise<number> {
+  
+
+  async createStoreRecord(options: CreateStoreRecordOptions): Promise<number> {
+    const {client, productId, storeName, price, inStock, image,productLink, productStoreName} = options;
+
     const queryText: string = `
            INSERT INTO Store_Records (product_id, store_name, latest_price, 
            in_stock, image, link, product_store_name, updated_at)
@@ -121,7 +124,6 @@ export class ProductRepositories {
   }
 
   async getStoreRecordsWithProductId(
-    client: PoolClient,
     productId: number,
   ): Promise<StoreRecordJoinProductRow[]> {
     const queryText: string = `
@@ -158,14 +160,13 @@ export class ProductRepositories {
       WHERE Store_Records.product_id = $1
       `;
 
-    const result = await client.query<StoreRecordJoinProductRow>(queryText, [
+    const result = await pool.query<StoreRecordJoinProductRow>(queryText, [
       productId,
     ]);
     return result.rows;
   }
 
   async getUserCollection(
-    client: PoolClient,
     userId: number,
     limit: number,
     offset: number,
@@ -181,7 +182,7 @@ export class ProductRepositories {
       ORDER BY Collections.created_at DESC
       LIMIT $2 OFFSET $3;`;
 
-    const result = await client.query<UserCollectionRow>(queryText, [
+    const result = await pool.query<UserCollectionRow>(queryText, [
       userId,
       limit,
       offset,
@@ -189,7 +190,7 @@ export class ProductRepositories {
     return result.rows;
   }
 
-  async deleteCollectionRecord(userId: number, productId: number) {
+  async deleteCollectionRecord(userId: number, productId: number): Promise<void> {
     const queryText: string = `
     DELETE FROM Collections
     WHERE user_id = $1 AND product_id = $2`;
@@ -229,7 +230,7 @@ export class ProductRepositories {
     inStock: boolean,
     price?: number,
     image?: string,
-  ) {
+  ): Promise<void> {
     const queryText: string = `
     UPDATE Store_Records 
     SET in_stock = $2, 

@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import { authMiddleware } from "@api/middlewares/authMiddleware.js";
 import { getEnvOrThrow } from "@api/utils/getEnvOrThrow.js";
 import { productRoutes } from "@api/routes/productRoutes.js";
-import { startCronJob } from "@api/cron/index.js";
+import { setupCronJobs } from "@api/cron/index.js";
 import { notificationRoutes } from "@api/routes/notificationRoutes.js";
 import { channelRoutes } from "@api/routes/channelRoutes.js";
 import { userRoutes } from "@api/routes/userRoutes.js";
@@ -13,10 +13,10 @@ import { userRoutes } from "@api/routes/userRoutes.js";
 const app = express();
 const port = getEnvOrThrow('API_PORT');
 
-startCronJob();
+setupCronJobs();
 
 const corsOptions = {
-  origin: [getEnvOrThrow('FE_ORIGIN'), 'https://web.postman.co'],
+  origin: [getEnvOrThrow('FE_ORIGIN')],
   credentials: true,
 };
 

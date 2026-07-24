@@ -1,15 +1,15 @@
-import { ParserControllers } from "@api/controllers/parserControllers.js";
-import { ProductControllers } from "@api/controllers/productControllers.js";
+import { ParserController } from "@api/controllers/parserController.js";
+import { ProductController } from "@api/controllers/productController.js";
 import { authMiddleware } from "@api/middlewares/authMiddleware.js";
 import { Router } from "express";
 
 export const productRoutes = Router();
 
-const productControllers = new ProductControllers();
-const parserControllers = new ParserControllers();
+const productController = new ProductController();
+const parserController = new ParserController();
 
-productRoutes.get('/collection', authMiddleware, productControllers.getCollection);
-productRoutes.post('/parse', authMiddleware, parserControllers.parse);
-productRoutes.post('/add-product-to-collection', authMiddleware, parserControllers.addProduct);
-productRoutes.get('/:productId/details', authMiddleware, productControllers.getProductStoreRecords);
-productRoutes.delete('/:productId/delete', authMiddleware, productControllers.deleteProductFromCollection)
+productRoutes.get('/collection', authMiddleware, productController.getCollection);
+productRoutes.post('/parse', authMiddleware, parserController.parse);
+productRoutes.post('/add-product-to-collection', authMiddleware, parserController.addProduct);
+productRoutes.get('/:productId/details', authMiddleware, productController.getProductStoreRecords);
+productRoutes.delete('/:productId/delete', authMiddleware, productController.deleteProductFromCollection)

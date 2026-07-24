@@ -1,26 +1,22 @@
 import pool from "@api/config/db.js";
 import { Parser } from "@api/parsers/services/parserOrchestrator.js";
 import { ParseResult } from "@api/types/ParsedResult.js";
-import { ProductRepositories } from "@api/repositories/productRepositories.js";
+import { ProductRepository } from "@api/repositories/productRepository.js";
 import {
   DuplicateProductError,
   InvalidParseData,
 } from "@api/errors/ProductErrors.js";
-import { PoolClient } from "pg";
 import { StoreName } from "@api/types/StoreName.js";
-import { Product } from "@api/types/ProductTypes.js";
+import { Product, UserCollectionRow } from "@api/types/ProductTypes.js";
 
 const parser = new Parser();
-const productRepositories = new ProductRepositories();
+const productRepository = new ProductRepository();
 
-export class ProductServices {
-  async parse(productLink: string) {
-    const client = await pool.connect();
+export class ProductService {
+  async parse(productLink: string): Promise<{productId: number, parseResult: ParseResult}> {
     try {
-      const storeRecord = await productRepositories.getStoreRecordByLink(
-        client,
-        productLink,
-      );
+      const storeRecord =
+        await productRepository.findStoreRecordByLink(productLink);
 
       //check for last updated required, to be implemented when re-parsing will work
       if (storeRecord) {
@@ -28,16 +24,14 @@ export class ProductServices {
         const primaryStoreName = storeRecord.storeName;
 
         const existingStoreRecords =
-          await productRepositories.getStoreRecordsWithProductId(
-            client,
-            productId,
-          );
+          await productRepository.getStoreRecordsWithProductId(productId);
 
         let existingProductsObject: Record<StoreName, Product | null> = {
           eva: null,
           notino: null,
           makeup: null,
         };
+
         for (const product of existingStoreRecords) {
           existingProductsObject[product.storeName] = {
             name: product.name,
@@ -63,17 +57,16 @@ export class ProductServices {
           throw new InvalidParseData();
         }
 
-        const productId = await this.addNewProduct(client, parseResult);
+        const productId = await this.addNewProduct(parseResult);
         return { productId, parseResult };
       }
     } catch (error) {
       throw error;
-    } finally {
-      client.release();
     }
   }
 
-  async addNewProduct(client: PoolClient, parseResults: ParseResult) {
+  async addNewProduct(parseResults: ParseResult): Promise<number> {
+    const client = await pool.connect();
     try {
       await client.query("BEGIN");
 
@@ -84,7 +77,7 @@ export class ProductServices {
         throw new InvalidParseData();
       }
 
-      const productId = await productRepositories.createProduct(
+      const productId = await productRepository.createProduct(
         client,
         primaryProduct.name,
         primaryProduct.brand,
@@ -97,18 +90,18 @@ export class ProductServices {
         if (!product) continue;
 
         const storeRecordId: number =
-          await productRepositories.createStoreRecord(
+          await productRepository.createStoreRecord({
             client,
             productId,
-            product.name,
-            product.storeName,
-            product.link,
-            product.price,
-            product.inStock,
-            product.image,
-          );
+            productStoreName: product.name,
+            storeName: product.storeName,
+            productLink: product.link,
+            price: product.price,
+            inStock: product.inStock,
+            image: product.image,
+          });
 
-        await productRepositories.createPriceHistory(
+        await productRepository.createPriceHistory(
           storeRecordId,
           product.storeName,
           product.inStock,
@@ -122,15 +115,15 @@ export class ProductServices {
     } catch (error) {
       await client.query("ROLLBACK");
       throw error;
+    } finally {
+      client.release();
     }
   }
 
-  async addProductToUsersCollection(userId: number, productId: number) {
-    const client = await pool.connect();
+  async addProductToUsersCollection(userId: number, productId: number): Promise<void> {
     try {
       const collectionRecord =
-        await productRepositories.getCollectionByUserProductId(
-          client,
+        await productRepository.findCollectionByUserProductId(
           userId,
           productId,
         );
@@ -138,20 +131,16 @@ export class ProductServices {
       if (collectionRecord) {
         throw new DuplicateProductError();
       } else {
-        await productRepositories.createCollection(client, userId, productId);
+        await productRepository.createCollection(userId, productId);
       }
     } catch (error) {
       throw error;
-    } finally {
-      client.release();
     }
   }
 
-  async getCollection(userId: number, limit: number, offset: number) {
-    const client = await pool.connect();
+  async getCollection(userId: number, limit: number, offset: number): Promise<UserCollectionRow[]> {
     try {
-      const collection = await productRepositories.getUserCollection(
-        client,
+      const collection = await productRepository.getUserCollection(
         userId,
         limit,
         offset,
@@ -159,19 +148,13 @@ export class ProductServices {
       return collection;
     } catch (error) {
       throw error;
-    } finally {
-      client.release();
     }
   }
 
-  async getProductStoreRecords(productId: number) {
-    const client = await pool.connect();
+  async getProductStoreRecords(productId: number): Promise<Record<StoreName, Product | null>> {
     try {
       const storeRecords =
-        await productRepositories.getStoreRecordsWithProductId(
-          client,
-          productId,
-        );
+        await productRepository.getStoreRecordsWithProductId(productId);
       if (storeRecords.length === 0) {
         throw new Error(
           "API: No store records found for the product (something is really wrong..)",
@@ -189,14 +172,12 @@ export class ProductServices {
     } catch (error) {
       console.log("API: error in store records service: ", error);
       throw error;
-    } finally {
-      client.release();
     }
   }
 
-  async deleteProductFromCollection(userId: number, productId: number) {
+  async deleteProductFromCollection(userId: number, productId: number): Promise<void> {
     try {
-      await productRepositories.deleteCollectionRecord(userId, productId);
+      await productRepository.deleteCollectionRecord(userId, productId);
     } catch (error) {
       console.log("API: error deleting product from db: ", error);
       throw error;

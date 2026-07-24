@@ -1,5 +1,5 @@
 export class DuplicateProductError extends Error {
-  constructor(message: string = "User has product in this") {
+  constructor(message: string = "User has product in their collection") {
     super(message);
     this.name = "DuplicateProductError";
   }

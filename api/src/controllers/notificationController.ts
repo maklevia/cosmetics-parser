@@ -1,9 +1,9 @@
-import { NotificationServices } from "@api/services/notificationServise.js";
+import { NotificationServices } from "@api/services/notificationService.js";
 import { Request, Response } from "express";
 
 const notificationServices = new NotificationServices
 
-export class NotificationControllers {
+export class NotificationController {
     getUserNotification = async (req: Request, res: Response) => {
         try {
             const userId = res.locals.user.userId;

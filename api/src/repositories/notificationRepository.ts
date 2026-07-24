@@ -1,7 +1,7 @@
 import pool from "@api/config/db.js";
 import { NotificationRow, PendingNotifDataRow } from "@api/types/NotifTypes.js";
 
-export class NotificationRepositories {
+export class NotificationRepository {
   async createPriceDropQueue(
     storeRecordId: number,
     productId: number,
@@ -55,24 +55,30 @@ export class NotificationRepositories {
     return result.rows;
   }
 
-  async createUserNotification(userId: number, title: string, message: string, productId?: number, image?: string) {
+  async createUserNotification(
+    userId: number,
+    title: string,
+    message: string,
+    productId?: number,
+    image?: string,
+  ): Promise<void> {
     const queryText: string = `
     INSERT INTO User_Notifications (user_id, product_id, title, message, image)
-    VALUES ($1, $2, $3, $4, $5)`
+    VALUES ($1, $2, $3, $4, $5)`;
 
-    await pool.query(queryText, [userId, productId, title, message, image])
+    await pool.query(queryText, [userId, productId, title, message, image]);
   }
 
   async clearOldRecords(): Promise<void> {
     const queryTextQueue: string = `
     DELETE FROM Price_Drop_Queue
-    WHERE status = 'processed' AND created_at < NOW() - INTERVAL '7 days';`
+    WHERE status = 'processed' AND created_at < NOW() - INTERVAL '7 days';`;
 
     await pool.query(queryTextQueue);
 
     const queryTextNotifs: string = `
     DELETE FROM User_Notifications
-    WHERE created_at < NOW() - INTERVAL '30 days'`
+    WHERE created_at < NOW() - INTERVAL '30 days'`;
 
     await pool.query(queryTextNotifs);
   }
@@ -86,7 +92,7 @@ export class NotificationRepositories {
     message,
     is_read AS "isRead"
     FROM User_Notifications
-    WHERE user_id = $1`
+    WHERE user_id = $1`;
 
     const result = await pool.query<NotificationRow>(queryText, [userId]);
 
@@ -97,7 +103,7 @@ export class NotificationRepositories {
     const queryText: string = `
     UPDATE User_Notifications
     SET is_read = true
-    WHERE id = $1`
+    WHERE id = $1`;
 
     await pool.query(queryText, [notifId]);
   }

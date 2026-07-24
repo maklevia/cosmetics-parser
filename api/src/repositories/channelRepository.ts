@@ -1,6 +1,6 @@
 import pool from "@api/config/db.js"
 
-export class ChannelRepositories {
+export class ChannelRepository {
     //now this binds specificly to telegram. if new Channles table to-be created, this repository should
     //update that table instead of users and have no idea about diff types of channels.
     async bindChannelAccount(userUuid: string, channelAccountId: number): Promise<number | undefined> {

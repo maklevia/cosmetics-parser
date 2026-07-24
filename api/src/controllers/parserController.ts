@@ -2,23 +2,23 @@ import {
   InvalidLinkError,
   StoreRequestError,
 } from "@api/parsers/errors/ParserErrors.js";
-import { ProductServices } from "@api/services/productServices.js";
+import { ProductService } from "@api/services/productService.js";
 import { Response, Request } from "express";
 import {
   DuplicateProductError,
   InvalidParseData,
 } from "@api/errors/ProductErrors.js";
 
-export class ParserControllers {
-  private productServices: ProductServices;
+export class ParserController {
+  private productService: ProductService;
   constructor() {
-    this.productServices = new ProductServices();
+    this.productService = new ProductService();
   }
 
   parse = async (req: Request, res: Response) => {
     try {
       const productLink: string = req.body.url;
-      const result = await this.productServices.parse(productLink);
+      const result = await this.productService.parse(productLink);
       const productId = result.productId;
       const parsedResults = result.parseResult;
       return res.status(200).json({ productId, parsedResults });
@@ -45,7 +45,7 @@ export class ParserControllers {
     try {
       const userId: number = res.locals.user.userId;
       const productId: number = req.body.productId;
-      await this.productServices.addProductToUsersCollection(userId, productId);
+      await this.productService.addProductToUsersCollection(userId, productId);
 
       res.status(201).json({ message: "Product created successfully" });
     } catch (error) {

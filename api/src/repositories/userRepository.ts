@@ -1,8 +1,8 @@
 import pool from "@api/config/db.js";
 import { NewUserRow, AuthUserRow, UserRow } from "@api/types/UserTypes.js";
 
-export class UserRepositories {
-  async createUser(userEmail: string, userPassword: string) {
+export class UserRepository {
+  async createUser(userEmail: string, userPassword: string): Promise<NewUserRow> {
     const queryText = `
         INSERT INTO Users (email, password)
         VALUES ($1, $2)
@@ -15,7 +15,7 @@ export class UserRepositories {
     return result.rows[0];
   }
 
-  async getUserByEmail(userEmail: string) {
+  async findUserByEmail(userEmail: string): Promise<AuthUserRow | null> {
     const queryText: string = `
             SELECT id AS "userId",
             name,
@@ -33,7 +33,7 @@ export class UserRepositories {
     return user.rows[0];
   }
 
-  async getUserById(userId: number): Promise<UserRow> {
+  async findUserById(userId: number): Promise<UserRow> {
     const queryText: string = `
     SELECT name, email,
     id AS "userId",

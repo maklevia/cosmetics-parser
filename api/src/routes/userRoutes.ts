@@ -1,9 +1,9 @@
-import { UserControllers } from "@api/controllers/userControllers.js";
+import { UserController } from "@api/controllers/userController.js";
 import { authMiddleware } from "@api/middlewares/authMiddleware.js";
 import { Router } from "express";
 
 export const userRoutes = Router();
 
-const userControllers = new UserControllers();
+const userController = new UserController();
 
-userRoutes.get('/profile', authMiddleware, userControllers.getUserInfo);
+userRoutes.get('/profile', authMiddleware, userController.getUserInfo);

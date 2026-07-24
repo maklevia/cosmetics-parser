@@ -1,14 +1,14 @@
-import { NotificationRepositories } from "@api/repositories/notificationRepositories.js";
+import { NotificationRepository } from "@api/repositories/notificationRepository.js";
 import { getAllGateways } from "@api/getaways/getGetaway.js";
 import { ChannelNotificationError } from "@api/errors/ChannelErrors.js";
-import { ChannelRepositories } from "@api/repositories/channelRepositories.js";
+import { ChannelRepository } from "@api/repositories/channelRepository.js";
 
-const notifRepositories = new NotificationRepositories();
-const channelRepositories = new ChannelRepositories();
+const notifRepositories = new NotificationRepository();
+const channelRepository = new ChannelRepository();
 const gateways = getAllGateways();
 
-export class CronNotifServices {
-  async sendNotifications() {
+export class CronNotifService {
+  async sendNotifications(): Promise<void> {
     try {
       console.log("Starting to send notifications");
       const notifData = await notifRepositories.getPendingNotificationsData();
@@ -59,7 +59,7 @@ export class CronNotifServices {
               } catch (error) {
                 if (error instanceof ChannelNotificationError) {
                   failedChannels.add(channelName)
-                  await channelRepositories.disconnectChannelAccount(
+                  await channelRepository.disconnectChannelAccount(
                     user.userId,
                     channelName,
                   );
@@ -83,7 +83,7 @@ export class CronNotifServices {
       await notifRepositories.updatePriceDropQueue(processedQueueIds);
       console.log("Finished to send notifications");
     } catch (error) {
-      console.log("API: CronNotifServices error: ", error);
+      console.log("API: CronNotifService error: ", error);
     }
   }
 
@@ -95,7 +95,7 @@ export class CronNotifServices {
     return `${productName}: ${oldPrice} -> ${newPrice}`;
   }
 
-  async clearOldRecords() {
+  async clearOldRecords(): Promise<void> {
     try {
       await notifRepositories.clearOldRecords();
     } catch (error) {

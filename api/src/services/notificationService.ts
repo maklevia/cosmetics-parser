@@ -1,9 +1,10 @@
-import { NotificationRepositories } from "@api/repositories/notificationRepositories.js"
+import { NotificationRepository } from "@api/repositories/notificationRepository.js"
+import { NotificationRow } from "@api/types/NotifTypes.js";
 
-const notifRepositories = new NotificationRepositories();
+const notifRepositories = new NotificationRepository();
 
 export class NotificationServices {
-    async getUsersNotifications(userId: number) {
+    async getUsersNotifications(userId: number): Promise<NotificationRow[]> {
         try {
             const userNotifications = await notifRepositories.getNotificationsByUserId(userId);
             return userNotifications;
@@ -12,7 +13,7 @@ export class NotificationServices {
         }
     }
 
-    async markNotifAsRead(notifId: number) {
+    async markNotifAsRead(notifId: number): Promise<void> {
         try {
             await notifRepositories.markNotifAsRead(notifId);
         } catch (error) {

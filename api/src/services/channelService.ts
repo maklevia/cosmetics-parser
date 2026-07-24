@@ -1,18 +1,18 @@
 import { ChannelBindingError } from "@api/errors/ChannelErrors.js";
 import { getGetaway } from "@api/getaways/getGetaway.js";
-import { ChannelRepositories } from "@api/repositories/channelRepositories.js";
+import { ChannelRepository } from "@api/repositories/channelRepository.js";
 
-const channelRepositories = new ChannelRepositories();
+const channelRepository = new ChannelRepository();
 
-export class ChannelServices {
+export class ChannelService {
   async bindChannelAccount(
     userUuid: string,
     channelAccountId: number,
     channelName: string,
-  ) {
+  ): Promise<void> {
     //channel name not used here. it will be needed for repository in case we decide to add channel besides telegram
     try {
-      const userId = await channelRepositories.bindChannelAccount(
+      const userId = await channelRepository.bindChannelAccount(
         userUuid,
         channelAccountId,
       );
@@ -29,7 +29,7 @@ export class ChannelServices {
     channelName: string,
   ): Promise<string> {
     try {
-      const userUuid = await channelRepositories.createChannelToken(
+      const userUuid = await channelRepository.createChannelToken(
         userId,
         channelName,
       );
@@ -40,9 +40,9 @@ export class ChannelServices {
     }
   }
 
-  async clearOldChannelTokens() {
+  async clearOldChannelTokens(): Promise<void> {
     try {
-      await channelRepositories.clearChanellTokens();
+      await channelRepository.clearChanellTokens();
     } catch (error) {
       console.log('API: Error clearing old channel tokens: ', error);
     }

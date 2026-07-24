@@ -1,40 +1,40 @@
 import { Request, Response } from "express";
-import { UserServices } from "@api/services/userServices.js";
-import { AuthServices } from "@api/services/authServices.js";
+import { UserService } from "@api/services/userService.js";
+import { AuthService } from "@api/services/authService.js";
 import {
   cookiesAccessOptions,
   cookiesRefreshOptions,
 } from "@api/utils/cookieUtils.js";
 
-export class AuthControllers {
-  private userServices: UserServices;
-  private authServices: AuthServices;
+export class AuthController {
+  private userService: UserService;
+  private authService: AuthService;
 
   constructor() {
-    this.userServices = new UserServices();
-    this.authServices = new AuthServices();
+    this.userService = new UserService();
+    this.authService = new AuthService();
   }
 
   signup = async (req: Request, res: Response) => {
     try {
       const { email, password } = req.body;
-      const existingUser = await this.userServices.getUserByEmail(email);
+      const existingUser = await this.userService.findUserByEmail(email);
 
       if (existingUser) {
         return res.status(409).json({ message: "Email already registered" });
       }
 
-      const newUser = await this.userServices.createUser(email, password);
+      const newUser = await this.userService.createUser(email, password);
 
       if (!newUser) {
         return res.status(500).json({ message: "Internal server/db error" });
       }
 
-      const accessToken = this.authServices.createAccessToken(
+      const accessToken = this.authService.createAccessToken(
         newUser.userId,
         newUser.userEmail,
       );
-      const refreshToken = this.authServices.createRefreshToken(
+      const refreshToken = this.authService.createRefreshToken(
         newUser.userId,
         newUser.userEmail,
       );
@@ -53,12 +53,12 @@ export class AuthControllers {
   login = async (req: Request, res: Response) => {
     try {
       const { email, enteredPassword } = req.body;
-      const existingUser = await this.userServices.getUserByEmail(email);
+      const existingUser = await this.userService.findUserByEmail(email);
       //checking if email is registered in db
       if (!existingUser) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
-      const doPasswordsMatch = await this.authServices.verifyPassword(
+      const doPasswordsMatch = await this.authService.verifyPassword(
         existingUser.passwordHash,
         enteredPassword,
       );
@@ -66,11 +66,11 @@ export class AuthControllers {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      const accessToken = this.authServices.createAccessToken(
+      const accessToken = this.authService.createAccessToken(
         existingUser.userId,
         existingUser.userEmail,
       );
-      const refreshToken = this.authServices.createRefreshToken(
+      const refreshToken = this.authService.createRefreshToken(
         existingUser.userId,
         existingUser.userEmail,
       );
@@ -91,7 +91,7 @@ export class AuthControllers {
         .json({ message: "No refresh token. Not authorized" });
     }
 
-    this.authServices.validateRefreshToken(refreshToken, (error, decodedUser) => {
+    this.authService.validateRefreshToken(refreshToken, (error, decodedUser) => {
       if (error || !decodedUser) {
         res.clearCookie("accessToken", cookiesAccessOptions);
         res.clearCookie("refreshToken", cookiesRefreshOptions);
@@ -102,7 +102,7 @@ export class AuthControllers {
       const user = decodedUser;
 
       //refresh token validated, can create new access token
-      const accessToken = this.authServices.createAccessToken(
+      const accessToken = this.authService.createAccessToken(
         user.userId,
         user.userEmail,
       );

@@ -1,11 +1,11 @@
 import { ChannelBindingError } from "@api/errors/ChannelErrors.js";
-import { ChannelServices } from "@api/services/channelServices.js";
+import { ChannelService } from "@api/services/channelService.js";
 import { Request, Response } from "express";
 
-import { UserServices } from "@api/services/userServices.js";
+import { UserService } from "@api/services/userService.js";
 
-const channelServices = new ChannelServices();
-const userServices = new UserServices();
+const channelService = new ChannelService();
+const userService = new UserService();
 
 interface ChannelRequest extends Request {
   body: {
@@ -14,13 +14,13 @@ interface ChannelRequest extends Request {
   };
 }
 
-export class ChannelControllers {
+export class ChannelController {
   bindChannelAccount = async (req: ChannelRequest, res: Response) => {
     const { channelName } = req.params;
     const { uuid, channelAccountId } = req.body;
 
     try {
-      await channelServices.bindChannelAccount(
+      await channelService.bindChannelAccount(
         uuid,
         channelAccountId,
         channelName,
@@ -42,7 +42,7 @@ export class ChannelControllers {
     const userId: number = res.locals.user.userId;
 
     try {
-      const channelLink = await channelServices.generateChannelLink(userId, channelName);
+      const channelLink = await channelService.generateChannelLink(userId, channelName);
       res.status(201).json({channelLink});
     } catch (error) {
       console.log(error);
@@ -58,7 +58,7 @@ export class ChannelControllers {
     }
 
     try {
-      const isBinded = await userServices.isTelegramAccountBinded(telegramAccountId);
+      const isBinded = await userService.isTelegramAccountBinded(telegramAccountId);
       res.status(200).json({ isBinded });
     } catch (error) {
       console.log(error);
