@@ -3,13 +3,13 @@ import type { ParseResult } from "@/components/collection/collectionScreen/parse
 import { Button, Dialog, HStack } from "@chakra-ui/react";
 import { useAddProductToCollection } from "@/components/collection/collectionScreen/parseProductDialog/hooks/useAddProductToCollection";
 import { toaster } from "@/components/ui/toaster";
-export function ParsedProductsView({
-  parseResult,
-  productId,
-}: {
+
+interface Props {
   parseResult: ParseResult;
   productId: number;
-}) {
+}
+
+export function ParsedProductsView({ parseResult, productId }: Props) {
   const onSuccess = () => {
     toaster.update("add", {
       title: "Product successfully saved in your Collection",
@@ -46,27 +46,29 @@ export function ParsedProductsView({
       <Dialog.Header>
         <Dialog.Title>Search Result</Dialog.Title>
       </Dialog.Header>
+
       <Dialog.Body gap="2">
         <HStack alignItems="stretch" width="100%">
-          <ParsedProductCard
-            product={parseResult.products.eva}
-            storeName="Eva.ua"
-          ></ParsedProductCard>
-          <ParsedProductCard
-            product={parseResult.products.makeup}
-            storeName="Makeup.ua"
-          ></ParsedProductCard>
-          <ParsedProductCard
-            product={parseResult.products.notino}
-            storeName="Notino.ua"
-          ></ParsedProductCard>
+          
+          {Object.values(parseResult.products)
+          .filter((product) => product !== null)
+          .map((product, index) => (
+            <ParsedProductCard
+            key={index}
+            product={product}
+            storeName="Something"
+            />
+          ))
+         }
+
         </HStack>
-        <Dialog.Footer>
-          <Button onClick={handleClick} disabled={isLoading}>
-            Add to My Collection
-          </Button>
-        </Dialog.Footer>
       </Dialog.Body>
+
+      <Dialog.Footer>
+        <Button onClick={handleClick} disabled={isLoading}>
+          Add to My Collection
+        </Button>
+      </Dialog.Footer>
     </>
   );
 }
