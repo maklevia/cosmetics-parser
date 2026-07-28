@@ -22,8 +22,8 @@ export class CronParsingService {
       console.log("Fetched links successfully...");
 
       await Promise.all([
-        this.processQueue(groupedRecords.fastStores, 2000),
-        this.processQueue(groupedRecords.slowStores, 8000),
+        this.processQueue(groupedRecords.fastStores, 2000, 3),
+        this.processQueue(groupedRecords.slowStores, 8000, 5),
       ]);
 
       console.log("Re-parsing products finished.");
@@ -62,16 +62,27 @@ export class CronParsingService {
   private async processQueue(
     records: StoreRecord[],
     delayMs: number,
+    concurrency: number,
   ): Promise<void> {
-    for (const record of records) {
-      await this.parseAndUpdateRecords(record);
-      await this.sleep(delayMs);
-    }
+    const queue = [...records];
+
+    const workers = Array(concurrency)
+      .fill(null)
+      .map(async () => {
+        while (queue.length > 0) {
+          const record = queue.pop();
+
+          if (record) {
+            await this.parseAndUpdateRecords(record);
+            await this.sleep(delayMs);
+          }
+        }
+      });
+
+    await Promise.all(workers);
   }
 
-  private async parseAndUpdateRecords(
-    oldRecord: StoreRecord,
-  ): Promise<void> {
+  private async parseAndUpdateRecords(oldRecord: StoreRecord): Promise<void> {
     try {
       const newRecordData = await parser.parseSingleProduct(oldRecord.link);
       if (!newRecordData) {
@@ -93,14 +104,14 @@ export class CronParsingService {
           newRecordData.inStock,
           newRecordData.price,
         );
-        console.log(`Creating price history repo for ${newRecordData.name}`)
+        console.log(`Creating price history repo for ${newRecordData.name}`);
 
         if (
           oldRecord.latestPrice &&
           newRecordData.price &&
-          (oldRecord.latestPrice * 0.9 >= newRecordData.price)
+          oldRecord.latestPrice * 0.9 >= newRecordData.price
         ) {
-          console.log(`Creating notif record for ${newRecordData.name}`)
+          console.log(`Creating notif record for ${newRecordData.name}`);
           await notifRepositories.createPriceDropQueue(
             oldRecord.id,
             oldRecord.product.id,
@@ -116,5 +127,4 @@ export class CronParsingService {
 
   private sleep = (delayMs: number) =>
     new Promise((resolve) => setTimeout(resolve, delayMs));
-
 }
