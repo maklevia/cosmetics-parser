@@ -9,6 +9,9 @@ const channelService = new ChannelService();
 const userService = new UserService();
 
 interface ChannelRequest extends Request {
+  params: {
+    channelName: ChannelName;
+  };
   body: {
     uuid: string;
     channelAccountId: number;
@@ -17,7 +20,7 @@ interface ChannelRequest extends Request {
 
 export class ChannelController {
   bindChannelAccount = async (req: ChannelRequest, res: Response) => {
-    const channelName = req.params.channelName as ChannelName;
+    const channelName = req.params.channelName;
     const { uuid, channelAccountId } = req.body;
 
     try {

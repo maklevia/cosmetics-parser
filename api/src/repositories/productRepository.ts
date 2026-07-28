@@ -84,18 +84,9 @@ export class ProductRepository {
     )) {
       if (!product) continue;
 
-      const newStoreRecord = new StoreRecord();
-      newStoreRecord.productStoreName = product.name;
-      newStoreRecord.inStock = product.inStock;
-      newStoreRecord.image = product.image ?? null;
-      newStoreRecord.latestPrice = product.price ?? null;
-      newStoreRecord.link = product.link;
-      newStoreRecord.storeName = product.storeName;
+      const newStoreRecord = StoreRecord.fromParsedProduct(product);
 
-      const newPriceHistory = new PriceHistory();
-      newPriceHistory.inStock = product.inStock;
-      newPriceHistory.price = product.price ?? null;
-      newPriceHistory.storeName = product.storeName;
+      const newPriceHistory = PriceHistory.fromParsedProduct(product);
 
       newStoreRecord.priceHistory = [newPriceHistory];
 

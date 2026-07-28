@@ -9,6 +9,7 @@ import { StoreName } from "@api/types/StoreName.js";
 import { ParsedProduct } from "@api/types/ParsedProduct.js";
 import { Collection } from "@api/entities/Collection.js";
 import { CollectionProductResponse } from "@api/types/CollectionProductResponse.js";
+import { StoreRecordWithLowestPrice } from "@api/types/StoreRecordTypes.js";
 
 const parser = new Parser();
 const productRepository = new ProductRepository();
@@ -34,15 +35,7 @@ export class ProductService {
         };
 
         for (const product of existingStoreRecords) {
-          existingProductsObject[product.storeName] = {
-            name: product.productStoreName,
-            brand: product.product.brand,
-            price: product.latestPrice ?? undefined,
-            inStock: product.inStock,
-            image: product.image ?? undefined,
-            link: product.link,
-            storeName: product.storeName,
-          };
+          existingProductsObject[product.storeName] = this.mapToParsedProduct(product);
         }
 
         const existingProducts: ParseResult = {
@@ -136,22 +129,13 @@ export class ProductService {
         makeup: null,
       };
       for (const product of storeRecords) {
-        responceObject[product.storeName] = {
-          name: product.productStoreName,
-          brand: product.product.brand,
-          price: product.latestPrice ?? undefined,
-          inStock: product.inStock,
-          image: product.image ?? undefined,
-          link: product.link,
-          storeName: product.storeName,
-          lowestMonthPrice: product.lowestMonthPrice
-        };
+        responceObject[product.storeName] = this.mapToParsedProduct(product);
       }
       return responceObject;
     } catch (error) {
       console.log("API: error in store records service: ", error);
       throw error;
-    }
+    }1
   }
 
   async deleteProductFromCollection(userId: number, productId: number): Promise<void> {
@@ -161,5 +145,18 @@ export class ProductService {
       console.log("API: error deleting product from db: ", error);
       throw error;
     }
+  }
+
+  private mapToParsedProduct(product: StoreRecordWithLowestPrice): ParsedProduct {
+    return {
+      name: product.productStoreName,
+      brand: product.product.brand,
+      price: product.latestPrice ?? undefined,
+      inStock: product.inStock,
+      image: product.image ?? undefined,
+      link: product.link,
+      storeName: product.storeName,
+      lowestMonthPrice: product.lowestMonthPrice,
+    };
   }
 }

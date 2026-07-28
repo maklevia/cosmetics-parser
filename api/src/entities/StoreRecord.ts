@@ -14,12 +14,24 @@ import { StoreRecordOverride } from "@api/entities/StoreRecordOverride.js";
 import { PriceHistory } from "@api/entities/PriceHistory.js";
 import { PriceDropQueue } from "@api/entities/PriceDropQueue.js";
 import { StoreName } from "@api/types/StoreName.js";
+import { ParsedProduct } from "@api/types/ParsedProduct.js";
 
 @Entity("Store_Records")
 @Unique(["product", "storeName"])
 export class StoreRecord {
   @PrimaryGeneratedColumn()
   id: number;
+
+  static fromParsedProduct(product: ParsedProduct): StoreRecord {
+    const record = new StoreRecord();
+    record.productStoreName = product.name;
+    record.inStock = product.inStock;
+    record.image = product.image ?? null;
+    record.latestPrice = product.price ?? null;
+    record.link = product.link;
+    record.storeName = product.storeName;
+    return record;
+  }
 
   @ManyToOne(() => Product, (product) => product.storeRecords, {
     onDelete: "CASCADE",

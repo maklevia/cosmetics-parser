@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import { DataSource } from "typeorm";
 import { User } from "@api/entities/User.js";
 import { Product } from "@api/entities/Product.js";
 import { Collection } from "@api/entities/Collection.js";
@@ -9,11 +10,11 @@ import { PriceDropQueue } from "@api/entities/PriceDropQueue.js";
 import { UserNotification } from "@api/entities/UserNotification.js";
 import { ChannelToken } from "@api/entities/ChannelToken.js";
 import { getEnvOrThrow } from "@api/utils/getEnvOrThrow.js";
-import { DataSource } from "typeorm";
+
 
 export const AppDataSource = new DataSource({
     type: 'postgres',
-    host: "localhost",
+    host: getEnvOrThrow('DB_HOST'),
     port: Number(getEnvOrThrow('DB_PORT')),
     username: getEnvOrThrow('DB_USER'),
     password: getEnvOrThrow('DB_PASSWORD'),

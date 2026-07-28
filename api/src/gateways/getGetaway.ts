@@ -15,6 +15,8 @@ export function getGetaway(channelName: ChannelName) {
   return gateway;
 }
 
-export function getAllGateways(): [ChannelName, BaseGateway][] {
-  return Object.entries(gateways) as [ChannelName, BaseGateway][];
+export type GatewayEntry = [ChannelName, BaseGateway];
+
+export function getAllGateways(): GatewayEntry[] {
+  return Object.entries(gateways) as GatewayEntry[];
 }
