@@ -25,18 +25,14 @@ export class TelegramGateway implements BaseGateway {
       `📉 Price: <s>${item.oldPrice} UAH</s> ➡️ <b>${item.newPrice} UAH on ${formatStoreName(item.storeName)}</b>\n\n` +
       `<i><a href="${item.link}">Tap here to view the product</a></i>`;
 
-      try {
-        if (item.image) {
-            await this.sendPhoto(channelAccountId, message, item.image);
-        } else {
-            await this.sendMessage(channelAccountId, message);
-        }
-      } catch (error) {
-        throw error;
-      }
+    if (item.image) {
+      await this.sendPhoto(channelAccountId, message, item.image);
+    } else {
+      await this.sendMessage(channelAccountId, message);
+    }
   }
 
-    private async sendMessage(telegramAccountId: number, message: string) {
+  private async sendMessage(telegramAccountId: number, message: string) {
     const url = `${this.telegramApiUrl}/sendMessage`;
 
     const response = await fetch(url, {
@@ -55,7 +51,11 @@ export class TelegramGateway implements BaseGateway {
     }
   }
 
-  private async sendPhoto(telegramAccountId: number, message: string, imageUrl: string) {
+  private async sendPhoto(
+    telegramAccountId: number,
+    message: string,
+    imageUrl: string,
+  ) {
     const url = `${this.telegramApiUrl}/sendPhoto`;
 
     const response = await fetch(url, {

@@ -4,11 +4,8 @@ import { EvaParser } from "@api/parsers/stores/EvaParser.js";
 import { NotinoParser } from "@api/parsers/stores/NotinoParser.js";
 import { StoreName } from "@api/types/Enums.js";
 import type { BaseParser } from "@api/parsers/BaseParser.js";
-import {
-  InvalidLinkError,
-  ParserError,
-} from "@api/parsers/errors/ParserErrors.js";
 import { ParseResult } from "@api/types/ProductTypes.js";
+import { BadGatewayError, ValidationError } from "@api/errors/AppError.js";
 
 export class ParserOrchestrator {
   private readonly parsers: Record<StoreName, BaseParser>;
@@ -36,9 +33,9 @@ export class ParserOrchestrator {
         path.split("/").filter(Boolean).length >= 2
       )
         return StoreName.Notino;
-      else throw new InvalidLinkError();
+      else throw new ValidationError("Provided link is not supported");
     } catch (error) {
-      throw new InvalidLinkError();
+      throw new ValidationError("Provided link is invalid");
     }
   }
 
@@ -51,7 +48,7 @@ export class ParserOrchestrator {
     const primaryProduct = await primaryParser.parseByLink(link);
 
     if (!primaryProduct) {
-      throw new ParserError();
+      throw new BadGatewayError("Could not parse product from the provided link");
     }
 
     const parsedProducts: Record<StoreName, ParsedProduct | null> = {
@@ -80,12 +77,6 @@ export class ParserOrchestrator {
 
   async parseSingleProduct(link: string): Promise<ParsedProduct | null> {
     const storeName = this.recognizeStoreName(link);
-
-    try {
-      const product = await this.parsers[storeName].parseByLink(link);
-      return product;
-    } catch (error) {
-      throw error;
-    }
+    return await this.parsers[storeName].parseByLink(link);
   }
 }

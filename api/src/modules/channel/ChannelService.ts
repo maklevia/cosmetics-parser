@@ -11,16 +11,12 @@ export class ChannelService {
     channelAccountId: number,
     channelName: ChannelName,
   ): Promise<void> {
-    try {
-      const userId = await channelRepository.bindChannelAccount(
-        userUuid,
-        channelAccountId,
-      );
-      if (!userId) {
-        throw new ChannelBindingError();
-      }
-    } catch (error) {
-      throw error;
+    const userId = await channelRepository.bindChannelAccount(
+      userUuid,
+      channelAccountId,
+    );
+    if (!userId) {
+      throw new ChannelBindingError();
     }
   }
 
@@ -28,23 +24,15 @@ export class ChannelService {
     userId: number,
     channelName: ChannelName,
   ): Promise<string> {
-    try {
-      const userUuid = await channelRepository.createChannelToken(
-        userId,
-        channelName,
-      );
-      const gateway = getGateaway(channelName);
-      return gateway.generateBindingLink(userUuid);
-    } catch (error) {
-      throw error;
-    }
+    const userUuid = await channelRepository.createChannelToken(
+      userId,
+      channelName,
+    );
+    const gateway = getGateaway(channelName);
+    return gateway.generateBindingLink(userUuid);
   }
 
   async clearOldChannelTokens(): Promise<void> {
-    try {
-      await channelRepository.clearChannelTokens();
-    } catch (error) {
-      console.log('API: Error clearing old channel tokens: ', error);
-    }
+    await channelRepository.clearChannelTokens();
   }
 }

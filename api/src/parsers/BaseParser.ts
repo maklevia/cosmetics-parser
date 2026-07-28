@@ -1,10 +1,7 @@
-import {
-  ParserError,
-  StoreRequestError,
-} from "@api/parsers/errors/ParserErrors.js";
 import { ParsedProduct } from "@api/types/ProductTypes.js";
 import { StoreName } from "@api/types/Enums.js";
 import { checkProductNamesSimilarity } from "@api/parsers/utils/stringUtils.js";
+import { BadGatewayError } from "@api/errors/AppError.js";
 import axios from "axios";
 
 export abstract class BaseParser {
@@ -78,9 +75,9 @@ export abstract class BaseParser {
     }
     
     if (isAxiosNetworkError || isGotScrapingError) {
-      throw new StoreRequestError(this.storeName);
+      throw new BadGatewayError(`Store ${this.storeName} is temporarily unavailable`);
     }
 
-    throw new ParserError();
+    throw error;
   }
 }

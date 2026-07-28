@@ -10,6 +10,7 @@ import { notificationRoutes } from "@api/modules/notification/notificationRoutes
 import { channelRoutes } from "@api/modules/channel/channelRoutes.js";
 import { userRoutes } from "@api/modules/user/userRoutes.js";
 import "@api/config/index.js";
+import { errorMiddleware } from "@api/middlewares/errorMiddleware.js";
 
 const app = express();
 const port = getEnvOrThrow('API_PORT');
@@ -30,6 +31,8 @@ app.use('/product', productRoutes)
 app.use('/notification', notificationRoutes);
 app.use('/channel', channelRoutes)
 app.use('/user', userRoutes);
+
+app.use(errorMiddleware);
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
