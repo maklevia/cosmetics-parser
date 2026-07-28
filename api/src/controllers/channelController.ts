@@ -1,5 +1,6 @@
 import { ChannelBindingError } from "@api/errors/ChannelErrors.js";
 import { ChannelService } from "@api/services/channelService.js";
+import { ChannelName } from "@api/types/ChannelName.js";
 import { Request, Response } from "express";
 
 import { UserService } from "@api/services/userService.js";
@@ -8,6 +9,9 @@ const channelService = new ChannelService();
 const userService = new UserService();
 
 interface ChannelRequest extends Request {
+  params: {
+    channelName: ChannelName;
+  };
   body: {
     uuid: string;
     channelAccountId: number;
@@ -16,7 +20,7 @@ interface ChannelRequest extends Request {
 
 export class ChannelController {
   bindChannelAccount = async (req: ChannelRequest, res: Response) => {
-    const { channelName } = req.params;
+    const channelName = req.params.channelName;
     const { uuid, channelAccountId } = req.body;
 
     try {
@@ -38,7 +42,7 @@ export class ChannelController {
   };
 
   generateChannelLink = async (req: Request, res: Response) => {
-    const {channel: channelName} = req.params;
+    const channelName = req.params.channel as ChannelName;
     const userId: number = res.locals.user.userId;
 
     try {

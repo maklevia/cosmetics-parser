@@ -1,5 +1,5 @@
 import { gotScraping } from 'got-scraping';
-import type { Product } from "@api/types/ProductTypes.js";
+import type { ParsedProduct } from "@api/types/ParsedProduct.js";
 import { StoreName } from "@api/types/StoreName.js";
 import { BaseParser } from "@api/parsers/services/parsers/BaseParser.js";
 
@@ -23,7 +23,7 @@ export class NotinoParser extends BaseParser {
         return null;
     }
 
-    protected async fetchByLink(link: string): Promise<Product | null> {
+    protected async fetchByLink(link: string): Promise<ParsedProduct | null> {
         const { body } = await gotScraping({
             url: link,
             headerGeneratorOptions: {
@@ -47,7 +47,7 @@ export class NotinoParser extends BaseParser {
         };
     }
 
-    protected async fetchByNameAndBrand(searchProductName: string, searchProductBrand: string): Promise<Product | null> {
+    protected async fetchByNameAndBrand(searchProductName: string, searchProductBrand: string): Promise<ParsedProduct | null> {
         const { body } = await gotScraping({ url: this.notinoSearchUrl + searchProductName });
 
         const searchResult = this.extractLdJson(body, (p) => p?.description === 'підсумок пошуку');

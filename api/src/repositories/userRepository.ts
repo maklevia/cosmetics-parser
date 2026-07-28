@@ -1,59 +1,33 @@
-import pool from "@api/config/db.js";
-import { NewUserRow, AuthUserRow, UserRow } from "@api/types/UserTypes.js";
+import { AppDataSource } from "@api/config/data-source.js";
+import { User } from "@api/entities/User.js";
 
 export class UserRepository {
-  async createUser(userEmail: string, userPassword: string): Promise<NewUserRow> {
-    const queryText = `
-        INSERT INTO Users (email, password)
-        VALUES ($1, $2)
-        RETURNING id AS "userId", email AS "userEmail"`;
+  private userRepo = AppDataSource.getRepository(User);
 
-    const result = await pool.query<NewUserRow>(queryText, [
-      userEmail,
-      userPassword,
-    ]);
-    return result.rows[0];
+  async createUser(userEmail: string, userPassword: string): Promise<User> {
+    const newUser = new User();
+    newUser.email = userEmail;
+    newUser.password = userPassword;
+
+    const savedUser = await this.userRepo.save(newUser);
+
+    return savedUser;
   }
 
-  async findUserByEmail(userEmail: string): Promise<AuthUserRow | null> {
-    const queryText: string = `
-            SELECT id AS "userId",
-            name,
-            email AS "userEmail",
-            telegram_account_id AS "telegamAccountId",
-            password AS "passwordHash"
-            FROM Users
-            WHERE email=$1
-            LIMIT 1;
-            `;
-    const user = await pool.query<AuthUserRow>(queryText, [userEmail]);
-    if (user.rows.length === 0) {
-        return null;
-    }
-    return user.rows[0];
+  async findUserByEmail(userEmail: string): Promise<User | null> {
+    const foundUser = await this.userRepo.findOneBy({ email: userEmail });
+    return foundUser;
   }
 
-  async findUserById(userId: number): Promise<UserRow> {
-    const queryText: string = `
-    SELECT name, email,
-    id AS "userId",
-    telegram_account_id IS NOT NULL AS "isTelegramConnected"
-    FROM Users
-    WHERE id = $1`
-
-    const result = await pool.query<UserRow>(queryText, [userId]);
-    return result.rows[0];
+  async findUserById(userId: number): Promise<User | null> {
+    const foundUser = await this.userRepo.findOneBy({ id: userId });
+    return foundUser;
   }
 
-  //method is specific to Telegram channel
   async isTelegramAccountBinded(telegramAccountId: number): Promise<boolean> {
-    const queryText: string = `
-    SELECT 1 
-    FROM Users
-    WHERE telegram_account_id = $1
-    LIMIT 1;`
-
-    const response = await pool.query(queryText, [telegramAccountId]);
-    return response.rowCount !== null && response.rowCount > 0;
+    const isBinded = await this.userRepo.existsBy({
+      telegramAccountId: telegramAccountId,
+    });
+    return isBinded;
   }
 }

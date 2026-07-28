@@ -2,7 +2,7 @@ import {
   ParserError,
   StoreRequestError,
 } from "@api/parsers/errors/ParserErrors.js";
-import type { Product } from "@api/types/ProductTypes.js";
+import type { ParsedProduct } from "@api/types/ParsedProduct.js";
 import type { StoreName } from "@api/types/StoreName.js";
 import { checkProductNamesSimilarity } from "@api/parsers/utils/stringUtils.js";
 import axios from "axios";
@@ -10,13 +10,13 @@ import axios from "axios";
 export abstract class BaseParser {
   abstract readonly storeName: StoreName;
 
-  protected abstract fetchByLink(link: string): Promise<Product | null>;
+  protected abstract fetchByLink(link: string): Promise<ParsedProduct | null>;
   protected abstract fetchByNameAndBrand(
     searchProductName: string,
     searchProductBrand: string,
-  ): Promise<Product | null>;
+  ): Promise<ParsedProduct | null>;
 
-  async parseByLink(link: string): Promise<Product | null> {
+  async parseByLink(link: string): Promise<ParsedProduct | null> {
     try {
       const product = await this.fetchByLink(link);
       if (!product) {
@@ -43,7 +43,7 @@ export abstract class BaseParser {
   async parseByNameAndBrand(
     searchProductName: string,
     searchProductBrand: string,
-  ): Promise<Product | null> {
+  ): Promise<ParsedProduct | null> {
     try {
       const product = await this.fetchByNameAndBrand(
         searchProductName,

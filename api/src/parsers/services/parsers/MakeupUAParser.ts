@@ -1,6 +1,6 @@
 import axios from "axios";
 import { BaseParser } from "@api/parsers/services/parsers/BaseParser.js";
-import type { Product } from "@api/types/ProductTypes.js";
+import type { ParsedProduct } from "@api/types/ParsedProduct.js";
 import { StoreName } from "@api/types/StoreName.js";
 import { simplifyString, wordCount } from "@api/parsers/utils/stringUtils.js";
 import { MakeupByLinkResponse, MakeupSearchResponse } from "@api/parsers/types/MakeupApi.js";
@@ -23,7 +23,7 @@ export class MakeupUAParser extends BaseParser {
         }
     }
 
-    protected async fetchByLink(link: string): Promise<Product | null> {
+    protected async fetchByLink(link: string): Promise<ParsedProduct | null> {
         const productId = this.extractIdFromUrl(link, /\/product\/(\d+)/);
         const apiLink = this.makeupApiUrl + productId;
 
@@ -47,7 +47,7 @@ export class MakeupUAParser extends BaseParser {
         };
     }
 
-    protected async fetchByNameAndBrand(searchProductName: string, searchProductBrand: string): Promise<Product | null> {
+    protected async fetchByNameAndBrand(searchProductName: string, searchProductBrand: string): Promise<ParsedProduct | null> {
         const cleanSearchProductName = simplifyString(searchProductName);
 
         const response = await axios.get<MakeupSearchResponse>(this.makeupApiSearchUrl, {

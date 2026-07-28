@@ -1,6 +1,7 @@
 import { NotificationRepository } from "@api/repositories/notificationRepository.js";
 import { getAllGateways } from "@api/gateways/getGetaway.js";
 import { ChannelNotificationError } from "@api/errors/ChannelErrors.js";
+import { ChannelName } from "@api/types/ChannelName.js";
 import { ChannelRepository } from "@api/repositories/channelRepository.js";
 
 const notifRepositories = new NotificationRepository();
@@ -15,11 +16,11 @@ export class CronNotifService {
       const processedQueueIds: number[] = [];
 
       for (const user of notifData) {
-        const channelAccountIds: Record<string, number | null> = {
-          telegram: user.telegramId,
+        const channelAccountIds: Partial<Record<ChannelName, number | null>> = {
+          [ChannelName.Telegram]: user.telegramAccountId,
         };
 
-        const failedChannels = new Set<string>(); 
+        const failedChannels = new Set<ChannelName>(); 
         //create notification in db for web app
         for (const priceDropData of user.priceDropsData) {
 

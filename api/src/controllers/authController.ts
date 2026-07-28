@@ -31,12 +31,12 @@ export class AuthController {
       }
 
       const accessToken = this.authService.createAccessToken(
-        newUser.userId,
-        newUser.userEmail,
+        newUser.id,
+        newUser.email,
       );
       const refreshToken = this.authService.createRefreshToken(
-        newUser.userId,
-        newUser.userEmail,
+        newUser.id,
+        newUser.email,
       );
 
       res.cookie("accessToken", accessToken, cookiesAccessOptions);
@@ -59,7 +59,7 @@ export class AuthController {
         return res.status(401).json({ message: "Invalid credentials" });
       }
       const doPasswordsMatch = await this.authService.verifyPassword(
-        existingUser.passwordHash,
+        existingUser.password,
         enteredPassword,
       );
       if (!doPasswordsMatch) {
@@ -67,12 +67,12 @@ export class AuthController {
       }
 
       const accessToken = this.authService.createAccessToken(
-        existingUser.userId,
-        existingUser.userEmail,
+        existingUser.id,
+        existingUser.email,
       );
       const refreshToken = this.authService.createRefreshToken(
-        existingUser.userId,
-        existingUser.userEmail,
+        existingUser.id,
+        existingUser.email,
       );
 
       res.cookie("accessToken", accessToken, cookiesAccessOptions);

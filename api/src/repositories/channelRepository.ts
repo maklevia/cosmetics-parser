@@ -1,54 +1,57 @@
-import pool from "@api/config/db.js"
+import { AppDataSource } from "@api/config/data-source.js";
+import { User } from "@api/entities/User.js";
+import { ChannelName } from "@api/types/ChannelName.js";
+import { ChannelToken } from "@api/entities/ChannelToken.js";
+import { LessThan, MoreThan } from "typeorm";
 
 export class ChannelRepository {
-    //now this binds specificly to telegram. if new Channles table to-be created, this repository should
-    //update that table instead of users and have no idea about diff types of channels.
+    private userRepo = AppDataSource.getRepository(User);
+    private tokenRepo = AppDataSource.getRepository(ChannelToken);
+
     async bindChannelAccount(userUuid: string, channelAccountId: number): Promise<number | undefined> {
-        const queryText: string = `
-        WITH deleted_token AS (
-            DELETE FROM Channel_Tokens
-            WHERE uuid = $2 AND expires_at > NOW()
-            RETURNING user_id
-        )
-        UPDATE Users
-        SET telegram_account_id = $1
-        WHERE id = (SELECT user_id FROM deleted_token)
-        RETURNING id;`
+        return await AppDataSource.transaction(async (transactionalEntityManager) => {
+            const token = await transactionalEntityManager.findOne(ChannelToken, {
+                where: {
+                    uuid: userUuid,
+                    expiresAt: MoreThan(new Date())
+                },
+                relations: { user: true }
+            });
 
-        const result = await pool.query(queryText, [channelAccountId, userUuid])
-        const userId: number | undefined = result.rows[0]?.id;
+            if (!token || !token.user) {
+                return undefined;
+            }
 
-        return userId;
+            const userId = token.user.id;
+
+            await transactionalEntityManager.update(User, userId, {
+                telegramAccountId: channelAccountId
+            });
+
+            await transactionalEntityManager.delete(ChannelToken, token.id);
+
+            return userId;
+        });
     }
 
-    async createChannelToken(userId: number, channelName: string): Promise<string> {
-        const queryText: string = `
-        INSERT INTO Channel_Tokens (user_id, channel)
-        VALUES ($1, $2)
-        RETURNING uuid`
-
-        const result = await pool.query(queryText, [userId, channelName]);
-        const userUuid: string = result.rows[0].uuid;
-        return userUuid;
+    async createChannelToken(userId: number, channelName: ChannelName): Promise<string> {
+        const token = new ChannelToken();
+        token.user = { id: userId } as User;
+        token.channel = channelName;
+        
+        const savedToken = await this.tokenRepo.save(token);
+        return savedToken.uuid;
     }
 
     async clearChanellTokens(): Promise<void> {
-        const queryText: string = `
-        DELETE FROM Channel_Tokens
-        WHERE expires_at < NOW()`;
-
-        await pool.query(queryText);
+        await this.tokenRepo.delete({
+            expiresAt: LessThan(new Date())
+        });
     }
 
-    //now this binds specificly to telegram. if new Channles table to-be created, this repository should
-    //update that table instead of users and have no idea about diff types of channels.
-    //that is why channelName unused here.
-    async disconnectChannelAccount(userId: number, channelName: string): Promise<void> {
-        const queryText: string = `
-        UPDATE Users
-        SET telegram_account_id = NULL
-        WHERE id = $1`
-
-        await pool.query(queryText, [userId])
+    async disconnectChannelAccount(userId: number, channelName: ChannelName): Promise<void> {
+        await this.userRepo.update(userId, {
+            telegramAccountId: null
+        });
     }
 }

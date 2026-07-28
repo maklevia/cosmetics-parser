@@ -1,5 +1,6 @@
 import { ChannelBindingError } from "@api/errors/ChannelErrors.js";
 import { getGetaway } from "@api/gateways/getGetaway.js";
+import { ChannelName } from "@api/types/ChannelName.js";
 import { ChannelRepository } from "@api/repositories/channelRepository.js";
 
 const channelRepository = new ChannelRepository();
@@ -8,9 +9,8 @@ export class ChannelService {
   async bindChannelAccount(
     userUuid: string,
     channelAccountId: number,
-    channelName: string,
+    channelName: ChannelName,
   ): Promise<void> {
-    //channel name not used here. it will be needed for repository in case we decide to add channel besides telegram
     try {
       const userId = await channelRepository.bindChannelAccount(
         userUuid,
@@ -26,7 +26,7 @@ export class ChannelService {
 
   async generateChannelLink(
     userId: number,
-    channelName: string,
+    channelName: ChannelName,
   ): Promise<string> {
     try {
       const userUuid = await channelRepository.createChannelToken(

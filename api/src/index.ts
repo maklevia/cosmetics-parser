@@ -9,6 +9,7 @@ import { setupCronJobs } from "@api/cron/index.js";
 import { notificationRoutes } from "@api/routes/notificationRoutes.js";
 import { channelRoutes } from "@api/routes/channelRoutes.js";
 import { userRoutes } from "@api/routes/userRoutes.js";
+import "@api/config/index.js";
 
 const app = express();
 const port = getEnvOrThrow('API_PORT');
@@ -37,10 +38,3 @@ app.listen(port, () => {
 app.get("/", (req, res) => {
   res.send("API is running with TypeScript!");
 });
-
-app.get('/main', authMiddleware, (req, res) => {
-  res.status(200).json({
-        message: "Success! You are authenticated.",
-        user: res.locals.user 
-      });
-})

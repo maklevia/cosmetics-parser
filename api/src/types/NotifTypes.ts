@@ -1,25 +1,18 @@
-import { StoreName } from "@api/types/StoreName.js";
+import { StoreName } from "./StoreName.js";
+
+export interface PriceDropInfo {
+  queueId: number;
+  productName: string;
+  productId: number;
+  storeName: StoreName;
+  productLink: string;
+  image?: string;
+  oldPrice: number;
+  newPrice: number;
+}
 
 export interface PendingNotifDataRow {
   userId: number;
-  telegramId: number;
-  priceDropsData: {
-    queueId: number;
-    productId: number;
-    productName: string;
-    storeName: StoreName;
-    productLink: string;
-    oldPrice: number;
-    newPrice: number;
-    image?: string;
-  }[];
-}
-
-export interface NotificationRow {
-    notifId: number,
-    productId: number,
-    image?: string,
-    title: string,
-    message: string,
-    isRead: boolean
+  telegramAccountId: number;
+  priceDropsData: PriceDropInfo[];
 }

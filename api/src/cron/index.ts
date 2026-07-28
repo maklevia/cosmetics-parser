@@ -12,7 +12,7 @@ export const setupCronJobs = () => {
     timezone: "Europe/Kyiv",
   });
 
-  cron.schedule("56 21 * * *", () => cronNotifService.sendNotifications(), {
+  cron.schedule("0 11 * * *", () => cronNotifService.sendNotifications(), {
     timezone: "Europe/Kyiv",
   });
 
