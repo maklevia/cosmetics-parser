@@ -10,6 +10,7 @@ import { ParsedProduct } from "@api/types/ParsedProduct.js";
 import { Collection } from "@api/entities/Collection.js";
 import { CollectionProductResponse } from "@api/types/CollectionProductResponse.js";
 import { StoreRecordWithLowestPrice } from "@api/types/StoreRecordTypes.js";
+import { DAY, HOUR, MINUTE, SECOND } from "@api/utils/time.js";
 
 const parser = new Parser();
 const productRepository = new ProductRepository();
@@ -27,6 +28,8 @@ export class ProductService {
 
         const existingStoreRecords =
           await productRepository.getStoreRecordsWithProductId(productId);
+
+        await this.ensureUpdatedRecords(existingStoreRecords);
 
         let existingProductsObject: Record<StoreName, ParsedProduct | null> = {
           eva: null,
@@ -158,5 +161,28 @@ export class ProductService {
       storeName: product.storeName,
       lowestMonthPrice: product.lowestMonthPrice,
     };
+  }
+
+  private async ensureUpdatedRecords(records: StoreRecordWithLowestPrice[]): Promise<void> {
+    for (const record of records) { 
+
+      if(record.updatedAt && ((Date.now() - record.updatedAt.getTime()) > DAY)) {
+        try {
+          const freshRecord = await parser.parseSingleProduct(record.link);
+
+          if (freshRecord) {
+            await productRepository.updateStoreRecordsCron(record.id, freshRecord.inStock, freshRecord.price, freshRecord.image);
+            await productRepository.createPriceHistory(record.id, freshRecord.storeName, freshRecord.inStock, freshRecord.price);
+
+            record.latestPrice = freshRecord.price ?? null;
+            record.inStock = freshRecord.inStock;
+            record.image = freshRecord.image ?? null;
+            record.updatedAt = new Date();
+          }
+        } catch (error) {
+          console.log('API: Error while re-parsing old product on user input: ', error);
+        }
+      }
+    }
   }
 }

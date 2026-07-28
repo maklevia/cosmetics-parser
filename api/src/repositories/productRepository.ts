@@ -101,21 +101,10 @@ export class ProductRepository {
       .createQueryBuilder("storeRecord")
       .leftJoinAndSelect("storeRecord.product", "product")
       .addSelect(`(
-        SELECT MIN(p) FROM (
-          SELECT price AS p
-          FROM "Price_History"
-          WHERE store_record_id = "storeRecord"."id"
-            AND recorded_at >= NOW() - INTERVAL '30 days'
-          UNION ALL
-          (
-            SELECT price AS p
-            FROM "Price_History"
-            WHERE store_record_id = "storeRecord"."id"
-              AND recorded_at < NOW() - INTERVAL '30 days'
-            ORDER BY recorded_at DESC
-            LIMIT 1
-          )
-        ) AS history_window
+        SELECT MIN(price)
+        FROM "Price_History"
+        WHERE store_record_id = "storeRecord"."id"
+          AND recorded_at >= NOW() - INTERVAL '30 days'
       )`, "lowestMonthPrice")
       .where("storeRecord.product_id = :productId", { productId })
       .getRawAndEntities();

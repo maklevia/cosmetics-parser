@@ -97,28 +97,28 @@ export class CronParsingService {
         newRecordData.image,
       );
 
-      if (oldRecord.latestPrice !== newRecordData.price) {
-        await productRepository.createPriceHistory(
+      await productRepository.createPriceHistory(
+        oldRecord.id,
+        newRecordData.storeName,
+        newRecordData.inStock,
+        newRecordData.price,
+      );
+      console.log(`Creating price history repo for ${newRecordData.name}`);
+
+      if (
+        newRecordData.inStock && 
+        oldRecord.latestPrice !== newRecordData.price &&
+        oldRecord.latestPrice &&
+        newRecordData.price &&
+        oldRecord.latestPrice * 0.9 >= newRecordData.price
+      ) {
+        console.log(`Creating notif record for ${newRecordData.name}`);
+        await notifRepositories.createPriceDropQueue(
           oldRecord.id,
-          newRecordData.storeName,
-          newRecordData.inStock,
+          oldRecord.product.id,
+          oldRecord.latestPrice,
           newRecordData.price,
         );
-        console.log(`Creating price history repo for ${newRecordData.name}`);
-
-        if (
-          oldRecord.latestPrice &&
-          newRecordData.price &&
-          oldRecord.latestPrice * 0.9 >= newRecordData.price
-        ) {
-          console.log(`Creating notif record for ${newRecordData.name}`);
-          await notifRepositories.createPriceDropQueue(
-            oldRecord.id,
-            oldRecord.product.id,
-            oldRecord.latestPrice,
-            newRecordData.price,
-          );
-        }
       }
     } catch (error) {
       console.log(`API CRON: error parsing/updating `, error);
