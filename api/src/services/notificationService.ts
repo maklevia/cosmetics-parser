@@ -1,13 +1,21 @@
+import { UserNotification } from "@api/entities/UserNotification.js";
 import { NotificationRepository } from "@api/repositories/notificationRepository.js"
-import { NotificationRow } from "@api/types/NotifTypes.js";
+import { NotificationDataResponse } from "@api/types/NotificationDataResponse.js";
 
 const notifRepositories = new NotificationRepository();
 
 export class NotificationServices {
-    async getUsersNotifications(userId: number): Promise<NotificationRow[]> {
+    async getUsersNotifications(userId: number): Promise<NotificationDataResponse[]> {
         try {
             const userNotifications = await notifRepositories.getNotificationsByUserId(userId);
-            return userNotifications;
+            return userNotifications.map(notif => ({
+                notifId: notif.id,
+                productId: notif.product?.id ?? null,
+                isRead: notif.isRead,
+                title: notif.title ?? "",
+                message: notif.message,
+                image: notif.image ?? undefined
+            }));
         } catch (error) {
             throw error;
         }

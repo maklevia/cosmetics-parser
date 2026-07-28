@@ -1,13 +1,14 @@
-import pool from "@api/config/db.js";
 import { Parser } from "@api/parsers/services/parserOrchestrator.js";
-import { ParseResult } from "@api/types/ParsedResult.js";
+import { ParseResult } from "@api/types/ParseResult.js";
 import { ProductRepository } from "@api/repositories/productRepository.js";
 import {
   DuplicateProductError,
   InvalidParseData,
 } from "@api/errors/ProductErrors.js";
 import { StoreName } from "@api/types/StoreName.js";
-import { Product, UserCollectionRow } from "@api/types/ProductTypes.js";
+import { ParsedProduct } from "@api/types/ParsedProduct.js";
+import { Collection } from "@api/entities/Collection.js";
+import { CollectionProductResponse } from "@api/types/CollectionProductResponse.js";
 
 const parser = new Parser();
 const productRepository = new ProductRepository();
@@ -20,13 +21,13 @@ export class ProductService {
 
       //check for last updated required, to be implemented when re-parsing will work
       if (storeRecord) {
-        const productId = storeRecord.productId;
+        const productId = storeRecord.product.id;
         const primaryStoreName = storeRecord.storeName;
 
         const existingStoreRecords =
           await productRepository.getStoreRecordsWithProductId(productId);
 
-        let existingProductsObject: Record<StoreName, Product | null> = {
+        let existingProductsObject: Record<StoreName, ParsedProduct | null> = {
           eva: null,
           notino: null,
           makeup: null,
@@ -34,11 +35,11 @@ export class ProductService {
 
         for (const product of existingStoreRecords) {
           existingProductsObject[product.storeName] = {
-            name: product.name,
-            brand: product.brand,
-            price: product.price,
+            name: product.productStoreName,
+            brand: product.product.brand,
+            price: product.latestPrice ?? undefined,
             inStock: product.inStock,
-            image: product.image,
+            image: product.image ?? undefined,
             link: product.link,
             storeName: product.storeName,
           };
@@ -66,9 +67,7 @@ export class ProductService {
   }
 
   async addNewProduct(parseResults: ParseResult): Promise<number> {
-    const client = await pool.connect();
     try {
-      await client.query("BEGIN");
 
       const primaryStoreName = parseResults.primaryStore;
       const primaryProduct = parseResults.products[primaryStoreName];
@@ -77,47 +76,12 @@ export class ProductService {
         throw new InvalidParseData();
       }
 
-      const productId = await productRepository.createProduct(
-        client,
-        primaryProduct.name,
-        primaryProduct.brand,
-        primaryProduct.image,
-      );
+      const productId = await productRepository.saveParsedProduct(primaryProduct, parseResults)
 
-      for (const [storeName, product] of Object.entries(
-        parseResults.products,
-      )) {
-        if (!product) continue;
-
-        const storeRecordId: number =
-          await productRepository.createStoreRecord({
-            client,
-            productId,
-            productStoreName: product.name,
-            storeName: product.storeName,
-            productLink: product.link,
-            price: product.price,
-            inStock: product.inStock,
-            image: product.image,
-          });
-
-        await productRepository.createPriceHistory(
-          storeRecordId,
-          product.storeName,
-          product.inStock,
-          product.price,
-          client,
-        );
-      }
-
-      await client.query("COMMIT");
       return productId;
     } catch (error) {
-      await client.query("ROLLBACK");
       throw error;
-    } finally {
-      client.release();
-    }
+    } 
   }
 
   async addProductToUsersCollection(userId: number, productId: number): Promise<void> {
@@ -138,20 +102,26 @@ export class ProductService {
     }
   }
 
-  async getCollection(userId: number, limit: number, offset: number): Promise<UserCollectionRow[]> {
+  async getCollection(userId: number, limit: number, offset: number): Promise<CollectionProductResponse[]> {
     try {
       const collection = await productRepository.getUserCollection(
         userId,
         limit,
         offset,
       );
-      return collection;
+      return collection.map(c => ({
+        name: c.product.name,
+        brand: c.product.brand,
+        image: c.product.image ?? undefined,
+        notifyOnPriceDrop: c.notifyOnPriceDrop,
+        productId: c.product.id
+      }));
     } catch (error) {
       throw error;
     }
   }
 
-  async getProductStoreRecords(productId: number): Promise<Record<StoreName, Product | null>> {
+  async getProductStoreRecords(productId: number): Promise<Record<StoreName, ParsedProduct | null>> {
     try {
       const storeRecords =
         await productRepository.getStoreRecordsWithProductId(productId);
@@ -160,13 +130,22 @@ export class ProductService {
           "API: No store records found for the product (something is really wrong..)",
         );
       }
-      const responceObject: Record<StoreName, Product | null> = {
+      const responceObject: Record<StoreName, ParsedProduct | null> = {
         eva: null,
         notino: null,
         makeup: null,
       };
       for (const product of storeRecords) {
-        responceObject[product.storeName] = product;
+        responceObject[product.storeName] = {
+          name: product.productStoreName,
+          brand: product.product.brand,
+          price: product.latestPrice ?? undefined,
+          inStock: product.inStock,
+          image: product.image ?? undefined,
+          link: product.link,
+          storeName: product.storeName,
+          lowestMonthPrice: product.lowestMonthPrice
+        };
       }
       return responceObject;
     } catch (error) {

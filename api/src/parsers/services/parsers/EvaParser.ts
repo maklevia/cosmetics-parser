@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Product } from "@api/types/ProductTypes.js";
+import type { ParsedProduct } from "@api/types/ParsedProduct.js";
 import type { EvaByLinkResponse, EvaSearchResponse } from "@api/parsers/types/EvaApi.js";
 import { StoreName } from "@api/types/StoreName.js";
 import { simplifyString } from "@api/parsers/utils/stringUtils.js";
@@ -43,7 +43,7 @@ export class EvaParser extends BaseParser {
     return normalizedName;
   }
 
-  protected async fetchByLink(link: string): Promise<Product | null> {
+  protected async fetchByLink(link: string): Promise<ParsedProduct | null> {
     const productId = this.extractIdFromUrl(link, /\/pr(\d+)/);
     const apiLink = this.evaApiUrl + productId;
 
@@ -66,7 +66,7 @@ export class EvaParser extends BaseParser {
   protected async fetchByNameAndBrand(
     searchProductName: string,
     searchProductBrand: string,
-  ): Promise<Product | null> {
+  ): Promise<ParsedProduct | null> {
     const response = await axios.get<EvaSearchResponse>(this.evaApiSearchUrl, {
       params: { query: searchProductName },
     });

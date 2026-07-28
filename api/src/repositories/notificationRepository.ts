@@ -1,58 +1,65 @@
-import pool from "@api/config/db.js";
-import { NotificationRow, PendingNotifDataRow } from "@api/types/NotifTypes.js";
+import { AppDataSource } from "@api/config/data-source.js";
+import { User } from "@api/entities/User.js";
+import { Product } from "@api/entities/Product.js";
+import { StoreRecord } from "@api/entities/StoreRecord.js";
+import { PriceDropQueue, PriceDropQueueStatus } from "@api/entities/PriceDropQueue.js";
+import { UserNotification } from "@api/entities/UserNotification.js";
+import { In, LessThan } from "typeorm";
+import { PendingNotifDataRow } from "@api/types/NotifTypes.js";
 
 export class NotificationRepository {
+  private queueRepo = AppDataSource.getRepository(PriceDropQueue);
+  private notifRepo = AppDataSource.getRepository(UserNotification);
+  private userRepo = AppDataSource.getRepository(User);
+
   async createPriceDropQueue(
     storeRecordId: number,
     productId: number,
     oldPrice: number,
     newPrice: number,
   ): Promise<void> {
-    const queryText: string = `
-    INSERT INTO Price_Drop_Queue (store_record_id, product_id, old_price, new_price)
-    VALUES ($1, $2, $3, $4)`;
+    const queue = new PriceDropQueue();
+    queue.storeRecord = { id: storeRecordId } as StoreRecord;
+    queue.product = { id: productId } as Product;
+    queue.oldPrice = oldPrice;
+    queue.newPrice = newPrice;
 
-    await pool.query(queryText, [storeRecordId, productId, oldPrice, newPrice]);
+    await this.queueRepo.insert(queue);
   }
 
   async updatePriceDropQueue(price_drop_queue_ids: number[]): Promise<void> {
-    const queryText: string = `
-    UPDATE Price_Drop_Queue 
-    SET status = 'processed'
-    WHERE id = ANY($1)`;
-
-    await pool.query(queryText, [price_drop_queue_ids]);
+    await this.queueRepo.update(
+      { id: In(price_drop_queue_ids) },
+      { status: PriceDropQueueStatus.PROCESSED },
+    );
   }
 
   async getPendingNotificationsData(): Promise<PendingNotifDataRow[]> {
-    const queryText: string = `
-    SELECT Users.id AS "userId",
-    Users.telegram_account_id AS "telegramId",
-
-    json_agg(
-        json_build_object(
-            'queueId', Price_Drop_Queue.id,
-            'productName', Store_Records.product_store_name,
-            'productId', Store_Records.product_id,
-            'storeName', Store_Records.store_name,
-            'productLink', Store_Records.link,
-            'image', Store_Records.image,
-            'oldPrice', Price_Drop_Queue.old_price,
-            'newPrice', Price_Drop_Queue.new_price
-        )
-    ) AS "priceDropsData"
-    
-    FROM Price_Drop_Queue
-    JOIN Collections ON Collections.product_id = Price_Drop_Queue.product_id
-    JOIN Users ON Users.id = Collections.user_id
-    JOIN Store_records ON Store_Records.id = Price_Drop_Queue.store_record_id
-    
-    WHERE Price_Drop_Queue.status = 'pending' AND Collections.notify_on_price_drop = true
-    
-    GROUP BY Users.id, Users.telegram_account_id;`;
-
-    const result = await pool.query<PendingNotifDataRow>(queryText);
-    return result.rows;
+    return await this.userRepo
+      .createQueryBuilder("user")
+      .select('user.id', 'userId')
+      .addSelect('user.telegramAccountId', 'telegramAccountId')
+      .addSelect(`
+        json_agg(
+            json_build_object(
+                'queueId', queue.id,
+                'productName', storeRecord.product_store_name,
+                'productId', storeRecord.product_id,
+                'storeName', storeRecord.store_name,
+                'productLink', storeRecord.link,
+                'image', storeRecord.image,
+                'oldPrice', queue.old_price,
+                'newPrice', queue.new_price
+            )
+        )`, 'priceDropsData')
+      .innerJoin('user.collections', 'collection')
+      .innerJoin(PriceDropQueue, 'queue', 'queue.product_id = collection.product_id')
+      .innerJoin('queue.storeRecord', 'storeRecord')
+      .where('queue.status = :status', { status: PriceDropQueueStatus.PENDING })
+      .andWhere('collection.notifyOnPriceDrop = :notify', { notify: true })
+      .groupBy('user.id')
+      .addGroupBy('user.telegramAccountId')
+      .getRawMany<PendingNotifDataRow>();
   }
 
   async createUserNotification(
@@ -62,49 +69,43 @@ export class NotificationRepository {
     productId?: number,
     image?: string,
   ): Promise<void> {
-    const queryText: string = `
-    INSERT INTO User_Notifications (user_id, product_id, title, message, image)
-    VALUES ($1, $2, $3, $4, $5)`;
+    const notif = new UserNotification();
+    notif.user = { id: userId } as User;
+    if (productId) notif.product = { id: productId } as Product;
+    notif.title = title;
+    notif.message = message;
+    notif.image = image ?? null;
 
-    await pool.query(queryText, [userId, productId, title, message, image]);
+    await this.notifRepo.save(notif);
   }
 
   async clearOldRecords(): Promise<void> {
-    const queryTextQueue: string = `
-    DELETE FROM Price_Drop_Queue
-    WHERE status = 'processed' AND created_at < NOW() - INTERVAL '7 days';`;
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-    await pool.query(queryTextQueue);
+    await this.queueRepo.delete({
+      status: PriceDropQueueStatus.PROCESSED,
+      createdAt: LessThan(sevenDaysAgo),
+    });
 
-    const queryTextNotifs: string = `
-    DELETE FROM User_Notifications
-    WHERE created_at < NOW() - INTERVAL '30 days'`;
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    await pool.query(queryTextNotifs);
+    await this.notifRepo.delete({
+      createdAt: LessThan(thirtyDaysAgo),
+    });
   }
 
-  async getNotificationsByUserId(userId: number): Promise<NotificationRow[]> {
-    const queryText: string = `
-    SELECT id AS "notifId",
-    product_id AS "productId",
-    image,
-    title,
-    message,
-    is_read AS "isRead"
-    FROM User_Notifications
-    WHERE user_id = $1`;
-
-    const result = await pool.query<NotificationRow>(queryText, [userId]);
-
-    return result.rows;
+  async getNotificationsByUserId(userId: number): Promise<UserNotification[]> {
+    return await this.notifRepo.find({
+      where: { user: { id: userId } },
+      relations: { product: true },
+    });
   }
 
   async markNotifAsRead(notifId: number): Promise<void> {
-    const queryText: string = `
-    UPDATE User_Notifications
-    SET is_read = true
-    WHERE id = $1`;
-
-    await pool.query(queryText, [notifId]);
+    await this.notifRepo.update(notifId, {
+      isRead: true,
+    });
   }
 }

@@ -1,12 +1,12 @@
 import { AuthService } from "@api/services/authService.js";
 import { UserRepository } from "@api/repositories/userRepository.js";
-import { AuthUserRow, NewUserRow, UserRow } from "@api/types/UserTypes.js";
+import { User } from "@api/entities/User.js";
 
 const userRepository = new UserRepository();
 const authService = new AuthService();
 
 export class UserService {
-  async findUserByEmail(email: string): Promise<AuthUserRow | null> {
+  async findUserByEmail(email: string): Promise<User | null> {
     try {
       const user = await userRepository.findUserByEmail(email);
       return user;
@@ -16,7 +16,7 @@ export class UserService {
     }
   }
 
-  async createUser(email: string, password: string): Promise<NewUserRow | null> {
+  async createUser(email: string, password: string): Promise<User | null> {
     try {
       const hashedPassword = await authService.hashPassword(password);
       const createdUser = await userRepository.createUser(
@@ -30,9 +30,14 @@ export class UserService {
     }
   }
 
-  async getUserInfo(userId: number): Promise<UserRow> {
+  async getUserInfo(userId: number): Promise<User> {
     try {
       const user = await userRepository.findUserById(userId);
+
+      if (!user) {
+        throw new Error('API: No user info found')
+      }
+      
       return user;
     } catch (error) {
       console.log('API: Error getting user info: ', error)

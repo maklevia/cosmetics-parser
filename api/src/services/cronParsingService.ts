@@ -1,7 +1,7 @@
+import { StoreRecord } from "@api/entities/StoreRecord.js";
 import { Parser } from "@api/parsers/services/parserOrchestrator.js";
 import { NotificationRepository } from "@api/repositories/notificationRepository.js";
 import { ProductRepository } from "@api/repositories/productRepository.js";
-import { StoreRecordsForCronRow } from "@api/types/ProductTypes.js";
 import { StoreName } from "@api/types/StoreName.js";
 
 const productRepository = new ProductRepository();
@@ -9,8 +9,8 @@ const notifRepositories = new NotificationRepository();
 const parser = new Parser();
 
 interface GroupedRecords {
-  fastStores: StoreRecordsForCronRow[]; //now it's Makeup and Eva
-  slowStores: StoreRecordsForCronRow[]; //now it's Notino
+  fastStores: StoreRecord[]; //now it's Makeup and Eva
+  slowStores: StoreRecord[]; //now it's Notino
 }
 
 export class CronParsingService {
@@ -19,7 +19,7 @@ export class CronParsingService {
       console.log("Re-parsing products starting...");
 
       const groupedRecords = await this.fetchAndGroupRecords();
-      console.log("Fetched links succsessfully...");
+      console.log("Fetched links successfully...");
 
       await Promise.all([
         this.processQueue(groupedRecords.fastStores, 2000),
@@ -60,7 +60,7 @@ export class CronParsingService {
     }
   }
   private async processQueue(
-    records: StoreRecordsForCronRow[],
+    records: StoreRecord[],
     delayMs: number,
   ): Promise<void> {
     for (const record of records) {
@@ -70,7 +70,7 @@ export class CronParsingService {
   }
 
   private async parseAndUpdateRecords(
-    oldRecord: StoreRecordsForCronRow,
+    oldRecord: StoreRecord,
   ): Promise<void> {
     try {
       const newRecordData = await parser.parseSingleProduct(oldRecord.link);
@@ -80,15 +80,15 @@ export class CronParsingService {
       }
 
       await productRepository.updateStoreRecordsCron(
-        oldRecord.recordId,
+        oldRecord.id,
         newRecordData.inStock,
         newRecordData.price,
         newRecordData.image,
       );
 
-      if (oldRecord.price !== newRecordData.price) {
+      if (oldRecord.latestPrice !== newRecordData.price) {
         await productRepository.createPriceHistory(
-          oldRecord.recordId,
+          oldRecord.id,
           newRecordData.storeName,
           newRecordData.inStock,
           newRecordData.price,
@@ -96,15 +96,15 @@ export class CronParsingService {
         console.log(`Creating price history repo for ${newRecordData.name}`)
 
         if (
-          oldRecord.price &&
+          oldRecord.latestPrice &&
           newRecordData.price &&
-          (oldRecord.price * 0.9 >= newRecordData.price)
+          (oldRecord.latestPrice * 0.9 >= newRecordData.price)
         ) {
           console.log(`Creating notif record for ${newRecordData.name}`)
           await notifRepositories.createPriceDropQueue(
-            oldRecord.recordId,
-            oldRecord.productId,
-            oldRecord.price,
+            oldRecord.id,
+            oldRecord.product.id,
+            oldRecord.latestPrice,
             newRecordData.price,
           );
         }

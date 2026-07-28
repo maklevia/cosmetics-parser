@@ -1,11 +1,12 @@
 import { BaseGateway } from "@api/gateways/BaseGateway.js";
 import { TelegramGateway } from "@api/gateways/TelegramGateway.js";
+import { ChannelName } from "@api/types/ChannelName.js";
 
-const gateways: Record<string, BaseGateway> = {
-  telegram: new TelegramGateway(),
-};
+const gateways = {
+  [ChannelName.Telegram]: new TelegramGateway(),
+} as Record<ChannelName, BaseGateway>;
 
-export function getGetaway(channelName: string) {
+export function getGetaway(channelName: ChannelName) {
   const gateway = gateways[channelName];
   if (!gateway) {
     throw new Error("Unsupported gateway!");
@@ -14,6 +15,6 @@ export function getGetaway(channelName: string) {
   return gateway;
 }
 
-export function getAllGateways(): [string, BaseGateway][] {
-  return Object.entries(gateways);
+export function getAllGateways(): [ChannelName, BaseGateway][] {
+  return Object.entries(gateways) as [ChannelName, BaseGateway][];
 }

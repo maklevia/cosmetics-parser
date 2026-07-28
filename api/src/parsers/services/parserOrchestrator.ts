@@ -1,4 +1,4 @@
-import type { Product } from "@api/types/ProductTypes.js";
+import type { ParsedProduct } from "@api/types/ParsedProduct.js";
 import { MakeupUAParser } from "@api/parsers/services/parsers/MakeupUAParser.js";
 import { EvaParser } from "@api/parsers/services/parsers/EvaParser.js";
 import { NotinoParser } from "@api/parsers/services/parsers/NotinoParser.js";
@@ -8,7 +8,7 @@ import {
   InvalidLinkError,
   ParserError,
 } from "@api/parsers/errors/ParserErrors.js";
-import { ParseResult } from "@api/types/ParsedResult.js";
+import { ParseResult } from "@api/types/ParseResult.js";
 
 export class Parser {
   private readonly parsers: Record<StoreName, BaseParser>;
@@ -54,7 +54,7 @@ export class Parser {
       throw new ParserError();
     }
 
-    const parsedProducts: Record<StoreName, Product | null> = {
+    const parsedProducts: Record<StoreName, ParsedProduct | null> = {
       [StoreName.Eva]: null,
       [StoreName.Notino]: null,
       [StoreName.Makeup]: null,
@@ -78,7 +78,7 @@ export class Parser {
     return {primaryStore: primaryStore, products: parsedProducts};
   }
 
-  async parseSingleProduct(link: string): Promise<Product | null> {
+  async parseSingleProduct(link: string): Promise<ParsedProduct | null> {
     const storeName = this.recognizeStoreName(link);
 
     try {

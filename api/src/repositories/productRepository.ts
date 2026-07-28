@@ -1,70 +1,56 @@
-import pool from "@api/config/db.js";
-import {
-  CollectionRow,
-  StoreRecordJoinProductRow,
-  StoreRecordRow,
-  StoreRecordsForCronRow,
-  UserCollectionRow,
-} from "@api/types/ProductTypes.js";
+import { AppDataSource } from "@api/config/data-source.js";
+import { Collection } from "@api/entities/Collection.js";
+import { PriceHistory } from "@api/entities/PriceHistory.js";
+import { Product } from "@api/entities/Product.js";
+import { StoreRecord } from "@api/entities/StoreRecord.js";
+
 import { StoreName } from "@api/types/StoreName.js";
-import { Pool, PoolClient } from "pg";
+import { ParsedProduct } from "@api/types/ParsedProduct.js";
+import { ParseResult } from "@api/types/ParseResult.js";
+import { StoreRecordWithLowestPrice } from "@api/types/StoreRecordTypes.js";
+import { In } from "typeorm";
 
 interface CreateStoreRecordOptions {
-    client: PoolClient,
-    productId: number,
-    productStoreName: string,
-    storeName: StoreName,
-    productLink: string,
-    price?: number,
-    inStock: boolean,
-    image?: string ,
-  }
+  productId: number;
+  productStoreName: string;
+  storeName: StoreName;
+  productLink: string;
+  price?: number;
+  inStock: boolean;
+  image?: string;
+}
 
 export class ProductRepository {
-  async findStoreRecordByLink(
-    link: string,
-  ): Promise<StoreRecordRow | undefined> {
-    const queryText: string = `
-            SELECT product_id AS "productId",
-            id,
-            store_name AS "storeName",
-            latest_price AS price,
-            in_stock AS "inStock",
-            product_store_name AS "name"
-            FROM Store_Records
-            WHERE link = $1;
-            `;
-    const result = await pool.query(queryText, [link]);
-    return result.rows[0];
+  private storeRecordRepo = AppDataSource.getRepository(StoreRecord);
+  private collectionRepo = AppDataSource.getRepository(Collection);
+  private priceHistoryRepo = AppDataSource.getRepository(PriceHistory);
+  private productRepo = AppDataSource.getRepository(Product);
+
+  async findStoreRecordByLink(link: string): Promise<StoreRecord | null> {
+    const foundStoreRecord = await this.storeRecordRepo.findOne({
+      where: { link: link },
+      relations: { product: true }
+    });
+    return foundStoreRecord;
   }
 
   async findCollectionByUserProductId(
     userId: number,
     productId: number,
-  ): Promise<CollectionRow | undefined> {
-    const queryText: string = `
-            SELECT id, 
-            product_id AS "productId",
-            user_id AS userId  
-            FROM Collections
-            WHERE user_id = $1 AND product_id = $2;`;
-
-    const result = await pool.query<CollectionRow>(queryText, [
-      userId,
-      productId,
-    ]);
-    return result.rows[0];
+  ): Promise<Collection | null> {
+    const foundCollection = await this.collectionRepo.findOneBy({
+      user: { id: userId },
+      product: { id: productId },
+    });
+    return foundCollection;
   }
 
-  async createCollection(
-    userId: number,
-    productId: number,
-  ): Promise<void> {
-    const queryText: string = `
-            INSERT INTO Collections (user_id, product_id)
-            VALUES ($1, $2)`;
+  async createCollection(userId: number, productId: number): Promise<void> {
+    const newCollection = new Collection();
+    newCollection.user = { id: userId } as any;
+    newCollection.product = { id: productId } as any;
 
-    await pool.query(queryText, [userId, productId]);
+    await this.collectionRepo.save(newCollection);
   }
 
   async createPriceHistory(
@@ -72,173 +58,135 @@ export class ProductRepository {
     storeName: StoreName,
     inStock: boolean,
     price?: number,
-    client: PoolClient | Pool = pool,
   ): Promise<void> {
-    const queryText: string = `
-    INSERT INTO Price_History (store_record_id, store_name, price, in_stock)
-    VALUES ($1, $2, $3, $4)`;
+    const newPriceHistory = new PriceHistory();
+    newPriceHistory.inStock = inStock;
+    newPriceHistory.price = price ?? null;
+    newPriceHistory.storeName = storeName;
+    newPriceHistory.storeRecord = { id: storeRecordId } as StoreRecord;
 
-    await client.query(queryText, [storeRecordId, storeName, price, inStock]);
+    await this.priceHistoryRepo.insert(newPriceHistory);
   }
 
-  async createProduct(
-    client: PoolClient,
-    productName: string,
-    productBrand: string,
-    productImage?: string,
+  async saveParsedProduct(
+    primaryProduct: ParsedProduct,
+    parsedProducts: ParseResult,
   ): Promise<number> {
-    const queryText: string = `
-            INSERT INTO Products (name, brand, image)
-            VALUES ($1, $2, $3)
-            RETURNING id`;
+    const newProduct = new Product();
+    newProduct.name = primaryProduct.name;
+    newProduct.brand = primaryProduct.brand;
+    newProduct.image = primaryProduct.image ?? null;
 
-    const result = await client.query(queryText, [
-      productName,
-      productBrand,
-      productImage,
-    ]);
-    return result.rows[0].id;
+    newProduct.storeRecords = [];
+
+    for (const [storeName, product] of Object.entries(
+      parsedProducts.products,
+    )) {
+      if (!product) continue;
+
+      const newStoreRecord = new StoreRecord();
+      newStoreRecord.productStoreName = product.name;
+      newStoreRecord.inStock = product.inStock;
+      newStoreRecord.image = product.image ?? null;
+      newStoreRecord.latestPrice = product.price ?? null;
+      newStoreRecord.link = product.link;
+      newStoreRecord.storeName = product.storeName;
+
+      const newPriceHistory = new PriceHistory();
+      newPriceHistory.inStock = product.inStock;
+      newPriceHistory.price = product.price ?? null;
+      newPriceHistory.storeName = product.storeName;
+
+      newStoreRecord.priceHistory = [newPriceHistory];
+
+      newProduct.storeRecords.push(newStoreRecord);
+    }
+
+    const savedProduct = await this.productRepo.save(newProduct);
+    return savedProduct.id;
   }
-
-  
-
-  async createStoreRecord(options: CreateStoreRecordOptions): Promise<number> {
-    const {client, productId, storeName, price, inStock, image,productLink, productStoreName} = options;
-
-    const queryText: string = `
-           INSERT INTO Store_Records (product_id, store_name, latest_price, 
-           in_stock, image, link, product_store_name, updated_at)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
-           RETURNING id`;
-
-    const storeRecordId = await client.query(queryText, [
-      productId,
-      storeName,
-      price,
-      inStock,
-      image,
-      productLink,
-      productStoreName,
-    ]);
-    return storeRecordId.rows[0].id;
-  }
-
-  async getStoreRecordsWithProductId(
-    productId: number,
-  ): Promise<StoreRecordJoinProductRow[]> {
-    const queryText: string = `
-      SELECT  Store_Records.id as id,
-      product_id AS "productId",
-      store_name AS "storeName",
-      latest_price AS price,
-      in_stock AS "inStock",
-      product_store_name AS "name",
-      brand,
-      link,
-      Store_Records.image,
-
-      (
+  async getStoreRecordsWithProductId(productId: number): Promise<StoreRecordWithLowestPrice[]> {
+    const { entities, raw } = await this.storeRecordRepo
+      .createQueryBuilder("storeRecord")
+      .leftJoinAndSelect("storeRecord.product", "product")
+      .addSelect(`(
         SELECT MIN(p) FROM (
           SELECT price AS p
-          FROM Price_History
-          WHERE store_record_id = Store_Records.id
+          FROM "Price_History"
+          WHERE store_record_id = "storeRecord"."id"
             AND recorded_at >= NOW() - INTERVAL '30 days'
           UNION ALL
           (
             SELECT price AS p
-            FROM Price_History
-            WHERE store_record_id = Store_Records.id
+            FROM "Price_History"
+            WHERE store_record_id = "storeRecord"."id"
               AND recorded_at < NOW() - INTERVAL '30 days'
             ORDER BY recorded_at DESC
             LIMIT 1
           )
         ) AS history_window
-      ) AS "lowest30DayPrice"
+      )`, "lowestMonthPrice")
+      .where("storeRecord.product_id = :productId", { productId })
+      .getRawAndEntities();
 
-      FROM Store_Records
-      JOIN Products ON Products.id = Store_Records.product_id
-      WHERE Store_Records.product_id = $1
-      `;
+    const recordsWithPrice = entities as StoreRecordWithLowestPrice[];
+    
+    for (let i = 0; i < recordsWithPrice.length; i++) {
+      recordsWithPrice[i].lowestMonthPrice = raw[i].lowestMonthPrice;
+    }
 
-    const result = await pool.query<StoreRecordJoinProductRow>(queryText, [
-      productId,
-    ]);
-    return result.rows;
+    return recordsWithPrice;
   }
 
-  async getUserCollection(
+  async getUserCollection(userId: number, limit: number, offset: number): Promise<Collection[]> {
+    return await this.collectionRepo.find({
+      where: { user: { id: userId } },
+      relations: { product: true },
+      order: { createdAt: "DESC" },
+      take: limit,
+      skip: offset
+    });
+  }
+
+  async deleteCollectionRecord(
     userId: number,
-    limit: number,
-    offset: number,
-  ): Promise<UserCollectionRow[]> {
-    const queryText = `
-      SELECT Products.id AS "productId",
-      Products.name,
-      Products.brand,
-      Products.image,
-      Collections.notify_on_price_drop AS "notifyOnPriceDrop"
-      FROM Collections JOIN Products on Collections.product_id = Products.id
-      WHERE Collections.user_id = $1
-      ORDER BY Collections.created_at DESC
-      LIMIT $2 OFFSET $3;`;
-
-    const result = await pool.query<UserCollectionRow>(queryText, [
-      userId,
-      limit,
-      offset,
-    ]);
-    return result.rows;
-  }
-
-  async deleteCollectionRecord(userId: number, productId: number): Promise<void> {
-    const queryText: string = `
-    DELETE FROM Collections
-    WHERE user_id = $1 AND product_id = $2`;
-
-    await pool.query(queryText, [userId, productId]);
+    productId: number,
+  ): Promise<void> {
+    await this.collectionRepo.delete({
+      user: { id: userId },
+      product: { id: productId },
+    });
   }
 
   async getProductsFromCollections(): Promise<number[]> {
-    const queryText: string = `
-    SELECT DISTINCT product_id
-    FROM Collections`;
+    const result = await this.collectionRepo
+      .createQueryBuilder("collection")
+      .select("collection.product_id", "productId")
+      .distinct(true)
+      .getRawMany();
 
-    const result = await pool.query<{ product_id: number }>(queryText);
-    return result.rows.map((row) => row.product_id); //array of pure id's
+    const productIds: number[] = result.map((row) => row.productId);
+
+    return productIds;
   }
 
-  async getStoreRecordsForCron(
-    productsIds: number[],
-  ): Promise<StoreRecordsForCronRow[]> {
-    const queryText: string = `
-    SELECT id as "recordId",
-    product_id AS "productId",
-    link,
-    store_name AS "storeName",
-    latest_price AS price
-    FROM Store_Records
-    WHERE product_id = ANY($1)`;
-
-    const result = await pool.query<StoreRecordsForCronRow>(queryText, [
-      productsIds,
-    ]);
-    return result.rows;
+  async getStoreRecordsForCron(productsIds: number[]): Promise<StoreRecord[]> {
+    return await this.storeRecordRepo.find({
+      where: { product: { id: In(productsIds) } },
+      relations: { product: true }
+    });
   }
 
-  async updateStoreRecordsCron(
-    id: number,
-    inStock: boolean,
-    price?: number,
-    image?: string,
-  ): Promise<void> {
-    const queryText: string = `
-    UPDATE Store_Records 
-    SET in_stock = $2, 
-    latest_price = $3, 
-    image = COALESCE($4, image),
-    updated_at = NOW()
-    WHERE id = $1;`;
+  async updateStoreRecordsCron(id: number, inStock: boolean, price?: number, image?: string): Promise<void> {
+    const updateData: any = {
+        inStock: inStock,
+        latestPrice: price ?? null 
+    };
 
-    await pool.query(queryText, [id, inStock, price, image]);
+    if (image !== undefined) {
+        updateData.image = image; 
+    }
+
+    await this.storeRecordRepo.update(id, updateData);
   }
 }

@@ -44,9 +44,9 @@ export function ProductStoreRecordsCard({
             <Text>{product?.inStock ? "In stock" : "Out of stock"}</Text>
           </HStack>
 
-            {product.lowest30DayPrice && (
+            {product.lowestMonthPrice && (
               <Card.Description>
-                The lowest price for the 30 days: ₴{product.lowest30DayPrice}
+                The lowest price for the month: ₴{product.lowestMonthPrice}
               </Card.Description>
             )}
             
