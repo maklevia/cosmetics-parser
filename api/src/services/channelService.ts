@@ -1,7 +1,7 @@
 import { ChannelBindingError } from "@api/errors/ChannelErrors.js";
-import { getGetaway } from "@api/gateways/getGetaway.js";
+import { getGateaway } from "@api/gateways/getGateway.js";
 import { ChannelName } from "@api/types/Enums.js";
-import { ChannelRepository } from "@api/repositories/channelRepository.js";
+import { ChannelRepository } from "@api/repositories/ChannelRepository.js";
 
 const channelRepository = new ChannelRepository();
 
@@ -33,7 +33,7 @@ export class ChannelService {
         userId,
         channelName,
       );
-      const gateway = getGetaway(channelName);
+      const gateway = getGateaway(channelName);
       return gateway.generateBindingLink(userUuid);
     } catch (error) {
       throw error;
@@ -42,7 +42,7 @@ export class ChannelService {
 
   async clearOldChannelTokens(): Promise<void> {
     try {
-      await channelRepository.clearChanellTokens();
+      await channelRepository.clearChannelTokens();
     } catch (error) {
       console.log('API: Error clearing old channel tokens: ', error);
     }

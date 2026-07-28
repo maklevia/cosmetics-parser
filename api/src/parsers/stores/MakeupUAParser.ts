@@ -1,5 +1,5 @@
 import axios from "axios";
-import { BaseParser } from "@api/parsers/services/parsers/BaseParser.js";
+import { BaseParser } from "@api/parsers/BaseParser.js";
 import { ParsedProduct } from "@api/types/ProductTypes.js";
 import { StoreName } from "@api/types/Enums.js";
 import { simplifyString, wordCount } from "@api/parsers/utils/stringUtils.js";

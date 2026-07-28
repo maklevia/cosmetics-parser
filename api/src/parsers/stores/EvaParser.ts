@@ -3,7 +3,7 @@ import { ParsedProduct } from "@api/types/ProductTypes.js";
 import type { EvaByLinkResponse, EvaSearchResponse } from "@api/parsers/types/EvaApi.js";
 import { StoreName } from "@api/types/Enums.js";
 import { simplifyString } from "@api/parsers/utils/stringUtils.js";
-import { BaseParser } from "@api/parsers/services/parsers/BaseParser.js";
+import { BaseParser } from "@api/parsers/BaseParser.js";
 
 export class EvaParser extends BaseParser {
   readonly storeName = StoreName.Eva;
@@ -26,10 +26,10 @@ export class EvaParser extends BaseParser {
    * @param brand - The product brand, used to locate where the relevant name starts.
    */
   private normalizeProductName(initialName: string, brand: string): string {
-    const brandSimplyfied: string = simplifyString(brand);
-    const initialNameSimplyfied: string = simplifyString(initialName);
+    const brandSimplified: string = simplifyString(brand);
+    const initialNameSimplified: string = simplifyString(initialName);
 
-    const startIndex: number = initialNameSimplyfied.indexOf(brandSimplyfied);
+    const startIndex: number = initialNameSimplified.indexOf(brandSimplified);
     const checkedStartIndex: number = startIndex === -1 ? 0 : startIndex;
 
     const endIndex: number = initialName.indexOf(",");

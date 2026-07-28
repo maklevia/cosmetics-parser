@@ -24,19 +24,7 @@ export abstract class BaseParser {
       }
       return product;
     } catch (error) {
-      const isAxiosNetworkError = axios.isAxiosError(error);
-      let isGotScrapingError = false;
-      if (error instanceof Error) {
-        isGotScrapingError =
-          error.name === "HTTPError" ||
-          error.name === "RequestError" ||
-          error.name === "TimeoutError";
-      }
-      if (isAxiosNetworkError || isGotScrapingError) {
-        throw new StoreRequestError(this.storeName);
-      }
-
-      throw new ParserError();
+      this.handleParseError(error);
     }
   }
 
@@ -55,19 +43,7 @@ export abstract class BaseParser {
       }
       return product;
     } catch (error) {
-      const isAxiosNetworkError = axios.isAxiosError(error);
-      let isGotScrapingError = false;
-      if (error instanceof Error) {
-        isGotScrapingError =
-          error.name === "HTTPError" ||
-          error.name === "RequestError" ||
-          error.name === "TimeoutError";
-      }
-      if (isAxiosNetworkError || isGotScrapingError) {
-        throw new StoreRequestError(this.storeName);
-      }
-
-      throw new ParserError();
+      this.handleParseError(error);
     }
   }
 
@@ -88,5 +64,23 @@ export abstract class BaseParser {
       searchBrand,
       resultBrand,
     );
+  }
+
+  private handleParseError(error: unknown): never {
+    const isAxiosNetworkError = axios.isAxiosError(error);
+    let isGotScrapingError = false;
+    
+    if (error instanceof Error) {
+      isGotScrapingError =
+        error.name === "HTTPError" ||
+        error.name === "RequestError" ||
+        error.name === "TimeoutError";
+    }
+    
+    if (isAxiosNetworkError || isGotScrapingError) {
+      throw new StoreRequestError(this.storeName);
+    }
+
+    throw new ParserError();
   }
 }

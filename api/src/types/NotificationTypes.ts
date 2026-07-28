@@ -1,6 +1,6 @@
 import { StoreName } from "./Enums.js";
 
-export interface NotificationDataResponse {
+export interface NotificationData {
   notifId: number;
   productId: number | null;
   isRead: boolean;
@@ -9,7 +9,7 @@ export interface NotificationDataResponse {
   image?: string;
 }
 
-export interface PriceDropInfo {
+export interface PriceDropDInfo {
   queueId: number;
   productName: string;
   productId: number;
@@ -20,8 +20,8 @@ export interface PriceDropInfo {
   newPrice: number;
 }
 
-export interface PendingNotifDataRow {
+export interface PendingNotifData {
   userId: number;
   telegramAccountId: number;
-  priceDropsData: PriceDropInfo[];
+  priceDropsData: PriceDropDInfo[];
 }

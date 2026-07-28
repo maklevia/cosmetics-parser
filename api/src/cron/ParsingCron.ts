@@ -1,19 +1,19 @@
 import { StoreRecord } from "@api/entities/StoreRecord.js";
-import { Parser } from "@api/parsers/services/parserOrchestrator.js";
-import { NotificationRepository } from "@api/repositories/notificationRepository.js";
-import { ProductRepository } from "@api/repositories/productRepository.js";
+import { ParserOrchestrator } from "@api/parsers/ParserOrchestrator.js";
+import { NotificationRepository } from "@api/repositories/NotificationRepository.js";
+import { ProductRepository } from "@api/repositories/ProductRepository.js";
 import { StoreName } from "@api/types/Enums.js";
 
 const productRepository = new ProductRepository();
 const notifRepositories = new NotificationRepository();
-const parser = new Parser();
+const parser = new ParserOrchestrator();
 
 interface GroupedRecords {
   fastStores: StoreRecord[]; //now it's Makeup and Eva
   slowStores: StoreRecord[]; //now it's Notino
 }
 
-export class CronParsingService {
+export class ParsingCron {
   async dailyReparsing(): Promise<void> {
     try {
       console.log("Re-parsing products starting...");

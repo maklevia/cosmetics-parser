@@ -11,7 +11,7 @@ export class InvalidLinkError extends Error {
 //on store refused collection
 export class StoreRequestError extends Error {
     constructor(storeName: StoreName, message: string = 'Error parsing product from') {
-        super(message = `${message} ${storeName}`);
+        super(`${message} ${storeName}`);
         this.name = 'StoreRequestError';
     }
 }

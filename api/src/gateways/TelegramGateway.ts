@@ -51,7 +51,6 @@ export class TelegramGateway implements BaseGateway {
     });
 
     if (!response.ok) {
-      const error = await response.json();
       throw new ChannelNotificationError();
     }
   }

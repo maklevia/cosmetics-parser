@@ -1,11 +1,10 @@
-import { UserNotification } from "@api/entities/UserNotification.js";
-import { NotificationRepository } from "@api/repositories/notificationRepository.js"
-import { NotificationDataResponse } from "@api/types/NotificationTypes.js";
+import { NotificationRepository } from "@api/repositories/NotificationRepository.js"
+import { NotificationData } from "@api/types/NotificationTypes.js";
 
 const notifRepositories = new NotificationRepository();
 
-export class NotificationServices {
-    async getUsersNotifications(userId: number): Promise<NotificationDataResponse[]> {
+export class NotificationService {
+    async getUsersNotifications(userId: number): Promise<NotificationData[]> {
         try {
             const userNotifications = await notifRepositories.getNotificationsByUserId(userId);
             return userNotifications.map(notif => ({

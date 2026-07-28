@@ -6,7 +6,7 @@ const gateways = {
   [ChannelName.Telegram]: new TelegramGateway(),
 } as Record<ChannelName, BaseGateway>;
 
-export function getGetaway(channelName: ChannelName) {
+export function getGateaway(channelName: ChannelName): BaseGateway {
   const gateway = gateways[channelName];
   if (!gateway) {
     throw new Error("Unsupported gateway!");

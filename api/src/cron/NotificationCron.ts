@@ -1,18 +1,18 @@
-import { NotificationRepository } from "@api/repositories/notificationRepository.js";
-import { getAllGateways } from "@api/gateways/getGetaway.js";
+import { NotificationRepository } from "@api/repositories/NotificationRepository.js";
+import { getAllGateways } from "@api/gateways/getGateway.js";
 import { ChannelNotificationError } from "@api/errors/ChannelErrors.js";
 import { ChannelName } from "@api/types/Enums.js";
-import { ChannelRepository } from "@api/repositories/channelRepository.js";
+import { ChannelRepository } from "@api/repositories/ChannelRepository.js";
 
-const notifRepositories = new NotificationRepository();
+const notifRepository = new NotificationRepository();
 const channelRepository = new ChannelRepository();
 const gateways = getAllGateways();
 
-export class CronNotifService {
+export class NotificationCron {
   async sendNotifications(): Promise<void> {
     try {
       console.log("Starting to send notifications");
-      const notifData = await notifRepositories.getPendingNotificationsData();
+      const notifData = await notifRepository.getPendingNotificationsData();
       const processedQueueIds: number[] = [];
 
       for (const user of notifData) {
@@ -31,7 +31,7 @@ export class CronNotifService {
             priceDropData.newPrice,
           );
 
-          await notifRepositories.createUserNotification(
+          await notifRepository.createUserNotification(
             user.userId,
             title,
             message,
@@ -65,7 +65,7 @@ export class CronNotifService {
                     channelName,
                   );
 
-                  await notifRepositories.createUserNotification(
+                  await notifRepository.createUserNotification(
                     user.userId,
                     "⚠️ Telegram Disconnected",
                     "Your Telegram bot was disconnected. Reconnect anytime from your profile.",
@@ -81,7 +81,7 @@ export class CronNotifService {
         }
       }
 
-      await notifRepositories.updatePriceDropQueue(processedQueueIds);
+      await notifRepository.updatePriceDropQueue(processedQueueIds);
       console.log("Finished to send notifications");
     } catch (error) {
       console.log("API: CronNotifService error: ", error);
@@ -98,7 +98,7 @@ export class CronNotifService {
 
   async clearOldRecords(): Promise<void> {
     try {
-      await notifRepositories.clearOldRecords();
+      await notifRepository.clearOldRecords();
     } catch (error) {
       console.log(
         "API Cron: Error clearing up old db records (price queue and notifications)",

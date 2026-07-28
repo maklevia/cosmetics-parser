@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import {AuthService} from "@api/services/authService.js";
+import { AuthService } from "@api/services/AuthService.js";
+import { UserPayload } from "@api/types/AuthTypes.js";
 
 const authService = new AuthService();
 
@@ -20,4 +21,12 @@ export const authMiddleware = (
         res.locals.user = decodedUser;
         next();
     });
+}
+
+export function getAuthUser(res: Response): UserPayload {
+    const user = res.locals.user as UserPayload | undefined;
+    if (!user) {
+        throw new Error("User is not authenticated or missing from response locals.");
+    }
+    return user;
 }

@@ -8,7 +8,7 @@ interface CommandContext extends Context {
   payload: string;
 }
 
-interface StatusResponce {
+interface StatusResponse {
   isBinded: boolean;
 }
 
@@ -59,7 +59,7 @@ async function checkIsUserBinded(ctx: Context): Promise<boolean> {
 
   if (telegramId) {
     try {
-      const response = await axios.get<StatusResponce>(
+      const response = await axios.get<StatusResponse>(
         `${API_URL}/channel/telegram/status/${telegramId}`
       );
       return response.data.isBinded;

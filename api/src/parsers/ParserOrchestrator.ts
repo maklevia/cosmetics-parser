@@ -1,16 +1,16 @@
 import { ParsedProduct } from "@api/types/ProductTypes.js";
-import { MakeupUAParser } from "@api/parsers/services/parsers/MakeupUAParser.js";
-import { EvaParser } from "@api/parsers/services/parsers/EvaParser.js";
-import { NotinoParser } from "@api/parsers/services/parsers/NotinoParser.js";
+import { MakeupUAParser } from "@api/parsers/stores/MakeupUAParser.js";
+import { EvaParser } from "@api/parsers/stores/EvaParser.js";
+import { NotinoParser } from "@api/parsers/stores/NotinoParser.js";
 import { StoreName } from "@api/types/Enums.js";
-import type { BaseParser } from "@api/parsers/services/parsers/BaseParser.js";
+import type { BaseParser } from "@api/parsers/BaseParser.js";
 import {
   InvalidLinkError,
   ParserError,
 } from "@api/parsers/errors/ParserErrors.js";
 import { ParseResult } from "@api/types/ProductTypes.js";
 
-export class Parser {
+export class ParserOrchestrator {
   private readonly parsers: Record<StoreName, BaseParser>;
   constructor() {
     this.parsers = {

@@ -43,7 +43,7 @@ export class ChannelRepository {
         return savedToken.uuid;
     }
 
-    async clearChanellTokens(): Promise<void> {
+    async clearChannelTokens(): Promise<void> {
         await this.tokenRepo.delete({
             expiresAt: LessThan(new Date())
         });

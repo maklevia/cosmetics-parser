@@ -1,7 +1,7 @@
 import { gotScraping } from "got-scraping";
 import { ParsedProduct } from "@api/types/ProductTypes.js";
 import { StoreName } from "@api/types/Enums.js";
-import { BaseParser } from "@api/parsers/services/parsers/BaseParser.js";
+import { BaseParser } from "@api/parsers/BaseParser.js";
 import { getEnvOrThrow } from "@api/utils/getEnvOrThrow.js";
 
 export class NotinoParser extends BaseParser {

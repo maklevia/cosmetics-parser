@@ -5,12 +5,12 @@ import { token_set_ratio } from 'fuzzball'
  * Example: L'Oréal  will be returned as l'oreal 
  */
 export function simplifyString(str: string): string {
-    const symplifyedString = str
+    const simplifiedString = str
     .normalize("NFD") 
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
 
-    return symplifyedString;
+    return simplifiedString;
 }
 
 export function wordCount(str: string): number {

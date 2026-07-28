@@ -1,23 +1,23 @@
-import { ChannelService } from "@api/services/channelService.js";
-import { CronNotifService } from "@api/services/cronNotifService.js";
-import { CronParsingService } from "@api/services/cronParsingService.js";
+import { ChannelService } from "@api/services/ChannelService.js";
+import { NotificationCron } from "./NotificationCron.js";
+import { ParsingCron } from "./ParsingCron.js";
 import cron from "node-cron";
 
-const cronParsingService = new CronParsingService();
-const cronNotifService = new CronNotifService();
+const parsingCron = new ParsingCron();
+const notificationCron = new NotificationCron();
 const channelService = new ChannelService();
 
 export const setupCronJobs = () => {
-  cron.schedule("0 7 * * *", () => cronParsingService.dailyReparsing(), {
+  cron.schedule("0 7 * * *", () => parsingCron.dailyReparsing(), {
     timezone: "Europe/Kyiv",
   });
 
-  cron.schedule("0 11 * * *", () => cronNotifService.sendNotifications(), {
+  cron.schedule("0 11 * * *", () => notificationCron.sendNotifications(), {
     timezone: "Europe/Kyiv",
   });
 
   cron.schedule("0 15 * * *", async () => {
     await channelService.clearOldChannelTokens();
-    await cronNotifService.clearOldRecords();
+    await notificationCron.clearOldRecords();
   });
 };

@@ -1,5 +1,5 @@
-import { AuthService } from "@api/services/authService.js";
-import { UserRepository } from "@api/repositories/userRepository.js";
+import { AuthService } from "@api/services/AuthService.js";
+import { UserRepository } from "@api/repositories/UserRepository.js";
 import { User } from "@api/entities/User.js";
 
 const userRepository = new UserRepository();

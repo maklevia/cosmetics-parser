@@ -1,9 +1,10 @@
 import { ChannelBindingError } from "@api/errors/ChannelErrors.js";
-import { ChannelService } from "@api/services/channelService.js";
+import { ChannelService } from "@api/services/ChannelService.js";
+import { getAuthUser } from "@api/middlewares/authMiddleware.js";
 import { ChannelName } from "@api/types/Enums.js";
 import { Request, Response } from "express";
 
-import { UserService } from "@api/services/userService.js";
+import { UserService } from "@api/services/UserService.js";
 
 const channelService = new ChannelService();
 const userService = new UserService();
@@ -43,7 +44,7 @@ export class ChannelController {
 
   generateChannelLink = async (req: Request, res: Response) => {
     const channelName = req.params.channel as ChannelName;
-    const userId: number = res.locals.user.userId;
+    const userId: number = getAuthUser(res).userId;
 
     try {
       const channelLink = await channelService.generateChannelLink(userId, channelName);

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { UserService } from "@api/services/userService.js";
-import { AuthService } from "@api/services/authService.js";
+import { UserService } from "@api/services/UserService.js";
+import { AuthService } from "@api/services/AuthService.js";
 import {
   cookiesAccessOptions,
   cookiesRefreshOptions,

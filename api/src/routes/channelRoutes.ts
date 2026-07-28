@@ -1,4 +1,4 @@
-import { ChannelController } from "@api/controllers/channelController.js";
+import { ChannelController } from "@api/controllers/ChannelController.js";
 import { authMiddleware } from "@api/middlewares/authMiddleware.js";
 import { Router } from "express";
 

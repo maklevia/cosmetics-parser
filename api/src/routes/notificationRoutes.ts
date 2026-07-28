@@ -1,4 +1,4 @@
-import { NotificationController } from "@api/controllers/notificationController.js";
+import { NotificationController } from "@api/controllers/NotificationController.js";
 import { authMiddleware } from "@api/middlewares/authMiddleware.js";
 import { Router } from "express";
 

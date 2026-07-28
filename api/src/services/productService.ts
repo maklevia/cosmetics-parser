@@ -1,18 +1,17 @@
-import { Parser } from "@api/parsers/services/parserOrchestrator.js";
+import { ParserOrchestrator } from "@api/parsers/ParserOrchestrator.js";
 import { ParseResult } from "@api/types/ProductTypes.js";
-import { ProductRepository } from "@api/repositories/productRepository.js";
+import { ProductRepository } from "@api/repositories/ProductRepository.js";
 import {
   DuplicateProductError,
   InvalidParseData,
 } from "@api/errors/ProductErrors.js";
 import { StoreName } from "@api/types/Enums.js";
 import { ParsedProduct } from "@api/types/ProductTypes.js";
-import { Collection } from "@api/entities/Collection.js";
 import { CollectionProductResponse } from "@api/types/ProductTypes.js";
 import { StoreRecordWithLowestPrice } from "@api/types/ProductTypes.js";
-import { DAY, HOUR, MINUTE, SECOND } from "@api/utils/time.js";
+import { DAY } from "@api/utils/time.js";
 
-const parser = new Parser();
+const parser = new ParserOrchestrator();
 const productRepository = new ProductRepository();
 
 export class ProductService {
@@ -126,15 +125,15 @@ export class ProductService {
           "API: No store records found for the product (something is really wrong..)",
         );
       }
-      const responceObject: Record<StoreName, ParsedProduct | null> = {
+      const storeProducts: Record<StoreName, ParsedProduct | null> = {
         eva: null,
         notino: null,
         makeup: null,
       };
       for (const product of storeRecords) {
-        responceObject[product.storeName] = this.mapToParsedProduct(product);
+        storeProducts[product.storeName] = this.mapToParsedProduct(product);
       }
-      return responceObject;
+      return storeProducts;
     } catch (error) {
       console.log("API: error in store records service: ", error);
       throw error;

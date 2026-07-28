@@ -1,4 +1,4 @@
-import { UserController } from "@api/controllers/userController.js";
+import { UserController } from "@api/controllers/UserController.js";
 import { authMiddleware } from "@api/middlewares/authMiddleware.js";
 import { Router } from "express";
 

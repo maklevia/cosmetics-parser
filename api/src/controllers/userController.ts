@@ -1,11 +1,12 @@
-import { UserService } from "@api/services/userService.js";
+import { UserService } from "@api/services/UserService.js";
 import { Request, Response } from "express";
+import { getAuthUser } from "@api/middlewares/authMiddleware.js";
 
 const userService = new UserService();
 
 export class UserController {
   getUserInfo = async (req: Request, res: Response) => {
-    const userId: number = res.locals.user.userId;
+    const userId: number = getAuthUser(res).userId;
     try {
       const userInfo = await userService.getUserInfo(userId);
 
