@@ -1,7 +1,7 @@
 import axios from "axios";
 import { BaseParser } from "@api/parsers/services/parsers/BaseParser.js";
-import type { ParsedProduct } from "@api/types/ParsedProduct.js";
-import { StoreName } from "@api/types/StoreName.js";
+import { ParsedProduct } from "@api/types/ProductTypes.js";
+import { StoreName } from "@api/types/Enums.js";
 import { simplifyString, wordCount } from "@api/parsers/utils/stringUtils.js";
 import { MakeupByLinkResponse, MakeupSearchResponse } from "@api/parsers/types/MakeupApi.js";
 

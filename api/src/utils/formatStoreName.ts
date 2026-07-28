@@ -1,4 +1,4 @@
-import { StoreName } from "@api/types/StoreName.js";
+import { StoreName } from "@api/types/Enums.js";
 
 export function formatStoreName(storeName: StoreName): string {
     switch(storeName) {

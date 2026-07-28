@@ -4,10 +4,10 @@ import { PriceHistory } from "@api/entities/PriceHistory.js";
 import { Product } from "@api/entities/Product.js";
 import { StoreRecord } from "@api/entities/StoreRecord.js";
 
-import { StoreName } from "@api/types/StoreName.js";
-import { ParsedProduct } from "@api/types/ParsedProduct.js";
-import { ParseResult } from "@api/types/ParseResult.js";
-import { StoreRecordWithLowestPrice } from "@api/types/StoreRecordTypes.js";
+import { StoreName } from "@api/types/Enums.js";
+import { ParsedProduct } from "@api/types/ProductTypes.js";
+import { ParseResult } from "@api/types/ProductTypes.js";
+import { StoreRecordWithLowestPrice } from "@api/types/ProductTypes.js";
 import { In } from "typeorm";
 
 interface CreateStoreRecordOptions {

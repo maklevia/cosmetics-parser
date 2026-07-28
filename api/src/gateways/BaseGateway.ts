@@ -1,4 +1,4 @@
-import { StoreName } from "@api/types/StoreName.js";
+import { StoreName } from "@api/types/Enums.js";
 
 export interface PriceDropItem {
   name: string;

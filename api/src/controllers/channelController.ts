@@ -1,6 +1,6 @@
 import { ChannelBindingError } from "@api/errors/ChannelErrors.js";
 import { ChannelService } from "@api/services/channelService.js";
-import { ChannelName } from "@api/types/ChannelName.js";
+import { ChannelName } from "@api/types/Enums.js";
 import { Request, Response } from "express";
 
 import { UserService } from "@api/services/userService.js";

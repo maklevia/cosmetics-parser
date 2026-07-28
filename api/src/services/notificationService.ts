@@ -1,6 +1,6 @@
 import { UserNotification } from "@api/entities/UserNotification.js";
 import { NotificationRepository } from "@api/repositories/notificationRepository.js"
-import { NotificationDataResponse } from "@api/types/NotificationDataResponse.js";
+import { NotificationDataResponse } from "@api/types/NotificationTypes.js";
 
 const notifRepositories = new NotificationRepository();
 

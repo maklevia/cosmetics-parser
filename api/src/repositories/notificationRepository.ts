@@ -5,7 +5,7 @@ import { StoreRecord } from "@api/entities/StoreRecord.js";
 import { PriceDropQueue, PriceDropQueueStatus } from "@api/entities/PriceDropQueue.js";
 import { UserNotification } from "@api/entities/UserNotification.js";
 import { In, LessThan } from "typeorm";
-import { PendingNotifDataRow } from "@api/types/NotifTypes.js";
+import { PendingNotifDataRow } from "@api/types/NotificationTypes.js";
 
 export class NotificationRepository {
   private queueRepo = AppDataSource.getRepository(PriceDropQueue);

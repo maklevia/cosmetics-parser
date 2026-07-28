@@ -1,6 +1,6 @@
 import { gotScraping } from "got-scraping";
-import type { ParsedProduct } from "@api/types/ParsedProduct.js";
-import { StoreName } from "@api/types/StoreName.js";
+import { ParsedProduct } from "@api/types/ProductTypes.js";
+import { StoreName } from "@api/types/Enums.js";
 import { BaseParser } from "@api/parsers/services/parsers/BaseParser.js";
 import { getEnvOrThrow } from "@api/utils/getEnvOrThrow.js";
 

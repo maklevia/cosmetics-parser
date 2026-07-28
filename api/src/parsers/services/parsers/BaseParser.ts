@@ -2,8 +2,8 @@ import {
   ParserError,
   StoreRequestError,
 } from "@api/parsers/errors/ParserErrors.js";
-import type { ParsedProduct } from "@api/types/ParsedProduct.js";
-import type { StoreName } from "@api/types/StoreName.js";
+import { ParsedProduct } from "@api/types/ProductTypes.js";
+import { StoreName } from "@api/types/Enums.js";
 import { checkProductNamesSimilarity } from "@api/parsers/utils/stringUtils.js";
 import axios from "axios";
 

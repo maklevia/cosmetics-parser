@@ -1,4 +1,4 @@
-import { StoreName } from "@api/types/StoreName.js";
+import { StoreName } from "@api/types/Enums.js";
 
 //on invalid link input
 export class InvalidLinkError extends Error {

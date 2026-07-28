@@ -1,7 +1,7 @@
 import axios from "axios";
-import type { ParsedProduct } from "@api/types/ParsedProduct.js";
+import { ParsedProduct } from "@api/types/ProductTypes.js";
 import type { EvaByLinkResponse, EvaSearchResponse } from "@api/parsers/types/EvaApi.js";
-import { StoreName } from "@api/types/StoreName.js";
+import { StoreName } from "@api/types/Enums.js";
 import { simplifyString } from "@api/parsers/utils/stringUtils.js";
 import { BaseParser } from "@api/parsers/services/parsers/BaseParser.js";
 

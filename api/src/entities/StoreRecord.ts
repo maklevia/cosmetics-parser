@@ -13,8 +13,8 @@ import { Product } from "@api/entities/Product.js";
 import { StoreRecordOverride } from "@api/entities/StoreRecordOverride.js";
 import { PriceHistory } from "@api/entities/PriceHistory.js";
 import { PriceDropQueue } from "@api/entities/PriceDropQueue.js";
-import { StoreName } from "@api/types/StoreName.js";
-import { ParsedProduct } from "@api/types/ParsedProduct.js";
+import { StoreName } from "@api/types/Enums.js";
+import { ParsedProduct } from "@api/types/ProductTypes.js";
 
 @Entity("Store_Records")
 @Unique(["product", "storeName"])

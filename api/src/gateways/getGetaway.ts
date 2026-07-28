@@ -1,6 +1,6 @@
 import { BaseGateway } from "@api/gateways/BaseGateway.js";
 import { TelegramGateway } from "@api/gateways/TelegramGateway.js";
-import { ChannelName } from "@api/types/ChannelName.js";
+import { ChannelName } from "@api/types/Enums.js";
 
 const gateways = {
   [ChannelName.Telegram]: new TelegramGateway(),

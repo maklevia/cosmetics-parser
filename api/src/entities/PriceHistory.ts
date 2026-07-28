@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from "typeorm";
 import { StoreRecord } from "@api/entities/StoreRecord.js";
-import { StoreName } from "@api/types/StoreName.js";
-import { ParsedProduct } from "@api/types/ParsedProduct.js";
+import { StoreName } from "@api/types/Enums.js";
+import { ParsedProduct } from "@api/types/ProductTypes.js";
 
 @Entity("Price_History")
 export class PriceHistory {

@@ -1,6 +1,6 @@
 import { AppDataSource } from "@api/config/data-source.js";
 import { User } from "@api/entities/User.js";
-import { ChannelName } from "@api/types/ChannelName.js";
+import { ChannelName } from "@api/types/Enums.js";
 import { ChannelToken } from "@api/entities/ChannelToken.js";
 import { LessThan, MoreThan } from "typeorm";
 

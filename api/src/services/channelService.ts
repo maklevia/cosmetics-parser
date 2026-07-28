@@ -1,6 +1,6 @@
 import { ChannelBindingError } from "@api/errors/ChannelErrors.js";
 import { getGetaway } from "@api/gateways/getGetaway.js";
-import { ChannelName } from "@api/types/ChannelName.js";
+import { ChannelName } from "@api/types/Enums.js";
 import { ChannelRepository } from "@api/repositories/channelRepository.js";
 
 const channelRepository = new ChannelRepository();

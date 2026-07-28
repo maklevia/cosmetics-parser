@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from "typeorm";
 import { User } from "@api/entities/User.js";
 
-import { ChannelName } from "@api/types/ChannelName.js";
+import { ChannelName } from "@api/types/Enums.js";
 @Entity("Channel_Tokens")
 export class ChannelToken {
     @PrimaryGeneratedColumn()

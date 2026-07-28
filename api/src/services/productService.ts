@@ -1,15 +1,15 @@
 import { Parser } from "@api/parsers/services/parserOrchestrator.js";
-import { ParseResult } from "@api/types/ParseResult.js";
+import { ParseResult } from "@api/types/ProductTypes.js";
 import { ProductRepository } from "@api/repositories/productRepository.js";
 import {
   DuplicateProductError,
   InvalidParseData,
 } from "@api/errors/ProductErrors.js";
-import { StoreName } from "@api/types/StoreName.js";
-import { ParsedProduct } from "@api/types/ParsedProduct.js";
+import { StoreName } from "@api/types/Enums.js";
+import { ParsedProduct } from "@api/types/ProductTypes.js";
 import { Collection } from "@api/entities/Collection.js";
-import { CollectionProductResponse } from "@api/types/CollectionProductResponse.js";
-import { StoreRecordWithLowestPrice } from "@api/types/StoreRecordTypes.js";
+import { CollectionProductResponse } from "@api/types/ProductTypes.js";
+import { StoreRecordWithLowestPrice } from "@api/types/ProductTypes.js";
 import { DAY, HOUR, MINUTE, SECOND } from "@api/utils/time.js";
 
 const parser = new Parser();
