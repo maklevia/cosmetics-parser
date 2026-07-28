@@ -1,14 +1,14 @@
 import express from "express";
 import cors from "cors";
-import { authRoutes } from "@api/routes/authRoutes.js";
+import { authRoutes } from "@api/modules/auth/authRoutes.js";
 import cookieParser from "cookie-parser";
 import { authMiddleware } from "@api/middlewares/authMiddleware.js";
 import { getEnvOrThrow } from "@api/utils/getEnvOrThrow.js";
-import { productRoutes } from "@api/routes/productRoutes.js";
+import { productRoutes } from "@api/modules/product/productRoutes.js";
 import { setupCronJobs } from "@api/cron/index.js";
-import { notificationRoutes } from "@api/routes/notificationRoutes.js";
-import { channelRoutes } from "@api/routes/channelRoutes.js";
-import { userRoutes } from "@api/routes/userRoutes.js";
+import { notificationRoutes } from "@api/modules/notification/notificationRoutes.js";
+import { channelRoutes } from "@api/modules/channel/channelRoutes.js";
+import { userRoutes } from "@api/modules/user/userRoutes.js";
 import "@api/config/index.js";
 
 const app = express();

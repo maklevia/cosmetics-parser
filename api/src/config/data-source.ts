@@ -1,14 +1,14 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
-import { User } from "@api/entities/User.js";
-import { Product } from "@api/entities/Product.js";
-import { Collection } from "@api/entities/Collection.js";
-import { StoreRecord } from "@api/entities/StoreRecord.js";
-import { StoreRecordOverride } from "@api/entities/StoreRecordOverride.js";
-import { PriceHistory } from "@api/entities/PriceHistory.js";
-import { PriceDropQueue } from "@api/entities/PriceDropQueue.js";
-import { UserNotification } from "@api/entities/UserNotification.js";
-import { ChannelToken } from "@api/entities/ChannelToken.js";
+import { User } from "@api/modules/user/User.js";
+import { Product } from "@api/modules/product/Product.js";
+import { Collection } from "@api/modules/product/Collection.js";
+import { StoreRecord } from "@api/modules/product/StoreRecord.js";
+import { StoreRecordOverride } from "@api/modules/product/StoreRecordOverride.js";
+import { PriceHistory } from "@api/modules/product/PriceHistory.js";
+import { PriceDropQueue } from "@api/modules/notification/PriceDropQueue.js";
+import { UserNotification } from "@api/modules/notification/UserNotification.js";
+import { ChannelToken } from "@api/modules/channel/ChannelToken.js";
 import { getEnvOrThrow } from "@api/utils/getEnvOrThrow.js";
 
 

@@ -1,4 +1,4 @@
-import { ChannelService } from "@api/services/ChannelService.js";
+import { ChannelService } from "@api/modules/channel/ChannelService.js";
 import { NotificationCron } from "./NotificationCron.js";
 import { ParsingCron } from "./ParsingCron.js";
 import cron from "node-cron";

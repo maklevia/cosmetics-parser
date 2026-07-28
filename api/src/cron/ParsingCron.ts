@@ -1,7 +1,7 @@
-import { StoreRecord } from "@api/entities/StoreRecord.js";
+import { StoreRecord } from "@api/modules/product/StoreRecord.js";
 import { ParserOrchestrator } from "@api/parsers/ParserOrchestrator.js";
-import { NotificationRepository } from "@api/repositories/NotificationRepository.js";
-import { ProductRepository } from "@api/repositories/ProductRepository.js";
+import { NotificationRepository } from "@api/modules/notification/NotificationRepository.js";
+import { ProductRepository } from "@api/modules/product/ProductRepository.js";
 import { StoreName } from "@api/types/Enums.js";
 
 const productRepository = new ProductRepository();

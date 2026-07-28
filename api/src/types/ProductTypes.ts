@@ -1,4 +1,4 @@
-import { StoreRecord } from "@api/entities/StoreRecord.js";
+import { StoreRecord } from "@api/modules/product/StoreRecord.js";
 import { StoreName } from "./Enums.js";
 
 export interface CollectionProductResponse {

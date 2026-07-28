@@ -1,8 +1,8 @@
-import { NotificationRepository } from "@api/repositories/NotificationRepository.js";
+import { NotificationRepository } from "@api/modules/notification/NotificationRepository.js";
 import { getAllGateways } from "@api/gateways/getGateway.js";
 import { ChannelNotificationError } from "@api/errors/ChannelErrors.js";
 import { ChannelName } from "@api/types/Enums.js";
-import { ChannelRepository } from "@api/repositories/ChannelRepository.js";
+import { ChannelRepository } from "@api/modules/channel/ChannelRepository.js";
 
 const notifRepository = new NotificationRepository();
 const channelRepository = new ChannelRepository();
