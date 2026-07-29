@@ -6,9 +6,13 @@ import { Box, ScrollArea, Text, VStack } from "@chakra-ui/react";
 export function NotificationDashboard() {
   const { notifications, markAsRead } = useNotifications();
 
-  const onClick = async (productId: number | null, notifId: number, isRead: boolean) => {
+  const onClick = async (
+    productId: number | null,
+    notifId: number,
+    isRead: boolean,
+  ) => {
     if (productId) {
-      productDetailsDialog.open('a', { productId });
+      productDetailsDialog.open("a", { productId });
     }
     if (!isRead) {
       markAsRead(notifId);
@@ -27,7 +31,13 @@ export function NotificationDashboard() {
             {notifications?.length > 0 ? (
               <VStack gap={2} align="stretch">
                 {notifications.map((notif) => (
-                  <NotificationItem notification={notif} key={notif.notifId} onClick={() => onClick(notif.productId, notif.notifId, notif.isRead)} />
+                  <NotificationItem
+                    notification={notif}
+                    key={notif.notifId}
+                    onClick={() =>
+                      onClick(notif.productId, notif.notifId, notif.isRead)
+                    }
+                  />
                 ))}
               </VStack>
             ) : (
@@ -43,4 +53,3 @@ export function NotificationDashboard() {
     </Box>
   );
 }
-

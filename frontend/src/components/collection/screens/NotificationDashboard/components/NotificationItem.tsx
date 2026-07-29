@@ -1,6 +1,7 @@
 import type { NotificationData } from "@fe/components/collection/screens/NotificationDashboard/types/NotificationType";
-import { Box, Card, Circle, Flex, Image, Stack, Text } from "@chakra-ui/react";
+import { Box, Card, Flex, Image, Stack, Text } from "@chakra-ui/react";
 import { FiTag } from "react-icons/fi";
+import { UnreadCircle } from "@fe/components/collection/screens/NotificationDashboard/components/UnreadCircle";
 
 interface Props {
   notification: NotificationData;
@@ -52,7 +53,7 @@ export function NotificationItem({ notification, onClick }: Props) {
 
           {/* Unread dot */}
           {!notification.isRead && (
-            <Circle size="10px" bg="pink.400" position="absolute" top={0} right={0} />
+            <UnreadCircle />
           )}
         </Flex>
       </Card.Body>

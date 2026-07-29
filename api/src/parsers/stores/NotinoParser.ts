@@ -14,6 +14,11 @@ export class NotinoParser extends BaseParser {
     return link.includes("InStock");
   }
 
+  private formatImageUrl(imageUrl: string | undefined): string | null {
+    if (!imageUrl) return null;
+    return imageUrl.replace("order_2k", "detail_main_uhq");
+  }
+
   private extractLdJson(
     body: string,
     predicate: (parsed: any) => boolean,
@@ -53,9 +58,7 @@ export class NotinoParser extends BaseParser {
           brand: data.brand.name,
           price: data?.offers[0]?.price || undefined,
           inStock: this.normalizeInStockParam(data.offers[0].availability),
-          image: data.image[0]
-            ? data.image[0].replace("order_2k", "detail_main_uhq")
-            : null,
+          image: this.formatImageUrl(data.image?.[0]),
           link,
           storeName: this.storeName,
         };
