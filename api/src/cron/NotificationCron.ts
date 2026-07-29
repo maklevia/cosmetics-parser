@@ -3,6 +3,7 @@ import { getAllGateways } from "@api/gateways/getGateway.js";
 import { ChannelNotificationError } from "@api/errors/ChannelErrors.js";
 import { ChannelName } from "@api/types/Enums.js";
 import { ChannelRepository } from "@api/modules/channel/ChannelRepository.js";
+import { AppError } from "@api/errors/AppError.js";
 
 const notifRepository = new NotificationRepository();
 const channelRepository = new ChannelRepository();
@@ -84,7 +85,9 @@ export class NotificationCron {
       await notifRepository.updatePriceDropQueue(processedQueueIds);
       console.log("Finished to send notifications");
     } catch (error) {
-      console.log("API: CronNotifService error: ", error);
+      if (!(error instanceof AppError)) {
+        console.log("API: CronNotifService error: ", error);
+      }
     }
   }
 
@@ -100,9 +103,11 @@ export class NotificationCron {
     try {
       await notifRepository.clearOldRecords();
     } catch (error) {
-      console.log(
-        "API Cron: Error clearing up old db records (price queue and notifications)",
-      );
+      if (!(error instanceof AppError)) {
+        console.log(
+          "API Cron: Error clearing up old db records (price queue and notifications)",
+        );
+      }
     }
   }
 }

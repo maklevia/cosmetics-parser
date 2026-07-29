@@ -6,7 +6,6 @@ import { ParsedProduct } from "@api/types/ProductTypes.js";
 @Entity("Price_History")
 export class PriceHistory {
     @PrimaryGeneratedColumn()
-    @PrimaryGeneratedColumn()
     id: number;
 
     static fromParsedProduct(product: ParsedProduct): PriceHistory {

@@ -3,6 +3,7 @@ import { ParserOrchestrator } from "@api/parsers/ParserOrchestrator.js";
 import { NotificationRepository } from "@api/modules/notification/NotificationRepository.js";
 import { ProductRepository } from "@api/modules/product/ProductRepository.js";
 import { StoreName } from "@api/types/Enums.js";
+import { AppError } from "@api/errors/AppError.js";
 
 const productRepository = new ProductRepository();
 const notifRepositories = new NotificationRepository();
@@ -28,10 +29,12 @@ export class ParsingCron {
 
       console.log("Re-parsing products finished.");
     } catch (error) {
-      console.log(
-        "API CRON: Something went wrong during daily reparsing: ",
-        error,
-      );
+      if (!(error instanceof AppError)) {
+        console.log(
+          "API CRON: Something went wrong during daily reparsing: ",
+          error,
+        );
+      }
     }
   }
 
@@ -103,7 +106,17 @@ export class ParsingCron {
         newRecordData.inStock,
         newRecordData.price,
       );
-      console.log(`Creating price history repo for ${newRecordData.name}`);
+
+      if (
+        oldRecord.storeName === oldRecord.product.primaryStoreName &&
+        newRecordData.image &&
+        oldRecord.product.image !== newRecordData.image
+      ) {
+        await productRepository.updateProductImage(
+          oldRecord.product.id,
+          newRecordData.image
+        );
+      }
 
       if (
         newRecordData.inStock && 
@@ -112,7 +125,6 @@ export class ParsingCron {
         newRecordData.price &&
         oldRecord.latestPrice * 0.9 >= newRecordData.price
       ) {
-        console.log(`Creating notif record for ${newRecordData.name}`);
         await notifRepositories.createPriceDropQueue(
           oldRecord.id,
           oldRecord.product.id,
@@ -121,7 +133,9 @@ export class ParsingCron {
         );
       }
     } catch (error) {
-      console.log(`API CRON: error parsing/updating `, error);
+      if (!(error instanceof AppError)) {
+        console.log(`API CRON: error parsing/updating `, error);
+      }
     }
   }
 

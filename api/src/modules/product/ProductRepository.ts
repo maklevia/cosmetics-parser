@@ -76,6 +76,7 @@ export class ProductRepository {
     newProduct.name = primaryProduct.name;
     newProduct.brand = primaryProduct.brand;
     newProduct.image = primaryProduct.image ?? null;
+    newProduct.primaryStoreName = parsedProducts.primaryStore;
 
     newProduct.storeRecords = [];
 
@@ -168,5 +169,9 @@ export class ProductRepository {
     }
 
     await this.storeRecordRepo.update(id, updateData);
+  }
+
+  async updateProductImage(productId: number, image: string): Promise<void> {
+    await this.productRepo.update(productId, { image });
   }
 }

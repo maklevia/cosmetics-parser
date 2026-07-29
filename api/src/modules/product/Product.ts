@@ -2,6 +2,7 @@ import { Collection } from "@api/modules/product/Collection.js";
 import { StoreRecord } from "@api/modules/product/StoreRecord.js";
 import { PriceDropQueue } from "@api/modules/notification/PriceDropQueue.js";
 import { UserNotification } from "@api/modules/notification/UserNotification.js";
+import { StoreName } from "@api/types/Enums.js";
 import {
   Column,
   CreateDateColumn,
@@ -24,6 +25,9 @@ export class Product {
 
   @Column({ type: "text", nullable: true })
   image: string | null;
+
+  @Column({ name: "primary_store_name", type: "enum", enum: StoreName, nullable: true })
+  primaryStoreName: StoreName;
 
   @CreateDateColumn({
     name: "created_at",
