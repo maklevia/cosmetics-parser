@@ -1,7 +1,7 @@
-import { deleteProductDialog } from "@/components/collection/screens/CollectionArea/components/DeleteProductDialog";
-import { ProductCard } from "@/components/collection/screens/CollectionArea/components/ProductCard";
-import { productDetailsDialog } from "@/components/collection/screens/CollectionArea/components/ProductDetailsDialog";
-import { useCollection } from "@/components/collection/screens/CollectionArea/hooks/useCollection";
+import { deleteProductDialog } from "@fe/components/collection/screens/CollectionArea/components/DeleteProductDialog";
+import { ProductCard } from "@fe/components/collection/screens/CollectionArea/components/ProductCard";
+import { productDetailsDialog } from "@fe/components/collection/screens/CollectionArea/components/ProductDetailsDialog";
+import { useCollection } from "@fe/components/collection/screens/CollectionArea/hooks/useCollection";
 import { Box, Button, Grid, Heading, HStack, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 
@@ -34,9 +34,7 @@ export function CollectionArea(props: Props) {
           <Button onClick={handleClick}>{seeAll ? "Hide" : "See all"}</Button>
         </HStack>
 
-        {isLoading ? (
-          <></>
-        ) : (
+        {!isLoading && (
           <Grid gap="3" templateColumns="repeat(4, 1fr)">
             {products?.map((product) => (
               <ProductCard key={product.productId} product={product} 

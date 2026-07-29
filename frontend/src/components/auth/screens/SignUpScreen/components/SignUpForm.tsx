@@ -1,10 +1,10 @@
-import { PasswordInput } from "@/components/ui/password-input";
+import { PasswordInput } from "@fe/components/ui/password-input";
 import { Button, Field, Fieldset, Input } from "@chakra-ui/react";
 import { useState } from "react";
-import { normalizeEmail } from "@/utils/emailUtils";
+import { normalizeEmail } from "@fe/utils/emailUtils";
 import { useNavigate } from "react-router-dom";
-import { useRegistration } from "@/components/auth/screens/SignUpScreen/hooks/useRegistration";
-import { useAuthValidation } from "@/components/auth/hooks/useAuthValidation";
+import { useRegistration } from "@fe/components/auth/screens/SignUpScreen/hooks/useRegistration";
+import { useAuthValidation } from "@fe/components/auth/hooks/useAuthValidation";
 
 export default function SignUpForm() {
   const navigate = useNavigate();

@@ -1,51 +1,30 @@
-import type { StoreName } from "./StoreName.js";
+import { StoreRecord } from "@api/modules/product/StoreRecord.js";
+import { StoreName } from "./Enums.js";
 
-export interface Product {
+export interface CollectionProductResponse {
     name: string;
     brand: string;
-    price?: number | undefined;
-    inStock: boolean;
-    image?: string | undefined;
-    link: string;
-    storeName: StoreName;
-
-    lowest30DayPrice?: number;
-}
-
-export interface StoreRecordRow {
-    id: number;
-    productId: number;
-    storeName: StoreName;
-    price: number | undefined;
-    inStock: boolean;
     image: string | undefined;
-    link: string;
-    name: string;
-}
-
-export interface StoreRecordJoinProductRow extends StoreRecordRow {
-    brand: string;
-    lowest30DayPrice?: number;
-}
-
-export interface CollectionRow {
-    id: number;
-    productId: number; 
-    userId: number;
-}
-
-export interface UserCollectionRow {
-    productId: number;
-    name: string;
-    brand: string;
-    image?: string | undefined;
     notifyOnPriceDrop: boolean;
+    productId: number;
 }
 
-export interface StoreRecordsForCronRow {
-    recordId: number;
+export interface ParsedProduct {
+    name: string;
+    brand: string;
+    price?: number;
+    inStock: boolean;
+    image?: string;
     link: string;
     storeName: StoreName;
-    productId: number;
-    price?: number;
+    lowestMonthPrice?: number;
 }
+
+export interface ParseResult {
+  primaryStore: StoreName;
+  products: Record<StoreName, ParsedProduct | null>;
+}
+
+export type StoreRecordWithLowestPrice = StoreRecord & {
+  lowestMonthPrice?: number;
+};

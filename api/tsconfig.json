@@ -4,10 +4,13 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "paths": {
-      "@api/*": ["./src/*"],
-      "@parsers/*": ["./src/parsers/*"]
+      "@api/*": ["./src/*"]
     },
-    "composite": true
+    "types": ["node"],
+    "composite": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false
   },
   "include": ["src"]
 }

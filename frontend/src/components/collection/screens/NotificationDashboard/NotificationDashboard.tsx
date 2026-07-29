@@ -1,14 +1,18 @@
-import { productDetailsDialog } from "@/components/collection/screens/CollectionArea/components/ProductDetailsDialog";
-import { NotificationItem } from "@/components/collection/screens/NotificationDashboard/components/NotificationItem";
-import { useNotifications } from "@/components/collection/screens/NotificationDashboard/hooks/useNotifications";
+import { productDetailsDialog } from "@fe/components/collection/screens/CollectionArea/components/ProductDetailsDialog";
+import { NotificationItem } from "@fe/components/collection/screens/NotificationDashboard/components/NotificationItem";
+import { useNotifications } from "@fe/components/collection/screens/NotificationDashboard/hooks/useNotifications";
 import { Box, ScrollArea, Text, VStack } from "@chakra-ui/react";
 
 export function NotificationDashboard() {
   const { notifications, markAsRead } = useNotifications();
 
-  const onClick = async (productId: number | null, notifId: number, isRead: boolean) => {
+  const onClick = async (
+    productId: number | null,
+    notifId: number,
+    isRead: boolean,
+  ) => {
     if (productId) {
-      productDetailsDialog.open('a', { productId });
+      productDetailsDialog.open("a", { productId });
     }
     if (!isRead) {
       markAsRead(notifId);
@@ -27,7 +31,13 @@ export function NotificationDashboard() {
             {notifications?.length > 0 ? (
               <VStack gap={2} align="stretch">
                 {notifications.map((notif) => (
-                  <NotificationItem notification={notif} key={notif.notifId} onClick={() => onClick(notif.productId, notif.notifId, notif.isRead)} />
+                  <NotificationItem
+                    notification={notif}
+                    key={notif.notifId}
+                    onClick={() =>
+                      onClick(notif.productId, notif.notifId, notif.isRead)
+                    }
+                  />
                 ))}
               </VStack>
             ) : (
@@ -43,4 +53,3 @@ export function NotificationDashboard() {
     </Box>
   );
 }
-

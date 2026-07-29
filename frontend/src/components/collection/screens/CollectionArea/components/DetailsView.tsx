@@ -1,5 +1,5 @@
-import type { ParsedProducts } from "@/components/collection/screens/ParsePopupForm/types/parsedProduct";
-import { ProductStoreRecordsCard } from "@/components/collection/screens/ProductStoreRecordsCard";
+import type { ParsedProducts } from "@fe/components/collection/screens/ParsePopupForm/types/parsedProduct";
+import { ProductStoreRecordsCard } from "@fe/components/collection/screens/ProductStoreRecordsCard";
 import { HStack } from "@chakra-ui/react";
 
 interface Props {

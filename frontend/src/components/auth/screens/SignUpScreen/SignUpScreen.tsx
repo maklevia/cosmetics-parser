@@ -1,6 +1,6 @@
-import AuthLayout from "@/components/auth/layouts/AuthLayout";
-import SignUpFooter from "@/components/auth/screens/SignUpScreen/components/SignUpFooter";
-import SignUpForm from "@/components/auth/screens/SignUpScreen/components/SignUpForm";
+import AuthLayout from "@fe/components/auth/layouts/AuthLayout";
+import SignUpFooter from "@fe/components/auth/screens/SignUpScreen/components/SignUpFooter";
+import SignUpForm from "@fe/components/auth/screens/SignUpScreen/components/SignUpForm";
 
 export default function RegisterScreen() {
   return (

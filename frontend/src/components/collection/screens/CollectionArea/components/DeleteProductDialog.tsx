@@ -1,6 +1,6 @@
-import { productDetailsDialog } from "@/components/collection/screens/CollectionArea/components/ProductDetailsDialog";
-import { useDeleteProducts } from "@/components/collection/screens/CollectionArea/hooks/useDeleteProduct";
-import { toaster } from "@/components/ui/toaster";
+import { productDetailsDialog } from "@fe/components/collection/screens/CollectionArea/components/ProductDetailsDialog";
+import { useDeleteProducts } from "@fe/components/collection/screens/CollectionArea/hooks/useDeleteProduct";
+import { toaster } from "@fe/components/ui/toaster";
 import {
   AbsoluteCenter,
   Button,
@@ -12,7 +12,7 @@ import {
 
 interface Props {
   productId: number;
-  setRefreshCount: React.Dispatch<React.SetStateAction<number>>;
+  setRefreshCount?: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export const deleteProductDialog = createOverlay((props: Props) => {
@@ -24,7 +24,7 @@ export const deleteProductDialog = createOverlay((props: Props) => {
     try {
       await deleteProduct();
       toaster.success({title: 'Product deleted successfully'});
-      setRefreshCount((prev: number) => prev + 1);
+      setRefreshCount?.((prev: number) => prev + 1);
 
       deleteProductDialog.close("a");
       productDetailsDialog.close("a");

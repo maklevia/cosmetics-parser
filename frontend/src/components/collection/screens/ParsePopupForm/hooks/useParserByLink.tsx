@@ -1,5 +1,5 @@
-import {api} from "@/api";
-import type { ParseResult } from "@/components/collection/screens/ParsePopupForm/types/parsedProduct";
+import {api} from "@fe/api";
+import type { ParseResult } from "@fe/components/collection/screens/ParsePopupForm/types/parsedProduct";
 import axios from "axios";
 import { useState } from "react";
 

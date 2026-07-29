@@ -1,6 +1,10 @@
 import { DialogBody, Text } from "@chakra-ui/react";
 
-export function ErrorView({errorMessage}: {errorMessage: string}) {
+interface Props {
+    errorMessage: string
+}
+
+export function ErrorView({errorMessage}: Props) {
     return (
         <DialogBody>
             <Text>{errorMessage}</Text>

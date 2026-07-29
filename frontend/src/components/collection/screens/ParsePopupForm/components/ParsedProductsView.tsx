@@ -1,8 +1,13 @@
-import { ProductStoreRecordsCard } from "@/components/collection/screens/ProductStoreRecordsCard";
-import type { ParseResult } from "@/components/collection/screens/ParsePopupForm/types/parsedProduct";
+import { ProductStoreRecordsCard } from "@fe/components/collection/screens/ProductStoreRecordsCard";
+import type {
+  ParseResult,
+  ProductRecord,
+} from "@fe/components/collection/screens/ParsePopupForm/types/parsedProduct";
 import { Button, Dialog, HStack } from "@chakra-ui/react";
-import { useAddProductToCollection } from "@/components/collection/screens/ParsePopupForm/hooks/useAddProductToCollection";
-import { toaster } from "@/components/ui/toaster";
+import { useAddProductToCollection } from "@fe/components/collection/screens/ParsePopupForm/hooks/useAddProductToCollection";
+import { toaster } from "@fe/components/ui/toaster";
+import { formatStoreName } from "@fe/utils/stringUtils";
+import type { StoreName } from "@fe/types/store.typedefs";
 
 interface Props {
   parseResult: ParseResult;
@@ -12,15 +17,20 @@ interface Props {
 }
 
 export function ParsedProductsView(props: Props) {
-  const {parseResult, productId, setRefreshCount, handleClose } = props;
+  const { 
+    parseResult, 
+    productId, 
+    setRefreshCount, 
+    handleClose 
+  } = props;
 
   const onSuccess = () => {
-    setRefreshCount((prevCount) => prevCount+1)
+    setRefreshCount((prevCount) => prevCount + 1);
     toaster.update("add", {
       title: "Product successfully saved in your Collection",
       type: "success",
     });
-    handleClose()
+    handleClose();
   };
 
   const onFailure = (message: string) => {
@@ -55,18 +65,18 @@ export function ParsedProductsView(props: Props) {
 
       <Dialog.Body gap="2">
         <HStack alignItems="stretch" width="100%">
-          
-          {Object.values(parseResult.products)
-          .filter((product) => product !== null)
-          .map((product, index) => (
+          {(
+            Object.entries(parseResult.products) as [
+              StoreName,
+              ProductRecord | null,
+            ][]
+          ).map(([storeName, product]) => (
             <ProductStoreRecordsCard
-            key={index}
-            product={product}
-            storeName="Something"
+              key={storeName}
+              product={product}
+              storeName={formatStoreName(storeName)}
             />
-          ))
-         }
-
+          ))}
         </HStack>
       </Dialog.Body>
 

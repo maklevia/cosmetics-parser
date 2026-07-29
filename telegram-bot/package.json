@@ -14,7 +14,6 @@
   "type": "module",
   "dependencies": {
     "dotenv": "^17.4.2",
-    "pg": "^8.22.0",
     "telegraf": "^4.16.3"
   },
   "devDependencies": {

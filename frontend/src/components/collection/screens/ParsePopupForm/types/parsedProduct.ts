@@ -1,14 +1,14 @@
-import type { StoreName } from "@/types/store.typedefs";
+import type { StoreName } from "@fe/types/store.typedefs";
 
 export interface ProductRecord {
   name: string;
   brand: string;
   inStock: boolean;
-  price?: number | undefined;
-  image?: string | undefined;
+  price?: number;
+  image?: string;
   link: string;
   storeName: StoreName;
-  lowest30DayPrice?: number;
+  lowestMonthPrice?: number;
 }
 export interface ParsedProducts {
   eva: ProductRecord | null;
@@ -17,5 +17,5 @@ export interface ParsedProducts {
 }
 
 export interface ParseResult {
-  products: ParsedProducts
+  products: ParsedProducts;
 }

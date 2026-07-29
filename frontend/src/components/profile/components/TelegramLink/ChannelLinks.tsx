@@ -1,4 +1,4 @@
-import { useGenerateChannelLinks } from "@/components/profile/components/TelegramLink/hooks/useGenerateChannelLink"
+import { useGenerateChannelLinks } from "@fe/components/profile/components/TelegramLink/hooks/useGenerateChannelLink"
 import { Button, Link, Stack, Text } from "@chakra-ui/react"
 
 export function ChannelLinks() {

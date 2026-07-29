@@ -1,5 +1,5 @@
-import { api } from "@/api"
-import type { ParsedProducts } from "@/components/collection/screens/ParsePopupForm/types/parsedProduct";
+import { api } from "@fe/api"
+import type { ParsedProducts } from "@fe/components/collection/screens/ParsePopupForm/types/parsedProduct";
 import { useState } from "react";
 
 interface HookOutput {

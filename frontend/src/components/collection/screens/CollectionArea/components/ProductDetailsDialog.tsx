@@ -1,6 +1,6 @@
-import { deleteProductDialog } from "@/components/collection/screens/CollectionArea/components/DeleteProductDialog";
-import { DetailsView } from "@/components/collection/screens/CollectionArea/components/DetailsView";
-import { useProductDetails } from "@/components/collection/screens/CollectionArea/hooks/useProductDetails";
+import { deleteProductDialog } from "@fe/components/collection/screens/CollectionArea/components/DeleteProductDialog";
+import { DetailsView } from "@fe/components/collection/screens/CollectionArea/components/DetailsView";
+import { useProductDetails } from "@fe/components/collection/screens/CollectionArea/hooks/useProductDetails";
 import {
   AbsoluteCenter,
   Button,
@@ -27,7 +27,7 @@ export const productDetailsDialog = createOverlay((props: Props) => {
 
   return (
     <AbsoluteCenter>
-      <Dialog.Root {...props} size="4xl">
+      <Dialog.Root {...props} size="xl">
         <Portal>
           <Dialog.Backdrop />
 

@@ -1,4 +1,4 @@
-import { submitOnEnter } from "@/utils/submitOnEnterUtil";
+import { submitOnEnter } from "@fe/utils/submitOnEnterUtil";
 import { Dialog, Stack, Text, Input, Button } from "@chakra-ui/react";
 
 interface ComponentInput {
@@ -7,6 +7,15 @@ interface ComponentInput {
 }
 
 export function LinkInputView({onChangeFunc, onClickFunc}: ComponentInput) {
+
+const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  onChangeFunc(e.target.value)
+}
+
+const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  submitOnEnter(e, onClickFunc)
+}
+
   return (
     <>
       <Dialog.Header>
@@ -16,8 +25,8 @@ export function LinkInputView({onChangeFunc, onClickFunc}: ComponentInput) {
           <Stack>
           <Text>Paste the link for your product</Text>
           <Input 
-            onChange={(e) => onChangeFunc(e.target.value)}
-            onKeyDown={(e) => submitOnEnter(e, onClickFunc)}
+            onChange={(e) => onInputChange(e)}
+            onKeyDown={(e) => onKeyDown(e)}
            />
           <Button onClick={onClickFunc}>Search product</Button>
         </Stack>

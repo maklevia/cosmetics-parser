@@ -1,5 +1,5 @@
-import { api } from "@/api";
-import type { UserInfo } from "@/components/profile/types/UserTypes";
+import { api } from "@fe/api";
+import type { UserInfo } from "@fe/components/profile/types/UserTypes";
 import { useEffect, useState } from "react";
 
 interface HookOutput {

@@ -1,4 +1,4 @@
-import type { CollectionProduct } from "@/components/collection/screens/CollectionArea/types/CollectionProduct";
+import type { CollectionProduct } from "@fe/components/collection/screens/CollectionArea/types/CollectionProduct";
 import { CardRoot, CardBody, Image, Heading, Text, Stack, Box } from "@chakra-ui/react";
 
 interface CollectionProductProp {

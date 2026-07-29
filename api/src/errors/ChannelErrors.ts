@@ -1,13 +1,13 @@
-export class ChannelBindingError extends Error {
+import { BadGatewayError, NotFoundError } from "./AppError.js";
+
+export class ChannelBindingError extends NotFoundError {
   constructor(message: string = "Could not bind channel account to user") {
     super(message);
-    this.name = "ChannelBindingError";
   }
 }
 
-export class ChannelNotificationError extends Error {
+export class ChannelNotificationError extends BadGatewayError {
   constructor(message: string = "Could not send notification to user") {
     super(message);
-    this.name = "ChannelNotificationError"
   }
 }
