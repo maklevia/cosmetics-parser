@@ -2,6 +2,7 @@ import { Box, Flex, } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { Logo } from "@fe/components/common/Logo";
 import { ProfileButton } from "@fe/components/layouts/Header/components/ProfileButton";
+import { NotificationsDrawer } from "@fe/components/layouts/NotificationDrawer/NotificationsDrawer";
 
 export function Header() {
     const navigator = useNavigate();
@@ -9,7 +10,7 @@ export function Header() {
   return (
     <Box 
       as="header" 
-      bg="rgb(216, 180, 173)" 
+      bg="#CEABB0" 
       borderBottom="1px solid" 
       borderColor="blackAlpha.100"
       _dark={{ 
@@ -21,9 +22,10 @@ export function Header() {
         
         <Logo fontSize="3xl" onLogoClick={() => navigator('/')}/>
 
-        <Box>
-         <ProfileButton />
-        </Box>
+        <Flex gap={4} alignItems="center">
+          <NotificationsDrawer />
+          <ProfileButton />
+        </Flex>
 
       </Flex>
     </Box>

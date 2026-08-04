@@ -1,7 +1,7 @@
-import { Button } from "@chakra-ui/react";
+import { Button, type ButtonProps } from "@chakra-ui/react";
 import React from "react";
 
-interface AuthButtonProps {
+interface AuthButtonProps extends ButtonProps {
   children: React.ReactNode;
 }
 

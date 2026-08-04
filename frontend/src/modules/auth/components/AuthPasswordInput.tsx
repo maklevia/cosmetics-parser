@@ -9,7 +9,7 @@ interface AuthPasswordInputProps {
   placeholder?: string;
   value?: string;
   onChange?: (val: string) => void;
-  onKeyDown?: (e: React.KeyboardEvent) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   errors?: string[] | string | boolean | null;
   name?: string;
 }

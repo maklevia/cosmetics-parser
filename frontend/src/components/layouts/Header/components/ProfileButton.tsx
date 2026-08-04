@@ -7,7 +7,7 @@ export function ProfileButton() {
   const navigate = useNavigate();
   const { isAuthenticated, user, isLoading } = useAuth();
 
-  const buttonColor = useColorModeValue("rgba(196, 159, 152, 1)", "rgb(156, 111, 111)");
+  const buttonColor = useColorModeValue("#CEABB0", "rgb(156, 111, 111)");
   const buttonBgImage = useColorModeValue(
     "linear-gradient(white, white), radial-gradient(circle, white 0%, white 100%)",
     "linear-gradient(#1F1515, #1F1515), linear-gradient(rgb(156, 111, 111), rgb(156, 111, 111))"

@@ -9,7 +9,7 @@ interface Props {
   placeholder?: string;
   value?: string;
   onChange?: (val: string) => void;
-  onKeyDown?: (e: React.KeyboardEvent) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   error?: string | boolean | null;
   name?: string;
 }

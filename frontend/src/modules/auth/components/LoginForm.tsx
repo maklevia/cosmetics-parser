@@ -13,7 +13,7 @@ import { AuthButton } from "@fe/modules/auth/components/AuthButton";
 export default function LoginForm() {
   const navigator = useNavigate();
   const navigateToMain = () => {
-    navigator("/collection");
+    navigator("/");
   };
 
   const [email, setEmail] = useState("");

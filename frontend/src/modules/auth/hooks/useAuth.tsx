@@ -32,9 +32,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [fetchUser]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void fetchUser();
-  }, [fetchUser]);
+    let ignore = false;
+    const loadInitialUser = async () => {
+      try {
+        const response = await api.get<UserInfo>("/user/profile");
+        if (!ignore) {
+          setUser(response.data);
+          setIsLoading(false);
+        }
+      } catch {
+        if (!ignore) {
+          setUser(null);
+          setIsLoading(false);
+        }
+      }
+    };
+    loadInitialUser();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   //logout implementation needed
 

@@ -9,7 +9,7 @@ interface AuthLayoutProps {
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
   const pageBg = useColorModeValue(
-    "radial-gradient(circle,rgb(223, 158, 141) 40%, rgba(230, 211, 204, 1) 100%)", 
+    "radial-gradient(circle, rgba(233, 216, 219, 1) 77%, rgba(199, 169, 174, 1) 100%)", 
     "radial-gradient(circle,rgba(66, 44, 44, 1) 16%, rgba(38, 26, 22, 1) 100%) "
   );
   const cardBg = useColorModeValue("#faf8f7", "#2A1D1D");

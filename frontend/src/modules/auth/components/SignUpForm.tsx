@@ -14,7 +14,7 @@ import { AuthButton } from "@fe/modules/auth/components/AuthButton";
 export default function SignUpForm() {
   const navigate = useNavigate();
   const navigateToHome = () => {
-    navigate("/collection");
+    navigate("/");
   };
 
   const [email, setEmail] = useState("");
