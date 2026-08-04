@@ -2,6 +2,8 @@ import { Box } from "@chakra-ui/react";
 import { Header } from "@fe/components/layouts/Header/Header";
 import { useColorModeValue } from "@fe/components/ui/color-mode";
 import { Outlet } from "react-router-dom";
+import { productsDialog } from "@fe/modules/collection/components/ProductsDialog";
+import { deleteProductDialog } from "@fe/modules/collection/components/CollectionArea/components/DeleteProductDialog";
 
 export function MainLayout() {
   const pageBg = useColorModeValue(
@@ -15,6 +17,8 @@ export function MainLayout() {
       <Box p={6}>
         <Outlet />
       </Box>
+      <productsDialog.Viewport />
+      <deleteProductDialog.Viewport />
     </Box>
   );
 }

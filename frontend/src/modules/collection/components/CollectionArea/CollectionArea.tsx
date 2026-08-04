@@ -53,9 +53,6 @@ export function CollectionArea(props: Props) {
             ))}
           </Grid>
         )}
-
-        <deleteProductDialog.Viewport />
-        
       </VStack>
     </Box>
   );

@@ -5,6 +5,8 @@ import { CollectionScreen } from "@fe/modules/collection/CollectionScreen";
 import { ProfileScreen } from "@fe/modules/profile/ProfileScreen";
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import { MainLayout } from "@fe/components/layouts/MainLayout";
+import { ProtectedRoute } from "@fe/app/ProtectedRoute";
+import { PublicRoute } from "@fe/app/PublicRoute";
 
 export const router = createBrowserRouter([
   {
@@ -15,14 +17,24 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
-        element: <MainLayout />,
+        element: <ProtectedRoute />,
         children: [
-          { path: "/", element: <CollectionScreen /> },
-          { path: "/profile", element: <ProfileScreen /> },
-        ]
+          {
+            element: <MainLayout />,
+            children: [
+              { path: "/", element: <CollectionScreen /> },
+              { path: "/profile", element: <ProfileScreen /> },
+            ],
+          },
+        ],
       },
-      { path: "/login", element: <LoginScreen /> },
-      { path: "/signup", element: <SignUpScreen /> },
+      {
+        element: <PublicRoute />,
+        children: [
+          { path: "/login", element: <LoginScreen /> },
+          { path: "/signup", element: <SignUpScreen /> },
+        ],
+      },
     ],
   },
 ]);

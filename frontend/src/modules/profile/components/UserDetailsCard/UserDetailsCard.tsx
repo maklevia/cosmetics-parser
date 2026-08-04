@@ -20,8 +20,7 @@ export function UserDetailsCard() {
   }
 
   const handleUpdateName = async () => {
-    await updateProfile({ name });
-    reloadUser();
+    await updateProfile({ newName: name });
   };
 
   return (

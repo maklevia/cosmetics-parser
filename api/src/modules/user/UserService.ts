@@ -33,4 +33,8 @@ export class UserService {
   async isTelegramAccountBinded(telegramAccountId: number): Promise<boolean> {
     return await userRepository.isTelegramAccountBinded(telegramAccountId);
   }
+
+  async updateUser(userId: number, updateData: Partial<User>): Promise<void> {
+    return await userRepository.updateUser(userId, updateData);
+  }
 }

@@ -27,7 +27,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const reloadUser = useCallback(async () => {
-    setIsLoading(true);
     await fetchUser();
   }, [fetchUser]);
 
@@ -53,8 +52,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ignore = true;
     };
   }, []);
-
-  //logout implementation needed
 
   return (
     <AuthContext.Provider value={{ isAuthenticated: !!user, user, isLoading, reloadUser }}>

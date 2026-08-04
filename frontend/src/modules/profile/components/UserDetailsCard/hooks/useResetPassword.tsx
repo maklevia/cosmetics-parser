@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { api } from "@fe/config/api";
+import axios from "axios";
 
 export function useResetPassword() {
   const [isLoading, setIsLoading] = useState(false);
@@ -8,11 +10,13 @@ export function useResetPassword() {
     setIsLoading(true);
     setError(null);
     try {
-      // TODO: Implement reset password logic here
-      console.log("Reset password triggered", { oldPassword, newPassword });
-    } catch (err: unknown) {
-      const e = err as Error;
-      setError(e.message || "Failed to reset password");
+      await api.patch('/auth/resetPassword', { oldPassword, newPassword });
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response) {
+        setError(err.response.data.message || "Failed to reset password");
+      } else {
+        setError("Something went wrong. Please try again later.");
+      }
       throw err;
     } finally {
       setIsLoading(false);

@@ -12,13 +12,25 @@ import {
 import { Field } from "@fe/components/ui/field";
 import { useResetPassword } from "@fe/modules/profile/components/UserDetailsCard/hooks/useResetPassword";
 import { useState } from "react";
+import { validatePassword, confirmPasswordMatch } from "@fe/utils/passwordUtils";
 
 export function ResetPasswordDialog() {
   const [open, setOpen] = useState(false);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [confirmedPassword, setConfirmedPassword] = useState("");
   
   const { resetPassword, isLoading, error } = useResetPassword();
+
+  const passwordErrors = validatePassword(newPassword);
+  const confirmPasswordError = confirmPasswordMatch(newPassword, confirmedPassword);
+
+  const isFormValid = 
+    !!oldPassword && 
+    !!newPassword && 
+    !!confirmedPassword && 
+    passwordErrors.length === 0 && 
+    !confirmPasswordError;
 
   const handleReset = async () => {
     try {
@@ -26,6 +38,7 @@ export function ResetPasswordDialog() {
       setOpen(false);
       setOldPassword("");
       setNewPassword("");
+      setConfirmedPassword("");
     } catch {
       // Error is handled in hook
     }
@@ -53,11 +66,31 @@ export function ResetPasswordDialog() {
               />
             </Field>
             
-            <Field label="New Password">
+            <Field 
+              label="New Password" 
+              invalid={newPassword.length > 0 && passwordErrors.length > 0} 
+              errorText={
+                passwordErrors.length > 0 ? (
+                  <Stack gap={1} mt={1}>
+                    {passwordErrors.map((err, i) => (
+                      <span key={i}>{err}</span>
+                    ))}
+                  </Stack>
+                ) : null
+              }
+            >
               <Input 
                 type="password" 
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
+              />
+            </Field>
+
+            <Field label="Confirm New Password" invalid={confirmedPassword.length > 0 && !!confirmPasswordError} errorText={confirmPasswordError}>
+              <Input 
+                type="password" 
+                value={confirmedPassword}
+                onChange={(e) => setConfirmedPassword(e.target.value)}
               />
             </Field>
           </Stack>
@@ -71,7 +104,7 @@ export function ResetPasswordDialog() {
             _hover={{ bg: "#b59297" }}
             onClick={handleReset} 
             loading={isLoading}
-            disabled={!oldPassword || !newPassword}
+            disabled={!isFormValid}
           >
             Update Password
           </Button>

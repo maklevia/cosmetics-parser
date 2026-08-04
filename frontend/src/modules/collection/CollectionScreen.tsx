@@ -13,8 +13,6 @@ export function CollectionScreen() {
         <VStack align="flex-start" gap={4}>
           <ParseLinkInput setRefreshCount={setRefreshCount} />
         </VStack>
-        
-        <productsDialog.Viewport />
 
         <CollectionArea
           refreshCount={refreshCount}
