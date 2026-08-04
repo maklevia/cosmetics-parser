@@ -27,14 +27,8 @@ export const useParserByLink = (): HookOutput => {
       });
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          setErrorMessage(error.response.data.error);
-        } else {
-          setErrorMessage(
-            "Could not connect to the server. Please, try again later.",
-          );
-        }
+      if (axios.isAxiosError(error) && error.response) {
+        setErrorMessage(error.response.data.message || "Parsing failed");
       } else {
         setErrorMessage("Something went wrong. Please, try again later.");
       }

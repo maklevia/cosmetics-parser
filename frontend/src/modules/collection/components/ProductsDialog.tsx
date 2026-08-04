@@ -8,7 +8,7 @@ import { useProductDetails } from "@fe/modules/collection/components/CollectionA
 import { deleteProductDialog } from "@fe/modules/collection/components/CollectionArea/components/DeleteProductDialog";
 import { toaster } from "@fe/components/ui/toaster";
 import { DialogCloseTrigger } from "@fe/components/ui/dialog";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 interface Props {
   mode: "add" | "delete";
@@ -46,13 +46,14 @@ export const productsDialog = createOverlay((props: Props) => {
   
   const resultsToDisplay = mode === "add" ? parseResult?.products : productDetails;
   const isLoading = mode === "delete" && isLoadingDetails;
+  const contentRef = useRef<HTMLDivElement>(null);
 
   return (
-    <Dialog.Root {...props} size="2xl" placement="center">
+    <Dialog.Root {...props} size="3xl" placement="center" initialFocusEl={() => contentRef.current}>
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
-          <Dialog.Content _dark={{ bg: "#4A3535" }}>
+          <Dialog.Content _dark={{ bg: "#4A3535" }} ref={contentRef} tabIndex={-1}>
             <Dialog.Header>
               <Dialog.Title fontSize="2xl">{mode === "add" ? "Search Result" : "Product Details"}</Dialog.Title>
             </Dialog.Header>

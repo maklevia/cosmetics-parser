@@ -28,7 +28,7 @@ export const useAddProductToCollection = ({
       onSuccess();
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        onFailure(error.response.data.error);
+        onFailure(error.response.data.message || "An error occurred");
       } else {
         onFailure("Something went wrong. Please, try again later.");
       }
