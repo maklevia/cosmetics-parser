@@ -10,7 +10,7 @@ interface LinkResponse {
     channelLink: string;
 }
 
-export function useGenerateChannelLinks(): HookOutput {
+export function useGenerateChannelLink(): HookOutput {
     const [channelLink, setChannelLink] = useState('');
 
     const generateChannelLink = async (channelName: string) => {

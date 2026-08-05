@@ -2,7 +2,6 @@ import type { NotificationData } from "@fe/components/layouts/NotificationDrawer
 import { Card, Flex, Stack, Text } from "@chakra-ui/react";
 import { UnreadCircle } from "@fe/components/layouts/NotificationDrawer/components/UnreadCircle";
 import { NotificationThumbnail } from "@fe/components/layouts/NotificationDrawer/components/NotificationThumbnail";
-import { useColorModeValue } from "@fe/components/ui/color-mode";
 
 interface Props {
   notification: NotificationData;
@@ -10,37 +9,30 @@ interface Props {
 }
 
 export function NotificationItem({ notification, onClick }: Props) {
-  const unreadBg = useColorModeValue("rgba(216, 180, 173, 0.15)", "rgba(156, 111, 111, 0.15)");
-  const readBg = useColorModeValue("transparent", "transparent");
-  const hoverBg = useColorModeValue("white", "whiteAlpha.100");
-  const hoverShadow = useColorModeValue(
-    "0 4px 20px rgba(196, 159, 152, 0.3)",
-    "0 4px 20px rgba(0, 0, 0, 0.5)"
-  );
-  const unreadBorderColor = useColorModeValue("rgba(216, 180, 173, 0.4)", "rgba(156, 111, 111, 0.4)");
-
-  const titleColor = useColorModeValue(
-    notification.isRead ? "fg.muted" : "fg", 
-    notification.isRead ? "whiteAlpha.600" : "white"
-  );
-  
-  const messageColor = useColorModeValue("gray.500", "whiteAlpha.500");
-
   return (
     <Card.Root
       size="sm"
       flexShrink={0}
       cursor="pointer"
       onClick={onClick}
-      bg={notification.isRead ? readBg : unreadBg}
+      bg={notification.isRead ? "transparent" : "rgba(216, 180, 173, 0.15)"}
       border="1px solid"
-      borderColor={notification.isRead ? "transparent" : unreadBorderColor}
+      borderColor={notification.isRead ? "transparent" : "rgba(216, 180, 173, 0.4)"}
       borderRadius="xl"
+      _dark={{
+        bg: notification.isRead ? "transparent" : "rgba(156, 111, 111, 0.15)",
+        borderColor: notification.isRead ? "transparent" : "rgba(156, 111, 111, 0.4)"
+      }}
       _hover={{ 
-        bg: hoverBg,
+        bg: "white",
         transform: "translateY(-2px)",
-        boxShadow: hoverShadow,
-        borderColor: "transparent"
+        boxShadow: "0 4px 20px rgba(196, 159, 152, 0.3)",
+        borderColor: "transparent",
+        _dark: {
+          bg: "whiteAlpha.100",
+          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.5)",
+          borderColor: "transparent"
+        }
       }}
       transition="all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)"
       overflow="hidden"
@@ -54,14 +46,16 @@ export function NotificationItem({ notification, onClick }: Props) {
             <Text 
               fontWeight={notification.isRead ? "medium" : "bold"} 
               fontSize="sm" 
-              color={titleColor}
+              color={notification.isRead ? "fg.muted" : "fg"}
+              _dark={{ color: notification.isRead ? "whiteAlpha.600" : "white" }}
               lineClamp={1}
             >
               {notification.title}
             </Text>
             <Text 
               fontSize="xs" 
-              color={messageColor} 
+              color="gray.500"
+              _dark={{ color: "whiteAlpha.500" }}
               lineClamp={2} 
               lineHeight="1.4"
             >

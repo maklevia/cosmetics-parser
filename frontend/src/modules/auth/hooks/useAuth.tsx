@@ -15,14 +15,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchUser = useCallback(async () => {
+  const fetchUser = useCallback(async (isIgnored?: () => boolean) => {
     try {
       const response = await api.get<UserInfo>("/user/profile");
+      if (isIgnored && isIgnored()) return;
       setUser(response.data);
     } catch {
+      if (isIgnored && isIgnored()) return;
       setUser(null);
     } finally {
-      setIsLoading(false);
+      if (!isIgnored || !isIgnored()) {
+        setIsLoading(false);
+      }
     }
   }, []);
 
@@ -32,26 +36,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let ignore = false;
-    const loadInitialUser = async () => {
-      try {
-        const response = await api.get<UserInfo>("/user/profile");
-        if (!ignore) {
-          setUser(response.data);
-          setIsLoading(false);
-        }
-      } catch {
-        if (!ignore) {
-          setUser(null);
-          setIsLoading(false);
-        }
-      }
+    
+    const init = async () => {
+      await fetchUser(() => ignore);
     };
-    loadInitialUser();
+    init();
 
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [fetchUser]);
 
   return (
     <AuthContext.Provider value={{ isAuthenticated: !!user, user, isLoading, reloadUser }}>

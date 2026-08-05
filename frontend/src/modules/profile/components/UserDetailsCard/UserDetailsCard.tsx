@@ -7,24 +7,19 @@ import { useState } from "react";
 import { Field } from "@fe/components/ui/field";
 
 export function UserDetailsCard() {
-  const { user, reloadUser } = useAuth();
+  const { user } = useAuth();
   const { updateProfile, isLoading: isUpdating } = useUpdateProfile();
   const { logout, isLoading: isLoggingOut } = useLogout();
-  
-  const [name, setName] = useState(user?.name || "");
-  const [prevName, setPrevName] = useState(user?.name || "");
-
-  if (user?.name && user.name !== prevName) {
-    setName(user.name);
-    setPrevName(user.name);
-  }
+  const [editedName, setEditedName] = useState<string | null>(null);
+  const currentName = editedName !== null ? editedName : (user?.name || "");
 
   const handleUpdateName = async () => {
-    await updateProfile({ newName: name });
+    await updateProfile({ newName: currentName });
+    setEditedName(null);
   };
 
   return (
-    <Card.Root size="lg" variant="outline" w="100%" borderRadius="2xl" boxShadow="sm" bg="white" _dark={{ bg: "#2A1D1D", borderColor: "whiteAlpha.100" }}>
+    <Card.Root size="lg" variant="outline" w="100%" borderRadius="2xl" boxShadow="sm" bg="white" _dark={{ bg: "surface.page", borderColor: "whiteAlpha.100" }}>
       <Card.Header pb={2}>
         <Card.Title fontSize="xl">Account Details</Card.Title>
       </Card.Header>
@@ -37,17 +32,17 @@ export function UserDetailsCard() {
           <Field label="Display Name">
             <Flex gap={3} w="100%">
               <Input 
-                value={name} 
-                onChange={(e) => setName(e.target.value)} 
+                value={currentName} 
+                onChange={(e) => setEditedName(e.target.value)} 
                 placeholder="Enter your name" 
               />
               <Button 
                 onClick={handleUpdateName} 
                 loading={isUpdating} 
-                disabled={name === user?.name || !name.trim()}
-                bg="#CEABB0"
+                disabled={currentName === user?.name || !currentName.trim()}
+                bg="brand.solid"
                 color="white"
-                _hover={{ bg: "#b59297" }}
+                _hover={{ bg: "brand.hover" }}
               >
                 Save
               </Button>

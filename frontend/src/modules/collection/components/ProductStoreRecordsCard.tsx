@@ -15,7 +15,7 @@ export function ProductStoreRecordsCard({
   return (
     <Card.Root flex="1" minWidth="240px" minHeight="450px" borderRadius="2xl" variant="outline" overflow="hidden" boxShadow="sm" _dark={{ bg: "#2F2121", borderColor: "whiteAlpha.100" }}>
       <Box bg="rgb(240, 230, 228)" py={3} px={4} borderBottom="1px solid" borderColor="blackAlpha.100" _dark={{ bg: "#3D2A2A", borderColor: "whiteAlpha.100" }}>
-        <Text fontWeight="bold" fontSize="lg" color="rgb(156, 111, 111)" _dark={{ color: "white" }}>
+        <Text fontWeight="bold" fontSize="lg" color="brand.text" _dark={{ color: "white" }}>
           {storeName}
         </Text>
       </Box>
@@ -50,7 +50,7 @@ export function ProductStoreRecordsCard({
             </Text>
           )}
 
-          <Button asChild variant="outline" size="sm" mt={2} w="100%" color="rgb(156, 111, 111)" borderColor="rgb(156, 111, 111)" _dark={{ color: "#E9D8DB", borderColor: "rgba(233, 216, 219, 0.4)", _hover: { bg: "rgba(233, 216, 219, 0.1)" } }}>
+          <Button asChild variant="outline" size="sm" mt={2} w="100%" color="brand.text" borderColor="brand.text" _dark={{ color: "#E9D8DB", borderColor: "rgba(233, 216, 219, 0.4)", _hover: { bg: "rgba(233, 216, 219, 0.1)" } }}>
             <Link to={product.link} target="_blank">
               View in store
             </Link>

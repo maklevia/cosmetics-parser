@@ -1,7 +1,6 @@
 import { CollectionArea } from "@fe/modules/collection/components/CollectionArea/CollectionArea";
 import { Container, Stack, VStack } from "@chakra-ui/react";
 import { useState } from "react";
-import { productsDialog } from "@fe/modules/collection/components/ProductsDialog";
 import { ParseLinkInput } from "@fe/modules/collection/components/ParseForm/ParseLinkInput";
 
 export function CollectionScreen() {

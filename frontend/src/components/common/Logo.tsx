@@ -19,7 +19,9 @@ export function Logo(props: Props) {
 
       <Text
         fontSize={fontSize}
-        bgImage="linear-gradient(90deg, rgba(156, 111, 111) 0%, rgb(112, 79, 79) 100%)"
+        bgGradient="to-r"
+        gradientFrom="brand.text"
+        gradientTo="rgb(112, 79, 79)"
         bgClip="text"
         color="transparent"
         textTransform="uppercase"

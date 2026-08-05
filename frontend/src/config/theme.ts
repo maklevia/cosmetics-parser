@@ -45,5 +45,27 @@ export const system = createSystem(defaultConfig, {
     recipes: {
       input: customInputRecipe,
     },
+    semanticTokens: {
+      colors: {
+        brand: {
+          solid: { value: { base: "#CEABB0", _dark: "#CEABB0" } },
+          hover: { value: { base: "#b59297", _dark: "#b59297" } },
+          text: { value: { base: "rgb(156, 111, 111)", _dark: "#E8C4C4" } },
+          muted: { value: { base: "rgba(210, 170, 162, 1)", _dark: "rgba(210, 170, 162, 1)" } },
+        },
+        surface: {
+          page: {
+            value: {
+              base: "radial-gradient(circle, rgba(233, 216, 219, 1) 77%, rgba(199, 169, 174, 1) 100%)",
+              _dark: "radial-gradient(circle, rgba(66, 44, 44, 1) 16%, rgba(38, 26, 22, 1) 100%)",
+            },
+          },
+          card: { value: { base: "white", _dark: "#2F2121" } },
+          cardElevated: { value: { base: "white", _dark: "#4A3535" } },
+          header: { value: { base: "#CEABB0", _dark: "#1F1515" } },
+          authCard: { value: { base: "#faf8f7", _dark: "#2A1D1D" } },
+        },
+      },
+    },
   },
 });

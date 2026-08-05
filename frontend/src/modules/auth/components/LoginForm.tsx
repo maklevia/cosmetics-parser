@@ -19,8 +19,6 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { isLoading, login, errorMessage, clearErrors } = useLogin({
-    email,
-    password,
     onSuccess: navigateToMain,
   });
 
@@ -35,7 +33,7 @@ export default function LoginForm() {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          login();
+          login(email, password);
         }}
       >
         <VStack gap={4} align="stretch">
@@ -50,7 +48,7 @@ export default function LoginForm() {
               setEmail(normalizeEmail(val));
               clearErrors();
             }}
-            onKeyDown={(e) => submitOnEnter(e, login)}
+            onKeyDown={(e) => submitOnEnter(e, () => login(email, password))}
           />
 
           <AuthPasswordInput
@@ -62,7 +60,7 @@ export default function LoginForm() {
               setPassword(val);
               clearErrors();
             }}
-            onKeyDown={(e) => submitOnEnter(e, login)}
+            onKeyDown={(e) => submitOnEnter(e, () => login(email, password))}
           />
 
           {errorMessage && (
@@ -74,7 +72,7 @@ export default function LoginForm() {
           <AuthButton
             loading={isLoading}
             disabled={!email || !password || invalidEmailMessage().length > 0}
-            onClick={login}
+            onClick={() => login(email, password)}
           >
             Log In
           </AuthButton>

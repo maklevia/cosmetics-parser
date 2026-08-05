@@ -1,4 +1,3 @@
-import { deleteProductDialog } from "@fe/modules/collection/components/CollectionArea/components/DeleteProductDialog";
 import { ProductCard } from "@fe/modules/collection/components/CollectionArea/components/ProductCard";
 import { useCollection } from "@fe/modules/collection/components/CollectionArea/hooks/useCollection";
 import { Box, Button, Grid, Heading, HStack, VStack, Text } from "@chakra-ui/react";
@@ -29,7 +28,7 @@ export function CollectionArea(props: Props) {
     <Box w="100%">
       <VStack align="flex-start" gap={6}>
         <HStack justify="space-between" w="100%">
-          <Heading size="xl" color="rgb(156, 111, 111)" _dark={{ color: "white" }}>
+          <Heading size="xl" color="brand.text" _dark={{ color: "white" }}>
             My Saved Products
           </Heading>
           {products && products.length > 0 && (

@@ -83,7 +83,7 @@ export const productsDialog = createOverlay((props: Props) => {
 
             <Dialog.Footer>
               {mode === "add" ? (
-                <Button color="white" bg="#CEABB0" _hover={{ bg: "#b59297" }} onClick={handleAdd} loading={isAdding}>
+                <Button color="white" bg="brand.solid" _hover={{ bg: "brand.hover" }} onClick={handleAdd} loading={isAdding}>
                   Add to My Collection
                 </Button>
               ) : (

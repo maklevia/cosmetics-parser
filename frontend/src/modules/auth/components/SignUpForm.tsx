@@ -22,8 +22,6 @@ export default function SignUpForm() {
   const [confirmedPassword, setConfirmedPassword] = useState("");
   
   const { register, isLoading } = useRegistration({
-    email,
-    password,
     onSuccess: navigateToHome,
   });
 
@@ -46,7 +44,7 @@ export default function SignUpForm() {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          if (isFormValid) register();
+          if (isFormValid) register(email, password);
         }}
       >
         <VStack gap={4} align="stretch">
@@ -58,7 +56,7 @@ export default function SignUpForm() {
             value={email}
             error={emailError}
             onChange={(val) => setEmail(normalizeEmail(val))}
-            onKeyDown={(e) => submitOnEnter(e, () => { if (isFormValid) register(); })}
+            onKeyDown={(e) => submitOnEnter(e, () => { if (isFormValid) register(email, password); })}
           />
 
           <AuthPasswordInput
@@ -67,7 +65,7 @@ export default function SignUpForm() {
             value={password}
             errors={passwordErrors.length > 0 ? passwordErrors : null}
             onChange={(val) => setPassword(val)}
-            onKeyDown={(e) => submitOnEnter(e, () => { if (isFormValid) register(); })}
+            onKeyDown={(e) => submitOnEnter(e, () => { if (isFormValid) register(email, password); })}
           />
 
           <AuthPasswordInput
@@ -76,13 +74,13 @@ export default function SignUpForm() {
             value={confirmedPassword}
             errors={confirmPasswordError}
             onChange={(val) => setConfirmedPassword(val)}
-            onKeyDown={(e) => submitOnEnter(e, () => { if (isFormValid) register(); })}
+            onKeyDown={(e) => submitOnEnter(e, () => { if (isFormValid) register(email, password); })}
           />
 
           <AuthButton
             loading={isLoading}
             disabled={!isFormValid}
-            onClick={() => { if (isFormValid) register(); }}
+            onClick={() => { if (isFormValid) register(email, password); }}
           >
             Sign Up
           </AuthButton>

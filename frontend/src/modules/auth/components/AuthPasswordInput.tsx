@@ -1,6 +1,5 @@
-import { Icon, Field } from "@chakra-ui/react";
+import { Box, Icon, Field } from "@chakra-ui/react";
 import { PasswordInput } from "@fe/components/ui/password-input";
-import { useColorModeValue } from "@fe/components/ui/color-mode";
 import React from "react";
 
 interface AuthPasswordInputProps {
@@ -24,8 +23,7 @@ export function AuthPasswordInput({
   errors,
   name,
 }: AuthPasswordInputProps) {
-  const labelColor = useColorModeValue("gray.700", "gray.300");
-  const iconColor = useColorModeValue("gray.400", "gray.500");
+
 
   let hasError = false;
   let errorList: string[] = [];
@@ -40,15 +38,15 @@ export function AuthPasswordInput({
   return (
     <Field.Root required invalid={hasError}>
 
-      <Field.Label color={labelColor} fontSize="sm" fontWeight="500">
+      <Field.Label color="gray.700" _dark={{ color: "gray.300" }} fontSize="sm" fontWeight="500">
         {label}
       </Field.Label>
 
-      <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
+      <Box position="relative" display="flex" alignItems="center" w="100%">
         {icon && (
-          <div style={{ position: 'absolute', left: '16px', zIndex: 2, display: 'flex' }}>
-            <Icon color={iconColor} boxSize="18px">{icon}</Icon>
-          </div>
+          <Box position="absolute" left="16px" zIndex={2} display="flex">
+            <Icon color="gray.400" _dark={{ color: "gray.500" }} boxSize="18px">{icon}</Icon>
+          </Box>
         )}
         
         <PasswordInput
@@ -60,7 +58,7 @@ export function AuthPasswordInput({
           onChange={(e) => onChange?.(e.target.value)}
           onKeyDown={onKeyDown}
         />
-      </div>
+      </Box>
       {errorList.map((err, i) => (
         <Field.ErrorText key={i}>{err}</Field.ErrorText>
       ))}

@@ -1,3 +1,4 @@
+import { toaster } from "@fe/components/ui/toaster";
 import { api } from "@fe/config/api";
 import type { CollectionProduct } from "@fe/modules/collection/components/CollectionArea/types/CollectionProduct";
 import { useEffect, useState } from "react";
@@ -19,6 +20,7 @@ export function useCollection(props: HookInput): HookOutput {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    let ignore = false;
     const getInitialProducts = async () => {
       try {
         setIsLoading(true);
@@ -28,17 +30,25 @@ export function useCollection(props: HookInput): HookOutput {
             params: { all: false },
           },
         );
+        if (ignore) return;
         setProducts(response.data.collection);
 
         setSeeAll(false);
-      } catch (error) {
-        console.log("Something went wrong: ", error);
+      } catch {
+        if (ignore) return;
+        toaster.error({ title: "Failed to load collection" });
       } finally {
-        setIsLoading(false);
+        if (!ignore) {
+          setIsLoading(false);
+        }
       }
     };
     getInitialProducts();
-  }, [refreshCount]);
+    
+    return () => {
+      ignore = true;
+    };
+  }, [refreshCount, setSeeAll]);
 
   //need to find a way to store products in cache to not fetch them from db
   //every time. to be implemented.
@@ -55,8 +65,8 @@ export function useCollection(props: HookInput): HookOutput {
       const restOfProducts = response.data.collection;
 
       setProducts((prevProducts) => [...prevProducts, ...restOfProducts]);
-    } catch (error) {
-      console.log("Something went wrong: ", error);
+    } catch {
+      toaster.error({ title: "Failed to load more products" });
     } finally {
       setIsLoading(false);
     }
@@ -66,8 +76,8 @@ export function useCollection(props: HookInput): HookOutput {
     try {
       const initialProducts = products.slice(0, 8);
       setProducts(initialProducts);
-    } catch (error) {
-      console.log(error);
+    } catch {
+      toaster.error({ title: "Failed to hide products" });
     }
   };
 

@@ -12,6 +12,7 @@ interface HookOutput {
   isLoading: boolean;
   parse: (link: string) => Promise<ParseResponse | undefined>;
   errorMessage?: string;
+  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const useParserByLink = (): HookOutput => {
@@ -38,5 +39,5 @@ export const useParserByLink = (): HookOutput => {
     }
   };
 
-  return { isLoading, parse, errorMessage };
+  return { isLoading, parse, errorMessage, setErrorMessage };
 };

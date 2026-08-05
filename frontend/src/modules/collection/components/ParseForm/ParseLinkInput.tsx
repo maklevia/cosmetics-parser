@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useParserByLink } from "@fe/modules/collection/components/ParseForm/hooks/useParserByLink";
 import { useCheckLink } from "@fe/modules/collection/hooks/useCheckLink";
 import { productsDialog } from "@fe/modules/collection/components/ProductsDialog";
-import { toaster } from "@fe/components/ui/toaster";
 
 interface Props {
   setRefreshCount: React.Dispatch<React.SetStateAction<number>>;
@@ -11,14 +10,14 @@ interface Props {
 
 export function ParseLinkInput({ setRefreshCount }: Props) {
   const [productLink, setProductLink] = useState("");
-  const { isLoading: isParsing, parse, errorMessage } = useParserByLink();
+  const { isLoading: isParsing, parse, errorMessage, setErrorMessage } = useParserByLink();
   const { checkLink } = useCheckLink();
 
   const handleParse = async () => {
     if (!productLink.trim()) return;
 
     if (!checkLink(productLink)) {
-      toaster.create({ title: "Invalid link format", type: "error" });
+      setErrorMessage("Invalid link format");
       return;
     }
     
@@ -52,9 +51,9 @@ export function ParseLinkInput({ setRefreshCount }: Props) {
             bg="gray.50"
             _dark={{ bg: "whiteAlpha.50" }}
             border="none"
-            _focus={{ ring: "2px", ringColor: "rgb(216, 180, 173)" }}
+            _focus={{ ring: "2px", ringColor: "brand.muted" }}
           />
-          <Button size="lg" color="white" bg="#CEABB0" _hover={{ bg: "#b59297" }} loading={isParsing} onClick={handleParse}>
+          <Button size="lg" color="white" bg="brand.solid" _hover={{ bg: "brand.hover" }} loading={isParsing} onClick={handleParse}>
             Search
           </Button>
         </Flex>

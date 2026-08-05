@@ -1,9 +1,9 @@
-import { useGenerateChannelLinks } from "@fe/modules/profile/components/ChannelConnectionsCard/hooks/useGenerateChannelLink"
+import { useGenerateChannelLink } from "@fe/modules/profile/components/ChannelConnectionsCard/hooks/useGenerateChannelLink"
 import { Button } from "@chakra-ui/react"
 import { FaTelegram } from "react-icons/fa"
 
 export function ChannelLinks() {
-    const {channelLink, generateChannelLink} = useGenerateChannelLinks();
+    const {channelLink, generateChannelLink} = useGenerateChannelLink();
 
     const handleClick = async (channelName: string) => {
         generateChannelLink(channelName);

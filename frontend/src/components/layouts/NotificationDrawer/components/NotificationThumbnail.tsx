@@ -1,5 +1,4 @@
 import { Box, Flex, Image } from "@chakra-ui/react";
-import { useColorModeValue } from "@fe/components/ui/color-mode";
 import { FiTag } from "react-icons/fi";
 
 interface Props {
@@ -7,8 +6,6 @@ interface Props {
 }
 
 export function NotificationThumbnail({ image }: Props) {
-  const placeholderBg = useColorModeValue("gray.50", "whiteAlpha.100");
-
   return (
     <Box flexShrink={0}>
       {image ? (
@@ -23,7 +20,8 @@ export function NotificationThumbnail({ image }: Props) {
       ) : (
         <Flex
           boxSize="44px"
-          bg={placeholderBg}
+          bg="gray.50"
+          _dark={{ bg: "whiteAlpha.100" }}
           borderRadius="lg"
           align="center"
           justify="center"

@@ -10,11 +10,10 @@ export function Header() {
   return (
     <Box 
       as="header" 
-      bg="#CEABB0" 
+      bg="surface.header" 
       borderBottom="1px solid" 
       borderColor="blackAlpha.100"
       _dark={{ 
-        bg: "#1F1515", 
         borderColor: "whiteAlpha.50" 
       }}
     >

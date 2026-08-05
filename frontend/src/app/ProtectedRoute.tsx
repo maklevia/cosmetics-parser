@@ -8,7 +8,7 @@ export const ProtectedRoute = () => {
     if (isLoading) {
         return (
             <Center h='100vh'>
-                <Spinner size="xl" color="rgb(156, 111, 111)"/>
+                <Spinner size="xl" color="brand.text"/>
             </Center>
         )
     }

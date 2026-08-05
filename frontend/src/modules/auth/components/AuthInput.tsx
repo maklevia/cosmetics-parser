@@ -1,5 +1,4 @@
-import { Input, Icon, Field } from "@chakra-ui/react";
-import { useColorModeValue } from "@fe/components/ui/color-mode";
+import { Box, Input, Icon, Field } from "@chakra-ui/react";
 import React from "react";
 
 interface Props {
@@ -25,22 +24,20 @@ export function AuthInput({
   error,
   name,
 }: Props) {
-  const labelColor = useColorModeValue("gray.700", "gray.300");
-  const iconColor = useColorModeValue("gray.400", "gray.500");
   const hasError = !!error;
 
   return (
     <Field.Root required invalid={hasError}>
 
-      <Field.Label color={labelColor} fontSize="sm" fontWeight="500">
+      <Field.Label color="gray.700" _dark={{ color: "gray.300" }} fontSize="sm" fontWeight="500">
         {label}
       </Field.Label>
       
-      <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
+      <Box position="relative" display="flex" alignItems="center" w="100%">
         {icon && (
-          <div style={{ position: 'absolute', left: '16px', zIndex: 2, display: 'flex' }}>
-            <Icon color={iconColor} boxSize="18px">{icon}</Icon>
-          </div>
+          <Box position="absolute" left="16px" zIndex={2} display="flex">
+            <Icon color="gray.400" _dark={{ color: "gray.500" }} boxSize="18px">{icon}</Icon>
+          </Box>
         )}
         <Input
           name={name}
@@ -52,7 +49,7 @@ export function AuthInput({
           onChange={(e) => onChange?.(e.target.value)}
           onKeyDown={onKeyDown}
         />
-      </div>
+      </Box>
       {typeof error === "string" && <Field.ErrorText>{error}</Field.ErrorText>}
     </Field.Root>
   );

@@ -1,5 +1,4 @@
 import { Box, Center, IconButton } from "@chakra-ui/react";
-import { useColorModeValue } from "@fe/components/ui/color-mode";
 import React from "react";
 import { LuBell } from "react-icons/lu";
 
@@ -9,9 +8,6 @@ interface Props {
 
 export const BellTrigger = React.forwardRef<HTMLButtonElement, Props>(
   ({ unreadCount, ...rest }, ref) => {
-    const bellColor = useColorModeValue("white", "rgb(156, 111, 111)");
-    const bellHoverBg = useColorModeValue("whiteAlpha.200", "whiteAlpha.100");
-    const badgeBg = useColorModeValue("rgb(156, 111, 111)", "rgba(210, 170, 162, 1)");
 
     return (
       <Box position="relative">
@@ -20,8 +16,8 @@ export const BellTrigger = React.forwardRef<HTMLButtonElement, Props>(
           rounded="full"
           aria-label="Notifications"
           cursor="pointer"
-          color={bellColor}
-          _hover={{ bg: bellHoverBg }}
+          color={{ base: "white", _dark: "brand.text" }}
+          _hover={{ bg: { base: "whiteAlpha.200", _dark: "whiteAlpha.100" } }}
           ref={ref}
           {...rest}
         >
@@ -33,7 +29,7 @@ export const BellTrigger = React.forwardRef<HTMLButtonElement, Props>(
             top={0}
             right={0}
             boxSize="18px"
-            bg={badgeBg}
+            bg={{ base: "brand.text", _dark: "brand.muted" }}
             color="white"
             borderRadius="full"
             fontSize="10px"
