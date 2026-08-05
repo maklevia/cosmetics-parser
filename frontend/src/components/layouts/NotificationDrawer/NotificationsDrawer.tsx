@@ -13,7 +13,7 @@ import {
 } from "@fe/components/ui/drawer";
 
 export function NotificationsDrawer() {
-  const { notifications, markAsRead } = useNotifications();
+  const { notifications, isLoading, markAsRead } = useNotifications();
 
   const handleItemClick = async (
     productId: number | null,
@@ -43,7 +43,7 @@ export function NotificationsDrawer() {
         </DrawerHeader>
 
         <DrawerBody px={4} py={2} position="relative" display="flex" flexDir="column" overflowY="auto">
-          <NotificationsList notifications={notifications} onItemClick={handleItemClick} />
+          <NotificationsList notifications={notifications} isLoading={isLoading} onItemClick={handleItemClick} />
         </DrawerBody>
       </DrawerContent>
     </DrawerRoot>

@@ -1,13 +1,25 @@
 import type { NotificationData } from "@fe/components/layouts/NotificationDrawer/types/NotificationType";
 import { Center, Text, VStack } from "@chakra-ui/react";
 import { NotificationItem } from "./NotificationItem";
+import { NotificationItemSkeleton } from "./NotificationItemSkeleton";
 
 interface Props {
   notifications: NotificationData[];
+  isLoading: boolean;
   onItemClick: (productId: number | null, notifId: number, isRead: boolean) => void;
 }
 
-export function NotificationsList({ notifications, onItemClick }: Props) {
+export function NotificationsList({ notifications, isLoading, onItemClick }: Props) {
+  if (isLoading) {
+    return (
+      <VStack gap={2} align="stretch" flex="1">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <NotificationItemSkeleton key={i} />
+        ))}
+      </VStack>
+    );
+  }
+
   if (!notifications || notifications.length === 0) {
     return (
       <Center h="100%">
@@ -30,3 +42,4 @@ export function NotificationsList({ notifications, onItemClick }: Props) {
     </VStack>
   );
 }
+

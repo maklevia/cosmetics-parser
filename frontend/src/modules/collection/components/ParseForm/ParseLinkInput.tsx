@@ -4,11 +4,10 @@ import { useParserByLink } from "@fe/modules/collection/components/ParseForm/hoo
 import { useCheckLink } from "@fe/modules/collection/hooks/useCheckLink";
 import { productsDialog } from "@fe/modules/collection/components/ProductsDialog";
 
-interface Props {
-  setRefreshCount: React.Dispatch<React.SetStateAction<number>>;
-}
+import { useCollection } from "@fe/modules/collection/hooks/useCollection";
 
-export function ParseLinkInput({ setRefreshCount }: Props) {
+export function ParseLinkInput() {
+  const { refreshProducts } = useCollection();
   const [productLink, setProductLink] = useState("");
   const { isLoading: isParsing, parse, errorMessage, setErrorMessage } = useParserByLink();
   const { checkLink } = useCheckLink();
@@ -28,7 +27,7 @@ export function ParseLinkInput({ setRefreshCount }: Props) {
            mode: "add", 
            productId: response.productId, 
            parseResult: response.parsedResults,
-           setRefreshCount 
+           refreshProducts 
          });
       }
     } catch {

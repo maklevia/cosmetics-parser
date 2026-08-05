@@ -129,6 +129,12 @@ export class ProductRepository {
     });
   }
 
+  async getUserCollectionCount(userId: number): Promise<number> {
+    return await this.collectionRepo.count({
+      where: { user: { id: userId } },
+    });
+  }
+
   async deleteCollectionRecord(
     userId: number,
     productId: number,

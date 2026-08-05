@@ -12,11 +12,11 @@ import {
 
 interface Props {
   productId: number;
-  setRefreshCount?: React.Dispatch<React.SetStateAction<number>>;
+  refreshProducts?: () => void;
 }
 
 export const deleteProductDialog = createOverlay((props: Props) => {
-  const { productId, setRefreshCount } = props;
+  const { productId, refreshProducts } = props;
 
   const { isLoading, deleteProduct } = useDeleteProducts({ productId });
 
@@ -24,7 +24,7 @@ export const deleteProductDialog = createOverlay((props: Props) => {
     try {
       await deleteProduct();
       toaster.success({title: 'Product deleted successfully'});
-      setRefreshCount?.((prev: number) => prev + 1);
+      refreshProducts?.();
 
       deleteProductDialog.close("a");
       productsDialog.close("a");

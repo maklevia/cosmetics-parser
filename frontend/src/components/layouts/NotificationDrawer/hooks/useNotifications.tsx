@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 
 interface HookOutput {
   notifications: NotificationData[];
+  isLoading: boolean;
   markAsRead: (notifId: number) => void;
 }
 interface NotifResponse extends AxiosResponse {
@@ -13,16 +14,20 @@ interface NotifResponse extends AxiosResponse {
 
 export function useNotifications(): HookOutput {
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const getNotifications = async () => {
       try {
+        setIsLoading(true);
         const response = await api.get<NotifResponse>(
           "/notification/getAll",
         );
         setNotifications(response.data.notifications);
       } catch (error) {
         console.log("FE: Error getting notifications: ", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     getNotifications();
@@ -40,5 +45,6 @@ export function useNotifications(): HookOutput {
     }
   }
 
-  return { notifications, markAsRead };
+  return { notifications, isLoading, markAsRead };
 }
+

@@ -14,17 +14,17 @@ interface Props {
   mode: "add" | "delete";
   productId: number;
   parseResult?: ParseResult;
-  setRefreshCount?: React.Dispatch<React.SetStateAction<number>>;
+  refreshProducts?: () => void;
 }
 
 export const productsDialog = createOverlay((props: Props) => {
-  const { mode, productId, parseResult, setRefreshCount } = props;
+  const { mode, productId, parseResult, refreshProducts } = props;
   const { isLoading: isLoadingDetails, productDetails, showDetails } = useProductDetails();
   
   const { add, isLoading: isAdding } = useAddProductToCollection({
     productId,
     onSuccess: () => {
-      setRefreshCount?.((prev) => prev + 1);
+      refreshProducts?.();
       toaster.update("add", { title: "Product successfully saved in your Collection", type: "success" });
       productsDialog.close("a");
     },
@@ -87,7 +87,7 @@ export const productsDialog = createOverlay((props: Props) => {
                   Add to My Collection
                 </Button>
               ) : (
-                <Button colorPalette="red" variant="outline" onClick={() => deleteProductDialog.open("a", {productId, setRefreshCount})}>
+                <Button colorPalette="red" variant="outline" onClick={() => deleteProductDialog.open("a", {productId, refreshProducts})}>
                   Delete product from Collection
                 </Button>
               )}
