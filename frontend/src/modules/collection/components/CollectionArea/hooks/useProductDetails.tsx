@@ -1,7 +1,8 @@
 import { api } from "@fe/config/api"
 import type { ParsedProducts } from "@fe/modules/collection/components/ParseForm/types/parsedProduct";
 import { useState, useCallback } from "react";
-
+import { isAxiosError } from "axios";
+import { toaster } from "@fe/components/ui/toaster";
 interface HookOutput {
     isLoading: boolean;
     productDetails: ParsedProducts | undefined;
@@ -19,7 +20,9 @@ export function useProductDetails(): HookOutput {
             const fetchedDetails: ParsedProducts = response.data.storeRecords;
             setProductDetails(fetchedDetails);
         } catch (error) {
-            console.log('FE: error getting response for product details: ', error);
+            if (isAxiosError(error) && error.response && error.response.status < 500) {
+                toaster.error({ title: "Failed to load product details" });
+            }
         } finally {
             setIsLoading(false)
         }

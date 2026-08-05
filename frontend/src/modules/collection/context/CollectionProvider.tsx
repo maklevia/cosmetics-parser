@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import type { ReactNode } from "react";
 import { toaster } from "@fe/components/ui/toaster";
 import { api } from "@fe/config/api";
+import { isAxiosError } from "axios";
 import type { CollectionProduct } from "@fe/modules/collection/components/CollectionArea/types/CollectionProduct";
 import { CollectionContext } from "@fe/modules/collection/hooks/useCollection";
 
@@ -38,9 +39,11 @@ export function CollectionProvider({ children }: { children: ReactNode }) {
         setProducts(collection);
         setHasMore(collection.length < totalCount);
         nextPageRef.current = 2;
-      } catch {
+      } catch (error) {
         if (ignore) return;
-        toaster.error({ title: "Failed to load collection" });
+        if (isAxiosError(error) && error.response && error.response.status < 500) {
+          toaster.error({ title: "Failed to load collection" });
+        }
       } finally {
         if (!ignore) setIsInitialLoading(false);
       }
@@ -62,8 +65,10 @@ export function CollectionProvider({ children }: { children: ReactNode }) {
       setProducts((prev) => [...prev, ...collection]);
       nextPageRef.current = page + 1;
       setHasMore(page * PAGE_SIZE < totalCount);
-    } catch {
-      toaster.error({ title: "Failed to load more products" });
+    } catch (error) {
+      if (isAxiosError(error) && error.response && error.response.status < 500) {
+        toaster.error({ title: "Failed to load more products" });
+      }
     } finally {
       setIsLoadingMore(false);
     }

@@ -1,6 +1,7 @@
 import type { ProductRecord } from "@fe/modules/collection/components/ParseForm/types/parsedProduct";
 import { Card, HStack, Image, Text, Box, Badge, Button } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
+import { decodeHtmlEntities } from "@fe/utils/stringUtils";
 
 interface ProductRecordProp {
   product: ProductRecord | null;
@@ -33,8 +34,8 @@ export function ProductStoreRecordsCard({
           </Box>
 
           <Box>
-            <Text fontSize="xs" color="fg.muted" fontWeight="bold" textTransform="uppercase">{product.brand}</Text>
-            <Card.Title fontSize="sm" lineClamp={2} mt={1}>{product.name}</Card.Title>
+            <Text fontSize="xs" color="fg.muted" fontWeight="bold" textTransform="uppercase">{decodeHtmlEntities(product.brand)}</Text>
+            <Card.Title fontSize="sm" lineClamp={2} mt={1}>{decodeHtmlEntities(product.name)}</Card.Title>
           </Box>
 
           <HStack justify="space-between" mt="auto">

@@ -1,6 +1,7 @@
 import { getEnvOrThrow } from "@fe/utils/getEnvOrThrow";
 import axios from "axios";
 import type { AxiosInstance } from "axios";
+import { toaster } from "@fe/components/ui/toaster";
 
 export const api: AxiosInstance = axios.create({
   baseURL: getEnvOrThrow('API_ORIGIN'),
@@ -28,6 +29,13 @@ api.interceptors.response.use(
         }
       }
     }
+
+    if (!error.response) {
+      toaster.error({ title: "Network error. Check your connection." });
+    } else if (error.response.status >= 500) {
+      toaster.error({ title: "Server error. Please try again later." });
+    }
+
     return Promise.reject(error);
   },
 );

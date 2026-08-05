@@ -1,5 +1,7 @@
 import { api } from "@fe/config/api"
+import { isAxiosError } from "axios";
 import { useState } from "react";
+import { toaster } from "@fe/components/ui/toaster";
 
 interface HookInput {
     productId: number,
@@ -19,7 +21,10 @@ export function useDeleteProducts(props: HookInput): HookOutput {
             setIsLoading(true);
             await api.delete(`/product/${productId}/delete`);
         } catch (error) {
-            console.log('FE: error deleting product from collection: ', error)
+            if (isAxiosError(error) && error.response && error.response.status < 500) {
+                toaster.error({ title: error.response.data?.message || "Error deleting product" });
+            }
+            throw error;
         } finally {
             setIsLoading(false);
         }
@@ -27,3 +32,4 @@ export function useDeleteProducts(props: HookInput): HookOutput {
 
     return {isLoading, deleteProduct}
 }
+

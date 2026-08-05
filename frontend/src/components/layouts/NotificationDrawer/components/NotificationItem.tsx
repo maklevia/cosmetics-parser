@@ -2,6 +2,7 @@ import type { NotificationData } from "@fe/components/layouts/NotificationDrawer
 import { Card, Flex, Stack, Text } from "@chakra-ui/react";
 import { UnreadCircle } from "@fe/components/layouts/NotificationDrawer/components/UnreadCircle";
 import { NotificationThumbnail } from "@fe/components/layouts/NotificationDrawer/components/NotificationThumbnail";
+import { decodeHtmlEntities } from "@fe/utils/stringUtils";
 
 interface Props {
   notification: NotificationData;
@@ -50,7 +51,7 @@ export function NotificationItem({ notification, onClick }: Props) {
               _dark={{ color: notification.isRead ? "whiteAlpha.600" : "white" }}
               lineClamp={1}
             >
-              {notification.title}
+              {decodeHtmlEntities(notification.title)}
             </Text>
             <Text 
               fontSize="xs" 
@@ -59,7 +60,7 @@ export function NotificationItem({ notification, onClick }: Props) {
               lineClamp={2} 
               lineHeight="1.4"
             >
-              {notification.message}
+              {decodeHtmlEntities(notification.message)}
             </Text>
           </Stack>
 

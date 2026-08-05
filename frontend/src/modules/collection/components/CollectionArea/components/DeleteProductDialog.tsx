@@ -1,4 +1,4 @@
-import { productsDialog } from "@fe/modules/collection/components/ProductsDialog"
+import { productDetailDialog } from "@fe/modules/collection/components/ProductDetailDialog"
 import { useDeleteProducts } from "@fe/modules/collection/components/CollectionArea/hooks/useDeleteProduct";
 import { toaster } from "@fe/components/ui/toaster";
 import { DialogCloseTrigger } from "@fe/components/ui/dialog";
@@ -27,7 +27,8 @@ export const deleteProductDialog = createOverlay((props: Props) => {
       refreshProducts?.();
 
       deleteProductDialog.close("a");
-      productsDialog.close("a");
+      productDetailDialog.close("a");
+
     } catch {
       toaster.error({ title: 'Something went wrong. Please try again later.' });
     }

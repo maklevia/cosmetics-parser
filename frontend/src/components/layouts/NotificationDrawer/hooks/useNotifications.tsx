@@ -1,7 +1,9 @@
 import { api } from "@fe/config/api";
 import type { NotificationData } from "@fe/components/layouts/NotificationDrawer/types/NotificationType";
 import type { AxiosResponse } from "axios";
+import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
+import { toaster } from "@fe/components/ui/toaster";
 
 interface HookOutput {
   notifications: NotificationData[];
@@ -25,7 +27,9 @@ export function useNotifications(): HookOutput {
         );
         setNotifications(response.data.notifications);
       } catch (error) {
-        console.log("FE: Error getting notifications: ", error);
+        if (isAxiosError(error) && error.response && error.response.status < 500) {
+          toaster.error({ title: "Failed to load notifications" });
+        }
       } finally {
         setIsLoading(false);
       }
@@ -41,10 +45,13 @@ export function useNotifications(): HookOutput {
 
       await api.patch(`/notification/${notifId}/markAsRead`);
     } catch (error) {
-      console.log('FE: error marking notification as read: ', error);
+      if (isAxiosError(error) && error.response && error.response.status < 500) {
+        toaster.error({ title: "Failed to update notification" });
+      }
     }
   }
 
   return { notifications, isLoading, markAsRead };
 }
+
 

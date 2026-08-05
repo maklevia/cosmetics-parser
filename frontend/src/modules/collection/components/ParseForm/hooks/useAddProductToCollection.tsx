@@ -27,12 +27,9 @@ export const useAddProductToCollection = ({
 
       onSuccess();
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        onFailure(error.response.data.message || "An error occurred");
-      } else {
-        onFailure("Something went wrong. Please, try again later.");
+      if (axios.isAxiosError(error) && error.response && error.response.status < 500) {
+        onFailure(error.response.data?.message || "An error occurred");
       }
-      
     } finally {
       setIsLoading(false);
     }

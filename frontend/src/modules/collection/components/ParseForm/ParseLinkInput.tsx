@@ -1,39 +1,11 @@
 import { Box, Button, Flex, Input, Stack, Text } from "@chakra-ui/react";
-import { useState } from "react";
-import { useParserByLink } from "@fe/modules/collection/components/ParseForm/hooks/useParserByLink";
-import { useCheckLink } from "@fe/modules/collection/hooks/useCheckLink";
-import { productsDialog } from "@fe/modules/collection/components/ProductsDialog";
-
 import { useCollection } from "@fe/modules/collection/hooks/useCollection";
+import { useParseAndOpenDialog } from "@fe/modules/collection/components/ParseForm/hooks/useParseAndOpenDialog";
 
 export function ParseLinkInput() {
   const { refreshProducts } = useCollection();
-  const [productLink, setProductLink] = useState("");
-  const { isLoading: isParsing, parse, errorMessage, setErrorMessage } = useParserByLink();
-  const { checkLink } = useCheckLink();
-
-  const handleParse = async () => {
-    if (!productLink.trim()) return;
-
-    if (!checkLink(productLink)) {
-      setErrorMessage("Invalid link format");
-      return;
-    }
-    
-    try {
-      const response = await parse(productLink);
-      if (response) {
-         productsDialog.open("a", { 
-           mode: "add", 
-           productId: response.productId, 
-           parseResult: response.parsedResults,
-           refreshProducts 
-         });
-      }
-    } catch {
-      // Error message is handled via errorMessage state and displayed in the UI
-    }
-  };
+  const { productLink, setProductLink, isParsing, errorMessage, handleParse } =
+    useParseAndOpenDialog({ refreshProducts });
 
   return (
     <Box w="100%" bg="white" p={6} borderRadius="2xl" boxShadow="sm" border="1px solid" borderColor="gray.100" _dark={{ bg: "#4A3535", borderColor: "whiteAlpha.100" }}>

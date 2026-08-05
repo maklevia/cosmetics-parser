@@ -1,5 +1,7 @@
 import { api } from "@fe/config/api";
+import { isAxiosError } from "axios";
 import { useState } from "react";
+import { toaster } from "@fe/components/ui/toaster";
 
 interface HookOutput {
     channelLink: string;
@@ -18,9 +20,12 @@ export function useGenerateChannelLink(): HookOutput {
             const response = await api.get<LinkResponse>(`/channel/${channelName}/generateLink`);
             setChannelLink(response.data.channelLink);
         } catch (error) {
-            console.log('FE: Error generating channel link: ', error)
+            if (isAxiosError(error) && error.response && error.response.status < 500) {
+                toaster.error({ title: error.response.data?.message || "Failed to generate channel link" });
+            }
         }
     }
 
     return { channelLink, generateChannelLink }
 }
+

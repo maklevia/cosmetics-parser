@@ -1,7 +1,8 @@
 import { Box } from "@chakra-ui/react";
 import { Header } from "@fe/components/layouts/Header/Header";
 import { Outlet } from "react-router-dom";
-import { productsDialog } from "@fe/modules/collection/components/ProductsDialog";
+import { addProductDialog } from "@fe/modules/collection/components/AddProductDialog";
+import { productDetailDialog } from "@fe/modules/collection/components/ProductDetailDialog";
 import { deleteProductDialog } from "@fe/modules/collection/components/CollectionArea/components/DeleteProductDialog";
 
 export function MainLayout() {
@@ -11,7 +12,8 @@ export function MainLayout() {
       <Box p={6}>
         <Outlet />
       </Box>
-      <productsDialog.Viewport />
+      <addProductDialog.Viewport />
+      <productDetailDialog.Viewport />
       <deleteProductDialog.Viewport />
     </Box>
   );

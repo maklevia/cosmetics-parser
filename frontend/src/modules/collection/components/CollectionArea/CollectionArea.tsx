@@ -10,7 +10,7 @@ import {
   VStack,
   Text,
 } from "@chakra-ui/react";
-import { productsDialog } from "@fe/modules/collection/components/ProductsDialog";
+import { productDetailDialog } from "@fe/modules/collection/components/ProductDetailDialog";
 
 export function CollectionArea() {
   const { isInitialLoading, isLoadingMore, products, hasMore, loadMore, refreshProducts } = useCollection();
@@ -56,8 +56,7 @@ export function CollectionArea() {
                 key={product.productId}
                 product={product}
                 onClick={() =>
-                  productsDialog.open("a", {
-                    mode: "delete",
+                  productDetailDialog.open("a", {
                     productId: product.productId,
                     refreshProducts,
                   })

@@ -1,4 +1,4 @@
-import { productsDialog } from "@fe/modules/collection/components/ProductsDialog";
+import { productDetailDialog } from "@fe/modules/collection/components/ProductDetailDialog";
 import { useNotifications } from "@fe/components/layouts/NotificationDrawer/hooks/useNotifications";
 import { BellTrigger } from "@fe/components/layouts/NotificationDrawer/components/BellTrigger";
 import { NotificationsList } from "@fe/components/layouts/NotificationDrawer/components/NotificationsList";
@@ -21,7 +21,7 @@ export function NotificationsDrawer() {
     isRead: boolean,
   ) => {
     if (productId) {
-      productsDialog.open("a", { mode: "delete", productId });
+      productDetailDialog.open("a", { productId });
     }
     if (!isRead) {
       markAsRead(notifId);
