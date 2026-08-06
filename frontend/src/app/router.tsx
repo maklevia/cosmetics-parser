@@ -1,4 +1,3 @@
-import { AuthProvider } from "@fe/modules/auth/hooks/useAuth";
 import LoginScreen from "@fe/modules/auth/screens/LoginScreen";
 import SignUpScreen from "@fe/modules/auth/screens/SignUpScreen";
 import { CollectionScreen } from "@fe/modules/collection/CollectionScreen";

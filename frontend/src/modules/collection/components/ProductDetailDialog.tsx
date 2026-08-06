@@ -23,7 +23,7 @@ export const productDetailDialog = createOverlay((props: Props) => {
   }, [productId, showDetails]);
 
   return (
-    <Dialog.Root {...props} size="3xl" placement="center" initialFocusEl={() => contentRef.current}>
+    <Dialog.Root {...props} size="xl" placement="center" initialFocusEl={() => contentRef.current}>
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>

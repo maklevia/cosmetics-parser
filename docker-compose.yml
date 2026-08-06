@@ -32,7 +32,27 @@ services:
     command: npm run dev --workspace=api
     depends_on:
       - db
+  frontend:
+    build:
+      context: .
+      dockerfile: docker-files/Dockerfile.frontend
+    ports:
+      - "5173:80"
+    environment:
+      - VITE_API_ORIGIN=${API_ORIGIN:-http://localhost:3001}
+    depends_on:
+      - api
 
+  telegram-bot:
+    build:
+      context: .
+      dockerfile: docker-files/Dockerfile.bot
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - API_ORIGIN=http://api:${API_PORT:-3001}
+      - API_KEY=${API_KEY}
+    depends_on:
+      - api
 
 
 # Declare the persistent volume for the database
