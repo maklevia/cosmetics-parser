@@ -11,7 +11,7 @@ interface HookOutput {
   productLink: string;
   setProductLink: (link: string) => void;
   isParsing: boolean;
-  errorMessage: string;
+  errorMessage?: string;
   handleParse: () => Promise<void>;
 }
 
