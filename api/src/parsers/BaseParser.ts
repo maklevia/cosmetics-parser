@@ -35,7 +35,6 @@ export abstract class BaseParser {
         searchProductBrand,
       );
       if (!product) {
-        console.log(`No matching result on ${this.storeName}`);
         return null;
       }
       return product;

@@ -30,4 +30,8 @@ export class UserRepository {
     });
     return isBinded;
   }
+
+  async updateUser(userId: number, updateData: Partial<User>): Promise<void> {
+    await this.userRepo.update(userId, updateData);
+  }
 }

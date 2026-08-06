@@ -39,16 +39,16 @@ export class ParserOrchestrator {
     }
   }
 
-  async getProductByLink(
-    link: string,
-  ): Promise<ParseResult> {
+  async getProductByLink(link: string): Promise<ParseResult> {
     const primaryStore = this.recognizeStoreName(link);
 
     const primaryParser = this.parsers[primaryStore];
     const primaryProduct = await primaryParser.parseByLink(link);
 
     if (!primaryProduct) {
-      throw new BadGatewayError("Could not parse product from the provided link");
+      throw new BadGatewayError(
+        "Could not parse product from the provided link",
+      );
     }
 
     const parsedProducts: Record<StoreName, ParsedProduct | null> = {
@@ -72,11 +72,20 @@ export class ParserOrchestrator {
       });
     await Promise.allSettled(secondaryFetches);
 
-    return {primaryStore: primaryStore, products: parsedProducts};
+    return { primaryStore: primaryStore, products: parsedProducts };
   }
 
   async parseSingleProduct(link: string): Promise<ParsedProduct | null> {
     const storeName = this.recognizeStoreName(link);
     return await this.parsers[storeName].parseByLink(link);
+  }
+
+  async parseSpecificStoreByProductNameAndBrand(
+    storeName: StoreName,
+    productName: string,
+    productBrand: string,
+  ): Promise<ParsedProduct | null> {
+    const product = await this.parsers[storeName].parseByNameAndBrand(productName, productBrand);
+    return product;
   }
 }

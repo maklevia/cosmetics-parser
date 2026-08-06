@@ -1,0 +1,39 @@
+import {api} from "@fe/config/api";
+import axios from "axios";
+import { useState } from "react";
+
+interface HookInput {
+  productId: number;
+  onSuccess: () => void;
+  onFailure: (message: string) => void;
+}
+interface HookOutput {
+  add: () => void;
+  isLoading: boolean;
+}
+
+export const useAddProductToCollection = ({
+  productId,
+  onSuccess,
+  onFailure,
+}: HookInput): HookOutput => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const add = async () => {
+    try {
+      setIsLoading(true);
+
+      await api.post("/product/add-product-to-collection", { productId });
+
+      onSuccess();
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response && error.response.status < 500) {
+        onFailure(error.response.data?.message || "An error occurred");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { add, isLoading };
+};

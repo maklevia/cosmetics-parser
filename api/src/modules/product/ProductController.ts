@@ -11,18 +11,17 @@ export class ProductController {
 
   getCollection = async (req: Request, res: Response) => {
     const userId: number = getAuthUser(res).userId;
-    const isInitial = req.query.all === "false";
-    const { limit, offset } = isInitial
-      ? { limit: 8, offset: 0 }
-      : { limit: 1000, offset: 8 };
+    const page = Math.max(parseInt(req.query.page as string, 10) || 1, 1);
+    const limit = Math.min(Math.max(parseInt(req.query.limit as string, 10) || 8, 1), 50);
+    const offset = (page - 1) * limit;
 
-    const collection = await this.productService.getCollection(
+    const { products, totalCount } = await this.productService.getCollection(
       userId,
       limit,
       offset,
     );
 
-    res.status(200).json({ collection });
+    res.status(200).json({ collection: products, totalCount });
   };
 
   getProductStoreRecords = async (req: Request, res: Response) => {

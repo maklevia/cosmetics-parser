@@ -96,20 +96,21 @@ export class ProductService {
     userId: number,
     limit: number,
     offset: number,
-  ): Promise<CollectionProductResponse[]> {
-    const collection = await productRepository.getUserCollection(
-      userId,
-      limit,
-      offset,
-    );
+  ): Promise<{ products: CollectionProductResponse[]; totalCount: number }> {
+    const [collection, totalCount] = await Promise.all([
+      productRepository.getUserCollection(userId, limit, offset),
+      productRepository.getUserCollectionCount(userId),
+    ]);
 
-    return collection.map((c) => ({
+    const products = collection.map((c) => ({
       name: c.product.name,
       brand: c.product.brand,
       image: c.product.image ?? undefined,
       notifyOnPriceDrop: c.notifyOnPriceDrop,
       productId: c.product.id,
     }));
+
+    return { products, totalCount };
   }
 
   async getProductStoreRecords(

@@ -3,6 +3,7 @@ import { ParsedProduct } from "@api/types/ProductTypes.js";
 import { StoreName } from "@api/types/Enums.js";
 import { BaseParser } from "@api/parsers/BaseParser.js";
 import { getEnvOrThrow } from "@api/utils/getEnvOrThrow.js";
+import { decodeHtmlEntities } from "@api/utils/decodeHtmlEntities.js";
 
 export class NotinoParser extends BaseParser {
   readonly storeName = StoreName.Notino;
@@ -54,11 +55,11 @@ export class NotinoParser extends BaseParser {
         if (!data) throw new Error();
 
         return {
-          name: data.name,
-          brand: data.brand.name,
+          name: decodeHtmlEntities(data.name),
+          brand: decodeHtmlEntities(data.brand.name),
           price: data?.offers[0]?.price || undefined,
           inStock: this.normalizeInStockParam(data.offers[0].availability),
-          image: this.formatImageUrl(data.image?.[0]),
+          image: this.formatImageUrl(data.image?.[0]) || undefined,
           link,
           storeName: this.storeName,
         };

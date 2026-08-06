@@ -103,9 +103,33 @@ export class NotificationRepository {
     });
   }
 
+  async assignBatchId(queueIds: number[], batchId: string): Promise<void> {
+    await this.queueRepo.update({ id: In(queueIds) }, { batchId });
+  }
+
+  async getDropsByBatchId(batchId: string): Promise<any[]> {
+    return await this.queueRepo
+      .createQueryBuilder("queue")
+      .select([
+        'storeRecord.product_store_name AS "name"',
+        'storeRecord.store_name AS "storeName"',
+        'storeRecord.link AS "link"',
+        'storeRecord.image AS "image"',
+        'queue.old_price AS "oldPrice"',
+        'queue.new_price AS "newPrice"'
+      ])
+      .innerJoin('queue.storeRecord', 'storeRecord')
+      .where('queue.batch_id = :batchId', { batchId })
+      .andWhere('queue.status = :status', { status: PriceDropQueueStatus.PROCESSED })
+      .orderBy('queue.id', 'ASC')
+      .getRawMany();
+  }
+
   async markNotifAsRead(notifId: number): Promise<void> {
-    await this.notifRepo.update(notifId, {
-      isRead: true,
-    });
+    await this.notifRepo.update(notifId, { isRead: true });
+  }
+
+  async markAllAsRead(userId: number): Promise<void> {
+    await this.notifRepo.update({ user: { id: userId }, isRead: false }, { isRead: true });
   }
 }

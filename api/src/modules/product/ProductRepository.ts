@@ -29,7 +29,7 @@ export class ProductRepository {
   async findStoreRecordByLink(link: string): Promise<StoreRecord | null> {
     const foundStoreRecord = await this.storeRecordRepo.findOne({
       where: { link: link },
-      relations: { product: true }
+      relations: { product: true },
     });
     return foundStoreRecord;
   }
@@ -97,21 +97,26 @@ export class ProductRepository {
     const savedProduct = await this.productRepo.save(newProduct);
     return savedProduct.id;
   }
-  async getStoreRecordsWithProductId(productId: number): Promise<StoreRecordWithLowestPrice[]> {
+  async getStoreRecordsWithProductId(
+    productId: number,
+  ): Promise<StoreRecordWithLowestPrice[]> {
     const { entities, raw } = await this.storeRecordRepo
       .createQueryBuilder("storeRecord")
       .leftJoinAndSelect("storeRecord.product", "product")
-      .addSelect(`(
+      .addSelect(
+        `(
         SELECT MIN(price)
         FROM "Price_History"
         WHERE store_record_id = "storeRecord"."id"
           AND recorded_at >= NOW() - INTERVAL '30 days'
-      )`, "lowestMonthPrice")
+      )`,
+        "lowestMonthPrice",
+      )
       .where("storeRecord.product_id = :productId", { productId })
       .getRawAndEntities();
 
     const recordsWithPrice = entities as StoreRecordWithLowestPrice[];
-    
+
     for (let i = 0; i < recordsWithPrice.length; i++) {
       recordsWithPrice[i].lowestMonthPrice = raw[i].lowestMonthPrice;
     }
@@ -119,13 +124,23 @@ export class ProductRepository {
     return recordsWithPrice;
   }
 
-  async getUserCollection(userId: number, limit: number, offset: number): Promise<Collection[]> {
+  async getUserCollection(
+    userId: number,
+    limit: number,
+    offset: number,
+  ): Promise<Collection[]> {
     return await this.collectionRepo.find({
       where: { user: { id: userId } },
       relations: { product: true },
       order: { createdAt: "DESC" },
       take: limit,
-      skip: offset
+      skip: offset,
+    });
+  }
+
+  async getUserCollectionCount(userId: number): Promise<number> {
+    return await this.collectionRepo.count({
+      where: { user: { id: userId } },
     });
   }
 
@@ -154,18 +169,23 @@ export class ProductRepository {
   async getStoreRecordsForCron(productsIds: number[]): Promise<StoreRecord[]> {
     return await this.storeRecordRepo.find({
       where: { product: { id: In(productsIds) } },
-      relations: { product: true }
+      relations: { product: true },
     });
   }
 
-  async updateStoreRecordsCron(id: number, inStock: boolean, price?: number, image?: string): Promise<void> {
+  async updateStoreRecordsCron(
+    id: number,
+    inStock: boolean,
+    price?: number,
+    image?: string,
+  ): Promise<void> {
     const updateData: any = {
-        inStock: inStock,
-        latestPrice: price ?? null 
+      inStock: inStock,
+      latestPrice: price ?? null,
     };
 
     if (image !== undefined) {
-        updateData.image = image; 
+      updateData.image = image;
     }
 
     await this.storeRecordRepo.update(id, updateData);
@@ -173,5 +193,59 @@ export class ProductRepository {
 
   async updateProductImage(productId: number, image: string): Promise<void> {
     await this.productRepo.update(productId, { image });
+  }
+
+  async getProductsWithMissingStores(): Promise<
+    {
+      productId: number;
+      name: string;
+      brand: string;
+      missingStore: StoreName;
+    }[]
+  > {
+    const productIds = await this.getProductsFromCollections();
+    if (productIds.length === 0) return [];
+
+    const products = await this.productRepo.find({
+      where: { id: In(productIds) },
+      relations: { storeRecords: true },
+    });
+
+    const allStores = Object.values(StoreName);
+    const result: {
+      productId: number;
+      name: string;
+      brand: string;
+      missingStore: StoreName;
+    }[] = [];
+
+    for (const product of products) {
+      const existingStores = product.storeRecords.map((r) => r.storeName);
+      for (const store of allStores) {
+        if (!existingStores.includes(store)) {
+          result.push({
+            productId: product.id,
+            name: product.name,
+            brand: product.brand,
+            missingStore: store,
+          });
+        }
+      }
+    }
+
+    return result;
+  }
+
+  async addDiscoveredStoreRecord(productId: number, parsedProduct: ParsedProduct): Promise<void> {
+    const product = await this.productRepo.findOneBy({ id: productId });
+    if (!product) return;
+
+    const newStoreRecord = StoreRecord.fromParsedProduct(parsedProduct);
+    const newPriceHistory = PriceHistory.fromParsedProduct(parsedProduct);
+    
+    newStoreRecord.priceHistory = [newPriceHistory];
+    newStoreRecord.product = product;
+
+    await this.storeRecordRepo.save(newStoreRecord);
   }
 }

@@ -7,3 +7,4 @@ export const userRoutes = Router();
 const userController = new UserController();
 
 userRoutes.get('/profile', authMiddleware, userController.getUserInfo);
+userRoutes.patch('/updateName', authMiddleware, userController.updateUserName);

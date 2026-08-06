@@ -6,6 +6,7 @@ import {
   cookiesRefreshOptions,
 } from "@api/utils/cookieUtils.js";
 import { AuthenticationError, ConflictError } from "@api/errors/AppError.js";
+import { getAuthUser } from "@api/middlewares/authMiddleware.js";
 
 export class AuthController {
   private userService: UserService;
@@ -112,4 +113,14 @@ export class AuthController {
 
     return res.status(200).json({ message: "Successfully logged out" });
   };
+
+  resetPassword = async (req: Request, res: Response) => {
+    const userId: number = getAuthUser(res).userId;
+    const newPassword: string = req.body.newPassword;
+    const oldPassword: string = req.body.oldPassword;
+
+    await this.authService.resetPassword(userId, oldPassword, newPassword);
+
+    res.status(200).json({message: 'Password resetted successfully'});
+  }
 }

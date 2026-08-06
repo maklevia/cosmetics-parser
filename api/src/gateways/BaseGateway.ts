@@ -10,6 +10,7 @@ export interface PriceDropItem {
 }
 
 export interface BaseGateway {
-    sendPriceDropNotification(channelAccountId: number, item: PriceDropItem): Promise<void>;
+    sendPriceDropNotification(channelAccountId: number, item: PriceDropItem, batchId: string): Promise<void>;
+    sendPriceDropSummary(channelAccountId: number, count: number, batchId: string): Promise<void>;
     generateBindingLink(userUuid: string): string;
 }
