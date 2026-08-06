@@ -53,7 +53,7 @@ export function AuthPasswordInput({
           name={name}
           placeholder={placeholder}
           value={value}
-          variant="auth"
+          variant="outline"
           pl={icon ? "40px" : "16px"}
           onChange={(e) => onChange?.(e.target.value)}
           onKeyDown={onKeyDown}
