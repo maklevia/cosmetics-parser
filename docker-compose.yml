@@ -25,11 +25,7 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
-    
-    volumes:
-      - .:/app
-      - /app/node_modules
-    command: npm run dev --workspace=api
+
     depends_on:
       - db
   frontend:
