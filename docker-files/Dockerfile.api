@@ -6,8 +6,10 @@ WORKDIR /app
 # Copy the root package.json and lock file to install dependencies
 COPY package*.json ./
 
-# Because we are using npm workspaces, we also need the package.jsons of all sub-packages
+# Because we are using npm workspaces, we MUST copy the package.jsons of all sub-packages
 COPY api/package.json ./api/
+COPY frontend/package.json ./frontend/
+COPY telegram-bot/package.json ./telegram-bot/
 
 # Install dependencies (this uses the lockfile for exact versions)
 RUN npm install

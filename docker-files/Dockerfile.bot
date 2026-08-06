@@ -5,7 +5,10 @@ WORKDIR /app
 # Copy the root package.json and lock file to install dependencies
 COPY package*.json ./
 
-# Copy the bot package.json
+# We MUST copy the package.json for EVERY workspace before npm install. 
+# This doesn't copy the api code! It just prevents npm from breaking the lockfile.
+COPY api/package.json ./api/
+COPY frontend/package.json ./frontend/
 COPY telegram-bot/package.json ./telegram-bot/
 
 # Install dependencies
