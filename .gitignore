@@ -5,3 +5,5 @@ dist/
 *.d.ts.map
 .env
 docs/
+# TypeScript cache files
+*.tsbuildinfo
