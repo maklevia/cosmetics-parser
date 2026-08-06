@@ -33,6 +33,9 @@ export class PriceDropQueue {
     })
     status: PriceDropQueueStatus;
 
+    @Column({ name: "batch_id", type: "varchar", length: 16, nullable: true })
+    batchId: string | null;
+
     @CreateDateColumn({ name: "created_at", type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
     createdAt: Date;
 }

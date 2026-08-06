@@ -20,4 +20,8 @@ export class NotificationService {
   async markNotifAsRead(notifId: number): Promise<void> {
     await notifRepositories.markNotifAsRead(notifId);
   }
+
+  async getDropsByBatchId(batchId: string): Promise<any[]> {
+    return await notifRepositories.getDropsByBatchId(batchId);
+  }
 }

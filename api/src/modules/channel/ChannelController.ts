@@ -54,4 +54,18 @@ export class ChannelController {
       const isBinded = await userService.isTelegramAccountBinded(telegramAccountId);
       res.status(200).json({ isBinded });
   }
+
+  getDropsByBatch = async (req: Request, res: Response) => {
+    const batchId = req.params.batchId;
+
+    if (!batchId) {
+      throw new ValidationError('Batch ID is required');
+    }
+
+    const { NotificationService } = await import("@api/modules/notification/NotificationService.js");
+    const notifService = new NotificationService();
+    const drops = await notifService.getDropsByBatchId(batchId);
+
+    res.status(200).json({ drops });
+  }
 }

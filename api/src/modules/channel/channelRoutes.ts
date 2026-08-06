@@ -10,3 +10,4 @@ const channelController = new ChannelController();
 channelRoutes.post('/:channel/bind', channelMiddleware, channelController.bindChannelAccount);
 channelRoutes.get('/:channel/generateLink', authMiddleware, channelController.generateChannelLink);
 channelRoutes.get('/telegram/status/:telegramAccountId', channelMiddleware, channelController.checkTelegramStatus);
+channelRoutes.get('/drops/batch/:batchId', channelMiddleware, channelController.getDropsByBatch);

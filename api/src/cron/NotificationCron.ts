@@ -5,6 +5,7 @@ import { ChannelName } from "@api/types/Enums.js";
 import { ChannelRepository } from "@api/modules/channel/ChannelRepository.js";
 import { AppError } from "@api/errors/AppError.js";
 import { PendingNotifData, PriceDropDInfo } from "@api/types/NotificationTypes.js";
+import crypto from "crypto";
 
 const notifRepository = new NotificationRepository();
 const channelRepository = new ChannelRepository();
@@ -38,10 +39,21 @@ export class NotificationCron {
     };
     const failedChannels = new Set<ChannelName>();
 
+    const batchId = crypto.randomBytes(8).toString("hex");
+
     for (const priceDropData of user.priceDropsData) {
       await this.createInAppNotification(user.userId, priceDropData);
       processedQueueIds.push(priceDropData.queueId);
-      await this.dispatchToGateways(user.userId, priceDropData, channelAccountIds, failedChannels);
+    }
+
+    // Assign batch_id to all queue items for this user
+    const queueIds = user.priceDropsData.map(d => d.queueId);
+    await notifRepository.assignBatchId(queueIds, batchId);
+
+    if (user.priceDropsData.length === 1) {
+      await this.dispatchNotificationToGateways(user.userId, user.priceDropsData[0], channelAccountIds, failedChannels, batchId);
+    } else if (user.priceDropsData.length > 1) {
+      await this.dispatchSummaryToGateways(user.userId, user.priceDropsData.length, channelAccountIds, failedChannels, batchId);
     }
   }
 
@@ -61,11 +73,12 @@ export class NotificationCron {
     );
   }
 
-  private async dispatchToGateways(
+  private async dispatchNotificationToGateways(
     userId: number,
     priceDropData: PriceDropDInfo,
     channelAccountIds: Partial<Record<ChannelName, number | null>>,
-    failedChannels: Set<ChannelName>
+    failedChannels: Set<ChannelName>,
+    batchId: string,
   ): Promise<void> {
     for (const [channelName, gateway] of gateways) {
       const accountId = channelAccountIds[channelName];
@@ -79,7 +92,26 @@ export class NotificationCron {
           link: priceDropData.productLink,
           image: priceDropData.image,
           storeName: priceDropData.storeName,
-        });
+        }, batchId);
+      } catch (error) {
+        await this.handleGatewayError(error, userId, channelName, failedChannels);
+      }
+    }
+  }
+
+  private async dispatchSummaryToGateways(
+    userId: number,
+    count: number,
+    channelAccountIds: Partial<Record<ChannelName, number | null>>,
+    failedChannels: Set<ChannelName>,
+    batchId: string,
+  ): Promise<void> {
+    for (const [channelName, gateway] of gateways) {
+      const accountId = channelAccountIds[channelName];
+      if (!accountId || failedChannels.has(channelName)) continue;
+
+      try {
+        await gateway.sendPriceDropSummary(accountId, count, batchId);
       } catch (error) {
         await this.handleGatewayError(error, userId, channelName, failedChannels);
       }
