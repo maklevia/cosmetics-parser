@@ -1,6 +1,5 @@
 import type { CollectionProduct } from "@fe/modules/collection/components/CollectionArea/types/CollectionProduct";
 import { Card, Image, Heading, Text, Stack, Box } from "@chakra-ui/react";
-import { decodeHtmlEntities } from "@fe/utils/stringUtils";
 
 interface CollectionProductProp {
     product: CollectionProduct;
@@ -31,17 +30,17 @@ export function ProductCard({product, onClick}: CollectionProductProp) {
                                 maxWidth='100%' 
                                 objectFit='contain' 
                                 src={product.image} 
-                                alt={decodeHtmlEntities(product.name)}
+                                alt={product.name}
                             />
                         </Box>
 
                         <Stack gap="1" width="100%" textAlign="center" mt="auto">
                             <Text fontSize='xs' color="fg.muted" textTransform="uppercase" fontWeight="bold">
-                                {decodeHtmlEntities(product.brand)}
+                                {product.brand}
                             </Text>
                             
                             <Heading fontSize='sm' lineClamp={2} fontWeight="medium">
-                                {decodeHtmlEntities(product.name)}
+                                {product.name}
                             </Heading>
                         </Stack>
                     </Stack>

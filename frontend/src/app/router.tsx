@@ -8,14 +8,12 @@ import { MainLayout } from "@fe/components/layouts/MainLayout";
 import { CollectionProvider } from "@fe/modules/collection/context/CollectionProvider";
 import { ProtectedRoute } from "@fe/app/ProtectedRoute";
 import { PublicRoute } from "@fe/app/PublicRoute";
+import { RootErrorBoundary } from "@fe/app/RootErrorBoundary";
 
 export const router = createBrowserRouter([
   {
-    element: (
-      <AuthProvider>
-        <Outlet />
-      </AuthProvider>
-    ),
+    element: <Outlet />,
+    errorElement: <RootErrorBoundary />,
     children: [
       {
         element: <ProtectedRoute />,

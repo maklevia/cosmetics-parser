@@ -59,7 +59,7 @@ export class NotinoParser extends BaseParser {
           brand: decodeHtmlEntities(data.brand.name),
           price: data?.offers[0]?.price || undefined,
           inStock: this.normalizeInStockParam(data.offers[0].availability),
-          image: this.formatImageUrl(data.image?.[0]),
+          image: this.formatImageUrl(data.image?.[0]) || undefined,
           link,
           storeName: this.storeName,
         };
