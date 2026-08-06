@@ -12,11 +12,15 @@ export const setupCronJobs = () => {
     timezone: "Europe/Kyiv",
   });
 
+  cron.schedule("13 13 * * *", () => parsingCron.weeklyDiscovery(), {
+    timezone: "Europe/Kyiv",
+  });
+
   cron.schedule("0 11 * * *", () => notificationCron.sendNotifications(), {
     timezone: "Europe/Kyiv",
   });
 
-  cron.schedule("0 15 * * *", async () => {
+  cron.schedule("0 5 * * 0", async () => {
     await channelService.clearOldChannelTokens();
     await notificationCron.clearOldRecords();
   });

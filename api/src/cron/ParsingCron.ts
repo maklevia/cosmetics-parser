@@ -141,4 +141,27 @@ export class ParsingCron {
 
   private sleep = (delayMs: number) =>
     new Promise((resolve) => setTimeout(resolve, delayMs));
+
+  async weeklyDiscovery(): Promise<void> {
+    try {
+      const productsToSearch = await productRepository.getProductsWithMissingStores();
+
+      for (const product of productsToSearch) {
+        const parsedProduct = await parser.parseSpecificStoreByProductNameAndBrand(product.missingStore, product.name, product.brand);
+
+        if (!parsedProduct) {
+          continue;
+        } 
+
+        console.log('Found missing store item ', parsedProduct);
+
+        await productRepository.addDiscoveredStoreRecord(product.productId, parsedProduct);
+        await this.sleep(15000);
+      }
+    } catch (error) {
+      if (!(error instanceof AppError)) {
+        console.log("API CRON: error during weekly discovery ", error);
+      }
+    }
+  }
 }
