@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Relation } from "typeorm";
 import { StoreRecord } from "@api/modules/product/StoreRecord.js";
 import { StoreName } from "@api/types/Enums.js";
 import { ParsedProduct } from "@api/types/ProductTypes.js";
@@ -18,7 +18,7 @@ export class PriceHistory {
 
     @ManyToOne(() => StoreRecord, record => record.priceHistory, { onDelete: "CASCADE" })
     @JoinColumn({ name: "store_record_id" })
-    storeRecord: StoreRecord;
+    storeRecord: Relation<StoreRecord>;
 
     @Column({ name: "store_name", type: "enum", enum: StoreName })
     storeName: StoreName;

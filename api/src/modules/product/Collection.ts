@@ -1,6 +1,6 @@
 import { Product } from "@api/modules/product/Product.js";
 import { User } from "@api/modules/user/User.js";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Relation } from "typeorm";
 
 
 @Entity("Collections")
@@ -16,9 +16,9 @@ import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGenerat
 
         @ManyToOne(() => User, (user) => user.collections, { onDelete: "CASCADE" })
         @JoinColumn({ name: "user_id" })
-        user: User;
+        user: Relation<User>;
 
         @ManyToOne(() => Product, (product) => product.collections, { onDelete: "CASCADE" })
         @JoinColumn({name: "product_id"})
-        product: Product;
+        product: Relation<Product>;
     }

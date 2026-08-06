@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, Unique } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, Unique, Relation } from "typeorm";
 import { User } from "@api/modules/user/User.js";
 import { StoreRecord } from "@api/modules/product/StoreRecord.js";
 
@@ -10,11 +10,11 @@ export class StoreRecordOverride {
 
     @ManyToOne(() => User, user => user.storeRecordOverrides, { onDelete: "CASCADE" })
     @JoinColumn({ name: "user_id" })
-    user: User;
+    user: Relation<User>;
 
     @ManyToOne(() => StoreRecord, record => record.overrides, { onDelete: "CASCADE" })
     @JoinColumn({ name: "store_record_id" })
-    storeRecord: StoreRecord;
+    storeRecord: Relation<StoreRecord>;
 
     @Column({ name: "latest_price", type: "int", nullable: true })
     latestPrice: number | null;

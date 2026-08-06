@@ -8,6 +8,7 @@ import {
   OneToMany,
   JoinColumn,
   Unique,
+  Relation
 } from "typeorm";
 import { Product } from "@api/modules/product/Product.js";
 import { StoreRecordOverride } from "@api/modules/product/StoreRecordOverride.js";
@@ -37,7 +38,7 @@ export class StoreRecord {
     onDelete: "CASCADE",
   })
   @JoinColumn({ name: "product_id" })
-  product: Product;
+  product: Relation<Product>;
 
   @Column({ name: "store_name", type: "enum", enum: StoreName })
   storeName: StoreName;

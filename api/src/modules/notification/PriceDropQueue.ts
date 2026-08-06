@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Relation } from "typeorm";
 import { StoreRecord } from "@api/modules/product/StoreRecord.js";
 import { Product } from "@api/modules/product/Product.js";
 
@@ -14,11 +14,11 @@ export class PriceDropQueue {
 
     @ManyToOne(() => StoreRecord, record => record.priceDropQueues, { onDelete: "CASCADE" })
     @JoinColumn({ name: "store_record_id" })
-    storeRecord: StoreRecord;
+    storeRecord: Relation<StoreRecord>;
 
     @ManyToOne(() => Product, product => product.priceDropQueues, { onDelete: "CASCADE" })
     @JoinColumn({ name: "product_id" })
-    product: Product;
+    product: Relation<Product>;
 
     @Column({ name: "old_price", type: "int", nullable: true })
     oldPrice: number | null;

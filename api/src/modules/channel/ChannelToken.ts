@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Relation } from "typeorm";
 import { User } from "@api/modules/user/User.js";
 
 import { ChannelName } from "@api/types/Enums.js";
@@ -12,7 +12,7 @@ export class ChannelToken {
 
     @ManyToOne(() => User, user => user.channelTokens, { onDelete: "CASCADE" })
     @JoinColumn({ name: "user_id" })
-    user: User;
+    user: Relation<User>;
 
     @Column({ type: "enum", enum: ChannelName, nullable: true })
     channel: ChannelName | null;

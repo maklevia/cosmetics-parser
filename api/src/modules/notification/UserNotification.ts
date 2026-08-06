@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, Relation } from "typeorm";
 import { User } from "@api/modules/user/User.js";
 import { Product } from "@api/modules/product/Product.js";
 
@@ -9,11 +9,11 @@ export class UserNotification {
 
     @ManyToOne(() => User, user => user.notifications, { onDelete: "CASCADE" })
     @JoinColumn({ name: "user_id" })
-    user: User;
+    user: Relation<User>;
 
     @ManyToOne(() => Product, product => product.notifications, { onDelete: "CASCADE", nullable: true })
     @JoinColumn({ name: "product_id" })
-    product: Product | null;
+    product: Relation<Product> | null;
 
     @Column({ type: "text", nullable: true })
     title: string | null;
