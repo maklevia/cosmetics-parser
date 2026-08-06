@@ -24,4 +24,11 @@ export class NotificationController {
     await notificationService.markNotifAsRead(notifId);
     res.status(200).json({ message: "Notification marked as read" });
   };
+
+  markAllAsRead = async (req: Request, res: Response) => {
+    const userId = getAuthUser(res).userId;
+
+    await notificationService.markAllAsRead(userId);
+    res.status(200).json({ message: "All notifications marked as read" });
+  };
 }

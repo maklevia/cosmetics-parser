@@ -7,4 +7,5 @@ export const notificationRoutes = Router();
 const notificationController = new NotificationController();
 
 notificationRoutes.get('/getAll', authMiddleware, notificationController.getUserNotification);
+notificationRoutes.patch('/markAllAsRead', authMiddleware, notificationController.markAllAsRead);
 notificationRoutes.patch('/:notifId/markAsRead', authMiddleware, notificationController.markNotifAsRead);

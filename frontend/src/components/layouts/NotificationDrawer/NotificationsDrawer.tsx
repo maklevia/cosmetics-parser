@@ -2,6 +2,8 @@ import { productDetailDialog } from "@fe/modules/collection/components/ProductDe
 import { useNotifications } from "@fe/components/layouts/NotificationDrawer/hooks/useNotifications";
 import { BellTrigger } from "@fe/components/layouts/NotificationDrawer/components/BellTrigger";
 import { NotificationsList } from "@fe/components/layouts/NotificationDrawer/components/NotificationsList";
+import { MarkAllAsReadButton } from "@fe/components/layouts/NotificationDrawer/components/MarkAllAsReadButton";
+import { Flex } from "@chakra-ui/react";
 import {
   DrawerRoot,
   DrawerTrigger,
@@ -13,7 +15,7 @@ import {
 } from "@fe/components/ui/drawer";
 
 export function NotificationsDrawer() {
-  const { notifications, isLoading, markAsRead } = useNotifications();
+  const { notifications, isLoading, markAsRead, markAllAsRead } = useNotifications();
 
   const handleItemClick = async (
     productId: number | null,
@@ -38,7 +40,10 @@ export function NotificationsDrawer() {
 
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>Notifications</DrawerTitle>
+          <Flex justify="space-between" align="center" w="100%">
+            <DrawerTitle>Notifications</DrawerTitle>
+            {unreadCount > 0 && <MarkAllAsReadButton onClick={markAllAsRead} />}
+          </Flex>
           <DrawerCloseTrigger />
         </DrawerHeader>
 

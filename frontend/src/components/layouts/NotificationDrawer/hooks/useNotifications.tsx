@@ -9,6 +9,7 @@ interface HookOutput {
   notifications: NotificationData[];
   isLoading: boolean;
   markAsRead: (notifId: number) => void;
+  markAllAsRead: () => void;
 }
 interface NotifResponse extends AxiosResponse {
     notifications: NotificationData[];
@@ -51,7 +52,21 @@ export function useNotifications(): HookOutput {
     }
   }
 
-  return { notifications, isLoading, markAsRead };
+  const markAllAsRead = async () => {
+    try {
+      setNotifications((prev) =>
+        prev.map((notif) => ({ ...notif, isRead: true }))
+      );
+
+      await api.patch('/notification/markAllAsRead');
+    } catch (error) {
+      if (isAxiosError(error) && error.response && error.response.status < 500) {
+        toaster.error({ title: "Failed to mark all as read" });
+      }
+    }
+  }
+
+  return { notifications, isLoading, markAsRead, markAllAsRead };
 }
 
 

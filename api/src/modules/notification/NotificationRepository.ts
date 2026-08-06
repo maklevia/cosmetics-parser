@@ -126,8 +126,10 @@ export class NotificationRepository {
   }
 
   async markNotifAsRead(notifId: number): Promise<void> {
-    await this.notifRepo.update(notifId, {
-      isRead: true,
-    });
+    await this.notifRepo.update(notifId, { isRead: true });
+  }
+
+  async markAllAsRead(userId: number): Promise<void> {
+    await this.notifRepo.update({ user: { id: userId }, isRead: false }, { isRead: true });
   }
 }
