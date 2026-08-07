@@ -26,4 +26,5 @@ export const AppDataSource = new DataSource({
         User, Product, Collection, StoreRecord, StoreRecordOverride,
         PriceHistory, PriceDropQueue, UserNotification, ChannelToken
     ],
+    migrations: ["src/migrations/*.ts", "dist/migrations/*.js"],
 })

@@ -40,7 +40,7 @@ export class StoreRecord {
   @JoinColumn({ name: "product_id" })
   product: Relation<Product>;
 
-  @Column({ name: "store_name", type: "enum", enum: StoreName })
+  @Column({ name: "store_name", type: "enum", enum: StoreName, enumName: "store_name_enum" })
   storeName: StoreName;
 
   @Column({ name: "product_store_name", type: "varchar", length: 255 })

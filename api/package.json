@@ -6,7 +6,12 @@
   "scripts": {
     "dev": "tsx watch --env-file=../.env src/index.ts",
     "build": "tsc --build && tsc-alias -f",
-    "start": "node dist/index.js"
+    "start": "npm run migration:run:prod && node dist/index.js",
+    "typeorm": "tsx --env-file=../.env ../node_modules/typeorm/cli.js",
+    "migration:generate": "npm run typeorm -- -d src/config/data-source.ts migration:generate",
+    "migration:run": "npm run typeorm -- -d src/config/data-source.ts migration:run",
+    "migration:revert": "npm run typeorm -- -d src/config/data-source.ts migration:revert",
+    "migration:run:prod": "node ../node_modules/typeorm/cli.js -d dist/config/data-source.js migration:run"
   },
   "dependencies": {
     "axios": "^1.18.1",

@@ -26,7 +26,7 @@ export class Product {
   @Column({ type: "text", nullable: true })
   image: string | null;
 
-  @Column({ name: "primary_store_name", type: "enum", enum: StoreName, nullable: true })
+  @Column({ name: "primary_store_name", type: "enum", enum: StoreName, enumName: "store_name_enum", nullable: true })
   primaryStoreName: StoreName;
 
   @CreateDateColumn({
