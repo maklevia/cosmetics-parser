@@ -12,6 +12,12 @@ import { ChannelToken } from "@api/modules/channel/ChannelToken.js";
 import { getEnvOrThrow } from "@api/utils/getEnvOrThrow.js";
 
 
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 export const AppDataSource = new DataSource({
     type: 'postgres',
     host: getEnvOrThrow('DB_HOST'),
@@ -26,5 +32,5 @@ export const AppDataSource = new DataSource({
         User, Product, Collection, StoreRecord, StoreRecordOverride,
         PriceHistory, PriceDropQueue, UserNotification, ChannelToken
     ],
-    migrations: ["src/migrations/*.ts", "dist/migrations/*.js"],
+    migrations: [__dirname + "/../migrations/*.{js,ts}"],
 })
