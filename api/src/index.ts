@@ -13,6 +13,7 @@ import "@api/config/index.js";
 import { errorMiddleware } from "@api/middlewares/errorMiddleware.js";
 
 const app = express();
+app.set("trust proxy", 1);
 const port = getEnvOrThrow('API_PORT');
 
 setupCronJobs();

@@ -4,7 +4,7 @@ import { CookieOptions } from "express";
 
 export const cookiesRefreshOptions: CookieOptions = {
     httpOnly: true,
-    sameSite: 'strict',
+    sameSite: getEnvOrThrow('NODE_ENV') === 'production' ? 'none' : 'strict',
     secure: getEnvOrThrow('NODE_ENV') === 'production',
     path: '/auth/refresh',
     maxAge: 30 * DAY
@@ -12,7 +12,7 @@ export const cookiesRefreshOptions: CookieOptions = {
 
 export const cookiesAccessOptions: CookieOptions = {
     httpOnly: true,
-    sameSite: 'strict',
+    sameSite: getEnvOrThrow('NODE_ENV') === 'production' ? 'none' : 'strict',
     secure: getEnvOrThrow('NODE_ENV') === 'production',
     path: '/',
     maxAge: 15 * MINUTE
