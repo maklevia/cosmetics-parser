@@ -89,6 +89,8 @@ export class AuthController {
         if (error || !decodedUser) {
           res.clearCookie("accessToken", cookiesAccessOptions);
           res.clearCookie("refreshToken", cookiesRefreshOptions);
+          // legacy Path='/auth/refresh' cleanup for users with old cookie
+          res.clearCookie("refreshToken", { ...cookiesRefreshOptions, path: '/auth/refresh' });
           return next(new AuthenticationError("No refresh token"));
         }
 
@@ -110,6 +112,7 @@ export class AuthController {
   logout = async (req: Request, res: Response) => {
     res.clearCookie("accessToken", cookiesAccessOptions);
     res.clearCookie("refreshToken", cookiesRefreshOptions);
+    res.clearCookie("refreshToken", { ...cookiesRefreshOptions, path: '/auth/refresh' });
 
     return res.status(200).json({ message: "Successfully logged out" });
   };
