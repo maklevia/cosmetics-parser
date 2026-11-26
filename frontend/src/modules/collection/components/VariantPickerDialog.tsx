@@ -111,29 +111,59 @@ export const variantPickerDialog = createOverlay((props: Props) => {
                 </Text>
 
                 <Box maxH="300px" overflowY="auto" pr={2}>
-                  <SimpleGrid columns={{ base: 2, md: 3 }} gap={2}>
+                  <SimpleGrid columns={{ base: 1, md: 2 }} gap={3}>
                     {needsVariant.options.map((option) => {
                       const isSelected = option.optionId === selectedOptionId;
 
                       return (
-                        <Button
+                        <Box
                           key={option.optionId}
-                          size="sm"
-                          height="auto"
-                          py={2}
-                          whiteSpace="normal"
-                          textAlign="left"
+                          p={3}
+                          borderRadius="xl"
+                          cursor="pointer"
                           onClick={() => setSelectedOptionId(option.optionId)}
-                          bg={isSelected ? "brand.solid" : "transparent"}
+                          bg={isSelected ? "brand.solid" : "gray.50"}
                           color={isSelected ? "white" : "brand.text"}
                           border="1px solid"
                           borderColor={isSelected ? "brand.solid" : "gray.200"}
                           _hover={{
-                            bg: isSelected ? "brand.hover" : "gray.50",
+                            bg: isSelected ? "brand.hover" : "gray.100",
                           }}
                         >
-                          {option.label}
-                        </Button>
+                          <Text fontWeight="semibold" fontSize="sm">
+                            {option.label}
+                          </Text>
+
+                          <VStack gap={1} alignItems="flex-start" mt={2}>
+                            {option.offers.map((offer) => (
+                              <HStack
+                                key={offer.variantId ?? offer.link}
+                                gap={2}
+                                fontSize="xs"
+                              >
+                                {offer.options?.warehouse && (
+                                  <Badge
+                                    colorPalette={isSelected ? "whiteAlpha" : "pink"}
+                                    variant="subtle"
+                                  >
+                                    {offer.options.warehouse.toUpperCase()}
+                                  </Badge>
+                                )}
+                                <Text>
+                                  {offer.price !== undefined
+                                    ? `₴${offer.price}`
+                                    : "Price unavailable"}
+                                </Text>
+                                <Badge
+                                  colorPalette={offer.inStock ? "green" : "red"}
+                                  variant="subtle"
+                                >
+                                  {offer.inStock ? "In stock" : "Out of stock"}
+                                </Badge>
+                              </HStack>
+                            ))}
+                          </VStack>
+                        </Box>
                       );
                     })}
                   </SimpleGrid>
