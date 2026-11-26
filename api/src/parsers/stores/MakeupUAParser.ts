@@ -157,6 +157,7 @@ export class MakeupUAParser extends BaseParser {
 
         for (const product of responseData) {
             if (product.type !== 'product') continue;
+            if (/набір|gift set|trio|duo/i.test(product.subTitle ?? '')) continue;
 
             const productName = this.titleOrSubtitle(product.title, product.subTitle, product.brand.title);
             const score = productNamesSimilarityScore(
