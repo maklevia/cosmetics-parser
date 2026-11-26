@@ -5,7 +5,7 @@ import { NotinoParser } from "@api/parsers/stores/NotinoParser.js";
 import { StoreName } from "@api/types/Enums.js";
 import type { BaseParser } from "@api/parsers/BaseParser.js";
 import { BadGatewayError, ValidationError } from "@api/errors/AppError.js";
-import { normalizeVariantValue } from "@api/parsers/utils/stringUtils.js";
+import { normalizeVariantValue, stripCategorySuffix } from "@api/parsers/utils/stringUtils.js";
 
 export class ParserOrchestrator {
   private readonly parsers: Record<StoreName, BaseParser>;
@@ -84,8 +84,9 @@ export class ParserOrchestrator {
     brand: string,
     selectedOptions: VariantOptions,
   ): Promise<ParsedProduct[]> {
+    const searchName = stripCategorySuffix(baseName);
     const preview = await this.parsers[storeName].parseByNameAndBrand(
-      baseName,
+      searchName,
       brand,
     );
 

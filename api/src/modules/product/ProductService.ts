@@ -232,7 +232,7 @@ export class ProductService {
       );
     });
 
-    await Promise.all(secondaryFetches);
+    await Promise.allSettled(secondaryFetches);
 
     const parseResult: ParseResult = {
       primaryStore: storeName,

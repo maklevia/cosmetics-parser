@@ -169,6 +169,6 @@ export class EvaParser extends BaseParser {
       return null;
     }
 
-    return this.mapProduct(bestProduct, `${this.evaUrl}${bestProduct.id}/`);
+    return await this.fetchByLink(`${this.evaUrl}${bestProduct.id}/`);
   }
 }

@@ -58,6 +58,38 @@ export function checkProductNamesSimilarity(productName1: string, productName2: 
     return true;
 }
 
+const CATEGORY_SUFFIXES = [
+    'парфумована вода жіноча',
+    'парфумована вода чоловіча',
+    'парфюмерна вода жіноча',
+    'парфюмерна вода чоловіча',
+    'туалетна вода жіноча',
+    'туалетна вода чоловіча',
+    'парфумована вода',
+    'парфюмерна вода',
+    'туалетна вода',
+    'помада для губ',
+];
+
+/**
+ * Removes trailing store-specific category words from a product name.
+ * Example: "CK Eternity for Women Парфумована вода жіноча" becomes
+ * "CK Eternity for Women".
+ */
+export function stripCategorySuffix(productName: string): string {
+    const simplifiedName = simplifyString(productName);
+
+    for (const suffix of CATEGORY_SUFFIXES) {
+        if (simplifiedName.endsWith(suffix)) {
+            return productName
+                .slice(0, productName.length - suffix.length)
+                .trim();
+        }
+    }
+
+    return productName;
+}
+
 /**
  * Returns a 0-100 similarity score for two products.
  * Returns 0 when brands do not match.
