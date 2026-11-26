@@ -191,7 +191,7 @@ export class ProductService {
       (option) => option.optionId === variantId,
     );
 
-    const primaryOffers = option
+    let primaryOffers = option
       ? option.offers
       : product.variantId === variantId
         ? [product]
@@ -201,7 +201,40 @@ export class ProductService {
       throw new ValidationError("Selected variant was not found");
     }
 
+    if (storeName === StoreName.Notino) {
+      primaryOffers = await this.refreshNotinoOffers(primaryOffers);
+    }
+
     return this.parseAndSaveProduct(storeName, product, primaryOffers);
+  }
+
+  private async refreshNotinoOffers(
+    offers: ParsedProduct[],
+  ): Promise<ParsedProduct[]> {
+    return Promise.all(
+      offers.map(async (offer) => {
+        if (offer.price !== undefined) {
+          return offer;
+        }
+
+        const freshOffer = await parser.parseSingleProduct(
+          offer.link,
+          offer.variantId,
+        );
+
+        if (!freshOffer) {
+          return offer;
+        }
+
+        return {
+          ...offer,
+          name: freshOffer.name || offer.name,
+          price: freshOffer.price,
+          inStock: freshOffer.inStock,
+          image: freshOffer.image ?? offer.image,
+        };
+      }),
+    );
   }
 
   private async parseAndSaveProduct(
