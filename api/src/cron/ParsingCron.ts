@@ -87,7 +87,10 @@ export class ParsingCron {
 
   private async parseAndUpdateRecords(oldRecord: StoreRecord): Promise<void> {
     try {
-      const newRecordData = await parser.parseSingleProduct(oldRecord.link);
+      const newRecordData = await parser.parseSingleProduct(
+        oldRecord.link,
+        oldRecord.variantId ?? undefined,
+      );
       if (!newRecordData) {
         console.log(`API CRON: Got null response for ${oldRecord.link}`);
         return;
@@ -147,15 +150,22 @@ export class ParsingCron {
       const productsToSearch = await productRepository.getProductsWithMissingStores();
 
       for (const product of productsToSearch) {
-        const parsedProduct = await parser.parseSpecificStoreByProductNameAndBrand(product.missingStore, product.name, product.brand);
+        const offers = await parser.findVariantOffersInStore(
+          product.missingStore,
+          product.name,
+          product.brand,
+          product.options ?? {},
+        );
 
-        if (!parsedProduct) {
+        if (offers.length === 0) {
           continue;
-        } 
+        }
 
-        console.log('Found missing store item ', parsedProduct);
+        console.log('Found missing store item ', offers);
 
-        await productRepository.addDiscoveredStoreRecord(product.productId, parsedProduct);
+        for (const offer of offers) {
+          await productRepository.addDiscoveredStoreRecord(product.productId, offer);
+        }
         await this.sleep(15000);
       }
     } catch (error) {

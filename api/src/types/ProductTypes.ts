@@ -36,12 +36,13 @@ export interface ParsedProductOption {
 }
 
 export interface ParsedStoreProduct extends ParsedProduct {
+    baseName?: string;
     variants?: ParsedProductOption[];
 }
 
 export interface ParseResult {
   primaryStore: StoreName;
-  products: Record<StoreName, ParsedProduct | null>;
+  products: Record<StoreName, ParsedProduct[]>;
 }
 
 export interface NeedsVariantParseResult {
