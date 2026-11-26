@@ -27,7 +27,7 @@ interface Props {
 export const variantPickerDialog = createOverlay((props: Props) => {
   const { needsVariant, productLink, refreshProducts } = props;
   const contentRef = useRef<HTMLDivElement>(null);
-  const { isLoading: isParsing, parse, errorMessage } = useParserByLink();
+  const { isLoading: isParsing, parse, errorMessage, setErrorMessage } = useParserByLink();
 
   const [selectedOptionId, setSelectedOptionId] = useState(() => {
     const defaultOption =
@@ -53,6 +53,8 @@ export const variantPickerDialog = createOverlay((props: Props) => {
           },
           refreshProducts,
         });
+      } else if (response?.status === "needs_variant") {
+        setErrorMessage("Selected variant is no longer available. Please try again.");
       }
     } catch {
       // Error message is handled via errorMessage state and displayed in the dialog
