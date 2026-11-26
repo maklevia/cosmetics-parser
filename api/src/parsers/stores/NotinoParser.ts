@@ -179,6 +179,11 @@ export class NotinoParser extends BaseParser {
       }
     }
 
+    if (options.length === 1) {
+      const offer = options[0].offers[0];
+      return { ...offer, baseName };
+    }
+
     const currentVariantLink = variantId
       ? variantLinks.find((variantLink) => variantLink.id === variantId)
       : null;
