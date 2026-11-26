@@ -293,32 +293,61 @@ export class ProductService {
   private async ensureUpdatedRecords(
     records: StoreRecordWithLowestPrice[],
   ): Promise<void> {
+    const groups = new Map<string, StoreRecordWithLowestPrice[]>();
+
     for (const record of records) {
-      if (record.updatedAt && Date.now() - record.updatedAt.getTime() > DAY) {
-        const freshRecord = await parser.parseSingleProduct(
-          record.link,
-          record.variantId ?? undefined,
+      const group = groups.get(record.link) ?? [];
+      group.push(record);
+      groups.set(record.link, group);
+    }
+
+    for (const group of groups.values()) {
+      const staleRecords = group.filter(
+        (record) =>
+          record.updatedAt &&
+          Date.now() - record.updatedAt.getTime() > DAY,
+      );
+
+      if (staleRecords.length === 0) {
+        continue;
+      }
+
+      const parsedProduct = await parser.parseSingleProduct(group[0].link);
+
+      if (!parsedProduct) {
+        continue;
+      }
+
+      for (const record of staleRecords) {
+        const freshRecord = record.variantId
+          ? parser.selectOfferFromProduct(
+              record.storeName,
+              parsedProduct,
+              record.variantId,
+            )
+          : parsedProduct;
+
+        if (!freshRecord) {
+          continue;
+        }
+
+        await productRepository.updateStoreRecordsCron(
+          record.id,
+          freshRecord.inStock,
+          freshRecord.price,
+          freshRecord.image,
+        );
+        await productRepository.createPriceHistory(
+          record.id,
+          freshRecord.storeName,
+          freshRecord.inStock,
+          freshRecord.price,
         );
 
-        if (freshRecord) {
-          await productRepository.updateStoreRecordsCron(
-            record.id,
-            freshRecord.inStock,
-            freshRecord.price,
-            freshRecord.image,
-          );
-          await productRepository.createPriceHistory(
-            record.id,
-            freshRecord.storeName,
-            freshRecord.inStock,
-            freshRecord.price,
-          );
-
-          record.latestPrice = freshRecord.price ?? null;
-          record.inStock = freshRecord.inStock;
-          record.image = freshRecord.image ?? null;
-          record.updatedAt = new Date();
-        }
+        record.latestPrice = freshRecord.price ?? null;
+        record.inStock = freshRecord.inStock;
+        record.image = freshRecord.image ?? null;
+        record.updatedAt = new Date();
       }
     }
   }

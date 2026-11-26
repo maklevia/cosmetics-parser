@@ -128,6 +128,14 @@ export class ParserOrchestrator {
     return this.parsers[storeName].selectOffer(product, variantId);
   }
 
+  selectOfferFromProduct(
+    storeName: StoreName,
+    product: ParsedStoreProduct,
+    variantId: string,
+  ): ParsedProduct | null {
+    return this.parsers[storeName].selectOffer(product, variantId);
+  }
+
   async parseSpecificStoreByProductNameAndBrand(
     storeName: StoreName,
     productName: string,
