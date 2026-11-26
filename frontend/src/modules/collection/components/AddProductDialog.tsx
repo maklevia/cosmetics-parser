@@ -1,6 +1,6 @@
 import { createOverlay, Dialog, Portal, Button, HStack } from "@chakra-ui/react";
 import { ProductStoreRecordsCard } from "@fe/modules/collection/components/ProductStoreRecordsCard";
-import type { ParseResult, ProductRecord } from "@fe/modules/collection/components/ParseForm/types/parsedProduct";
+import type { ParsedParseResult, ProductRecord } from "@fe/modules/collection/components/ParseForm/types/parsedProduct";
 import type { StoreName } from "@fe/types/store.typedefs";
 import { formatStoreName } from "@fe/utils/stringUtils";
 import { useAddProductToCollection } from "@fe/modules/collection/components/ParseForm/hooks/useAddProductToCollection";
@@ -10,7 +10,7 @@ import { useRef } from "react";
 
 interface Props {
   productId: number;
-  parseResult: ParseResult;
+  parseResult: ParsedParseResult;
   refreshProducts: () => void;
 }
 
@@ -50,12 +50,12 @@ export const addProductDialog = createOverlay((props: Props) => {
                 {(
                   Object.entries(parseResult.products) as [
                     StoreName,
-                    ProductRecord | null,
+                    ProductRecord[],
                   ][]
-                ).map(([storeName, product]) => (
+                ).map(([storeName, products]) => (
                   <ProductStoreRecordsCard
                     key={storeName}
-                    product={product}
+                    products={products}
                     storeName={formatStoreName(storeName)}
                   />
                 ))}
