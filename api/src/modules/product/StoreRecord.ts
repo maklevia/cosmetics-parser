@@ -7,7 +7,6 @@ import {
   ManyToOne,
   OneToMany,
   JoinColumn,
-  Unique,
   Relation
 } from "typeorm";
 import { Product } from "@api/modules/product/Product.js";
@@ -15,10 +14,9 @@ import { StoreRecordOverride } from "@api/modules/product/StoreRecordOverride.js
 import { PriceHistory } from "@api/modules/product/PriceHistory.js";
 import { PriceDropQueue } from "@api/modules/notification/PriceDropQueue.js";
 import { StoreName } from "@api/types/Enums.js";
-import { ParsedProduct } from "@api/types/ProductTypes.js";
+import { ParsedProduct, VariantOptions } from "@api/types/ProductTypes.js";
 
 @Entity("Store_Records")
-@Unique(["product", "storeName"])
 export class StoreRecord {
   @PrimaryGeneratedColumn()
   id: number;
@@ -31,6 +29,8 @@ export class StoreRecord {
     record.latestPrice = product.price ?? null;
     record.link = product.link;
     record.storeName = product.storeName;
+    record.variantId = product.variantId ?? null;
+    record.options = product.options ?? null;
     return record;
   }
 
@@ -48,6 +48,12 @@ export class StoreRecord {
 
   @Column({ type: "text"})
   link: string;
+
+  @Column({ name: "variant_id", type: "varchar", length: 255, nullable: true })
+  variantId: string | null;
+
+  @Column({ type: "jsonb", nullable: true })
+  options: VariantOptions | null;
 
   @Column({ type: "text", nullable: true })
   image: string | null;
