@@ -145,7 +145,7 @@ export const variantPickerDialog = createOverlay((props: Props) => {
                               >
                                 {offer.options?.warehouse && (
                                   <Badge
-                                    colorPalette={isSelected ? "whiteAlpha" : "pink"}
+                                    colorPalette="pink"
                                     variant="subtle"
                                   >
                                     {offer.options.warehouse.toUpperCase()}
