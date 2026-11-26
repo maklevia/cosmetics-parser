@@ -160,6 +160,25 @@ export class NotinoParser extends BaseParser {
       this.formatImageUrl(data.image?.[0]) ?? undefined,
     );
 
+    const primaryOffer = data?.offers?.[0];
+    const primaryOfferVariantId = primaryOffer?.url
+      ? this.extractIdFromUrl(primaryOffer.url, /\/p-(\d+)/)
+      : null;
+
+    if (primaryOfferVariantId) {
+      const primaryOption = options.find(
+        (option) => option.optionId === primaryOfferVariantId,
+      );
+
+      if (primaryOption?.offers[0]) {
+        primaryOption.offers[0] = {
+          ...primaryOption.offers[0],
+          price: primaryOffer?.price || undefined,
+          inStock: this.normalizeInStockParam(primaryOffer?.availability ?? ""),
+        };
+      }
+    }
+
     const currentVariantLink = variantId
       ? variantLinks.find((variantLink) => variantLink.id === variantId)
       : null;
