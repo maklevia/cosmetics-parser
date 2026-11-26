@@ -188,7 +188,7 @@ export const variantPickerDialog = createOverlay((props: Props) => {
                 loading={isParsing}
                 disabled={!selectedOptionId}
               >
-                Search Variant
+                Search Other Stores
               </Button>
             </Dialog.Footer>
             <DialogCloseTrigger />
