@@ -27,6 +27,8 @@ export function normalizeVariantValue(value: string): string {
     return simplifyString(value)
         .replace(/\s+/g, '')
         .replace(/,/g, '.')
+        .replace(/мл\./g, 'ml')
+        .replace(/гр\./g, 'g')
         .replace(/мл/g, 'ml')
         .replace(/гр/g, 'g')
         .replace(/г/g, 'g');
