@@ -12,6 +12,7 @@ import { ProductRepository } from "@api/modules/product/ProductRepository.js";
 import { StoreName } from "@api/types/Enums.js";
 import { DAY } from "@api/utils/time.js";
 import {
+  BadGatewayError,
   ConflictError,
   NotFoundError,
   ValidationError,
@@ -223,7 +224,9 @@ export class ProductService {
         );
 
         if (!freshOffer) {
-          return offer;
+          throw new BadGatewayError(
+            "Could not parse the selected Notino variant",
+          );
         }
 
         return {
