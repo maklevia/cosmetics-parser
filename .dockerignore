@@ -1,6 +1,7 @@
 node_modules
+**/dist
+**/*.tsbuildinfo
 .env
-dist
 .tmp
 npm-debug.log
 .DS_Store
