@@ -56,17 +56,19 @@ export class ProductController {
 
   parse = async (req: Request, res: Response) => {
       const productLink: string = req.body.url;
+      const variantId: string | undefined = req.body.variantId;
 
       if (!productLink || typeof productLink !== 'string') {
         throw new ValidationError("Product URL is required");
       }
 
-      const result = await this.productService.parse(productLink);
+      if (variantId !== undefined && typeof variantId !== 'string') {
+        throw new ValidationError("Variant ID must be a string");
+      }
 
-      const productId = result.productId;
-      const parsedResults = result.parseResult;
+      const result = await this.productService.parse(productLink, variantId);
 
-      return res.status(200).json({ productId, parsedResults });
+      return res.status(200).json(result);
   };
 
   addProduct = async (req: Request, res: Response) => {

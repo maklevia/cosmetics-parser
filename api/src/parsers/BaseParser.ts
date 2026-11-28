@@ -1,4 +1,4 @@
-import { ParsedProduct } from "@api/types/ProductTypes.js";
+import { ParsedProduct, ParsedProductOption, ParsedStoreProduct } from "@api/types/ProductTypes.js";
 import { StoreName } from "@api/types/Enums.js";
 import { checkProductNamesSimilarity } from "@api/parsers/utils/stringUtils.js";
 import { BadGatewayError } from "@api/errors/AppError.js";
@@ -7,13 +7,13 @@ import axios from "axios";
 export abstract class BaseParser {
   abstract readonly storeName: StoreName;
 
-  protected abstract fetchByLink(link: string): Promise<ParsedProduct | null>;
+  protected abstract fetchByLink(link: string): Promise<ParsedStoreProduct | null>;
   protected abstract fetchByNameAndBrand(
     searchProductName: string,
     searchProductBrand: string,
-  ): Promise<ParsedProduct | null>;
+  ): Promise<ParsedStoreProduct | null>;
 
-  async parseByLink(link: string): Promise<ParsedProduct | null> {
+  async parseByLink(link: string): Promise<ParsedStoreProduct | null> {
     try {
       const product = await this.fetchByLink(link);
       if (!product) {
@@ -28,7 +28,7 @@ export abstract class BaseParser {
   async parseByNameAndBrand(
     searchProductName: string,
     searchProductBrand: string,
-  ): Promise<ParsedProduct | null> {
+  ): Promise<ParsedStoreProduct | null> {
     try {
       const product = await this.fetchByNameAndBrand(
         searchProductName,
@@ -41,6 +41,31 @@ export abstract class BaseParser {
     } catch (error) {
       this.handleParseError(error);
     }
+  }
+
+  selectOffer(
+    product: ParsedStoreProduct,
+    variantId: string,
+  ): ParsedProduct | null {
+    if (product.variantId === variantId) {
+      return product;
+    }
+
+    for (const option of product.variants ?? []) {
+      const offer = option.offers.find((offer) => offer.variantId === variantId);
+      if (offer) {
+        return offer;
+      }
+    }
+
+    return null;
+  }
+
+  selectOption(
+    product: ParsedStoreProduct,
+    optionId: string,
+  ): ParsedProductOption | null {
+    return product.variants?.find((option) => option.optionId === optionId) ?? null;
   }
 
   protected extractIdFromUrl(link: string, pattern: RegExp): string | null {

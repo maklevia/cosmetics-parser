@@ -42,12 +42,12 @@ export const productDetailDialog = createOverlay((props: Props) => {
                   {(
                     Object.entries(productDetails) as [
                       StoreName,
-                      ProductRecord | null,
+                      ProductRecord[],
                     ][]
-                  ).map(([storeName, product]) => (
+                  ).map(([storeName, products]) => (
                     <ProductStoreRecordsCard
                       key={storeName}
-                      product={product}
+                      products={products}
                       storeName={formatStoreName(storeName)}
                     />
                   ))}

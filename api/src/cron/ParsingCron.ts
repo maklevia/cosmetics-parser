@@ -10,8 +10,8 @@ const notifRepositories = new NotificationRepository();
 const parser = new ParserOrchestrator();
 
 interface GroupedRecords {
-  fastStores: StoreRecord[]; //now it's Makeup and Eva
-  slowStores: StoreRecord[]; //now it's Notino
+  fastStores: StoreRecord[][]; //now it's Makeup and Eva
+  slowStores: StoreRecord[][]; //now it's Notino
 }
 
 export class ParsingCron {
@@ -44,39 +44,54 @@ export class ParsingCron {
       slowStores: [],
     };
 
-    try {
-      const productId = await productRepository.getProductsFromCollections();
-      const storeRecordsToParse =
-        await productRepository.getStoreRecordsForCron(productId);
+    const productId = await productRepository.getProductsFromCollections();
+    const storeRecordsToParse =
+      await productRepository.getStoreRecordsForCron(productId);
 
-      for (const record of storeRecordsToParse) {
-        if (record.storeName === StoreName.Notino) {
-          groupedRecords.slowStores.push(record);
-        } else {
-          groupedRecords.fastStores.push(record);
-        }
+    const fastRecords: StoreRecord[] = [];
+    const slowRecords: StoreRecord[] = [];
+
+    for (const record of storeRecordsToParse) {
+      if (record.storeName === StoreName.Notino) {
+        slowRecords.push(record);
+      } else {
+        fastRecords.push(record);
       }
-
-      return groupedRecords;
-    } catch (error) {
-      throw error;
     }
+
+    groupedRecords.fastStores = this.groupRecordsByLink(fastRecords);
+    groupedRecords.slowStores = this.groupRecordsByLink(slowRecords);
+
+    return groupedRecords;
   }
+
+  private groupRecordsByLink(records: StoreRecord[]): StoreRecord[][] {
+    const groups = new Map<string, StoreRecord[]>();
+
+    for (const record of records) {
+      const group = groups.get(record.link) ?? [];
+      group.push(record);
+      groups.set(record.link, group);
+    }
+
+    return [...groups.values()];
+  }
+
   private async processQueue(
-    records: StoreRecord[],
+    recordGroups: StoreRecord[][],
     delayMs: number,
     concurrency: number,
   ): Promise<void> {
-    const queue = [...records];
+    const queue = [...recordGroups];
 
     const workers = Array(concurrency)
       .fill(null)
       .map(async () => {
         while (queue.length > 0) {
-          const record = queue.pop();
+          const recordGroup = queue.pop();
 
-          if (record) {
-            await this.parseAndUpdateRecords(record);
+          if (recordGroup) {
+            await this.parseAndUpdateRecords(recordGroup);
             await this.sleep(delayMs);
           }
         }
@@ -85,52 +100,77 @@ export class ParsingCron {
     await Promise.all(workers);
   }
 
-  private async parseAndUpdateRecords(oldRecord: StoreRecord): Promise<void> {
+  private async parseAndUpdateRecords(oldRecords: StoreRecord[]): Promise<void> {
+    const firstRecord = oldRecords[0];
+
+    if (!firstRecord) {
+      return;
+    }
+
     try {
-      const newRecordData = await parser.parseSingleProduct(oldRecord.link);
-      if (!newRecordData) {
-        console.log(`API CRON: Got null response for ${oldRecord.link}`);
+      const parsedProduct = await parser.parseSingleProduct(firstRecord.link);
+
+      if (!parsedProduct) {
+        console.log(`API CRON: Got null response for ${firstRecord.link}`);
         return;
       }
 
-      await productRepository.updateStoreRecordsCron(
-        oldRecord.id,
-        newRecordData.inStock,
-        newRecordData.price,
-        newRecordData.image,
-      );
+      for (const oldRecord of oldRecords) {
+        const newRecordData = oldRecord.variantId
+          ? parser.selectOfferFromProduct(
+              oldRecord.storeName,
+              parsedProduct,
+              oldRecord.variantId,
+            )
+          : parsedProduct;
 
-      await productRepository.createPriceHistory(
-        oldRecord.id,
-        newRecordData.storeName,
-        newRecordData.inStock,
-        newRecordData.price,
-      );
+        if (!newRecordData) {
+          console.log(
+            `API CRON: Got null response for ${oldRecord.link} variant ${oldRecord.variantId}`,
+          );
+          continue;
+        }
 
-      if (
-        oldRecord.storeName === oldRecord.product.primaryStoreName &&
-        newRecordData.image &&
-        oldRecord.product.image !== newRecordData.image
-      ) {
-        await productRepository.updateProductImage(
-          oldRecord.product.id,
-          newRecordData.image
-        );
-      }
-
-      if (
-        newRecordData.inStock && 
-        oldRecord.latestPrice !== newRecordData.price &&
-        oldRecord.latestPrice &&
-        newRecordData.price &&
-        oldRecord.latestPrice * 0.9 >= newRecordData.price
-      ) {
-        await notifRepositories.createPriceDropQueue(
+        await productRepository.updateStoreRecordsCron(
           oldRecord.id,
-          oldRecord.product.id,
-          oldRecord.latestPrice,
+          newRecordData.inStock,
+          newRecordData.price,
+          newRecordData.image,
+        );
+
+        await productRepository.createPriceHistory(
+          oldRecord.id,
+          newRecordData.storeName,
+          newRecordData.inStock,
           newRecordData.price,
         );
+
+        if (
+          oldRecord === firstRecord &&
+          oldRecord.storeName === oldRecord.product.primaryStoreName &&
+          newRecordData.image &&
+          oldRecord.product.image !== newRecordData.image
+        ) {
+          await productRepository.updateProductImage(
+            oldRecord.product.id,
+            newRecordData.image
+          );
+        }
+
+        if (
+          newRecordData.inStock && 
+          oldRecord.latestPrice !== newRecordData.price &&
+          oldRecord.latestPrice &&
+          newRecordData.price &&
+          oldRecord.latestPrice * 0.9 >= newRecordData.price
+        ) {
+          await notifRepositories.createPriceDropQueue(
+            oldRecord.id,
+            oldRecord.product.id,
+            oldRecord.latestPrice,
+            newRecordData.price,
+          );
+        }
       }
     } catch (error) {
       if (!(error instanceof AppError)) {
@@ -147,15 +187,22 @@ export class ParsingCron {
       const productsToSearch = await productRepository.getProductsWithMissingStores();
 
       for (const product of productsToSearch) {
-        const parsedProduct = await parser.parseSpecificStoreByProductNameAndBrand(product.missingStore, product.name, product.brand);
+        const offers = await parser.findVariantOffersInStore(
+          product.missingStore,
+          product.name,
+          product.brand,
+          product.options ?? {},
+        );
 
-        if (!parsedProduct) {
+        if (offers.length === 0) {
           continue;
-        } 
+        }
 
-        console.log('Found missing store item ', parsedProduct);
+        console.log('Found missing store item ', offers);
 
-        await productRepository.addDiscoveredStoreRecord(product.productId, parsedProduct);
+        for (const offer of offers) {
+          await productRepository.addDiscoveredStoreRecord(product.productId, offer);
+        }
         await this.sleep(15000);
       }
     } catch (error) {

@@ -16,6 +16,10 @@ RUN npm install
 # Copy all source code
 COPY . .
 
+# Provide the public API origin to Vite at build time
+ARG API_ORIGIN=http://localhost:3001
+ENV API_ORIGIN=$API_ORIGIN
+
 # Build the Vite frontend. This creates static files in /frontend/dist
 RUN npm run build --workspace=frontend
 

@@ -1,14 +1,15 @@
-import { ParsedProduct } from "@api/types/ProductTypes.js";
+import { ParsedProduct, ParsedProductOption, ParsedStoreProduct, VariantOptions } from "@api/types/ProductTypes.js";
 import { MakeupUAParser } from "@api/parsers/stores/MakeupUAParser.js";
 import { EvaParser } from "@api/parsers/stores/EvaParser.js";
 import { NotinoParser } from "@api/parsers/stores/NotinoParser.js";
 import { StoreName } from "@api/types/Enums.js";
 import type { BaseParser } from "@api/parsers/BaseParser.js";
-import { ParseResult } from "@api/types/ProductTypes.js";
 import { BadGatewayError, ValidationError } from "@api/errors/AppError.js";
+import { normalizeVariantValue, stripCategorySuffix } from "@api/parsers/utils/stringUtils.js";
 
 export class ParserOrchestrator {
   private readonly parsers: Record<StoreName, BaseParser>;
+
   constructor() {
     this.parsers = {
       [StoreName.Eva]: new EvaParser(),
@@ -18,74 +19,191 @@ export class ParserOrchestrator {
   }
 
   private recognizeStoreName(link: string): StoreName {
+    let url: URL;
+
     try {
-      const url = new URL(link);
-      const path = url.pathname;
-      //link is for makeup and for product (contains /product)
-      if (url.hostname.endsWith("makeup.com.ua") && /\/product\/\d+/.test(path))
-        return StoreName.Makeup;
-      //link is for eva and for product (contains /pr)
-      else if (url.hostname.endsWith("eva.ua") && /\/pr\d+/.test(path))
-        return StoreName.Eva;
-      //link is for notino and there are at least 2 parts in the path
-      else if (
-        url.hostname.endsWith("notino.ua") &&
-        path.split("/").filter(Boolean).length >= 2
-      )
-        return StoreName.Notino;
-      else throw new ValidationError("Provided link is not supported");
-    } catch (error) {
+      url = new URL(link);
+    } catch {
       throw new ValidationError("Provided link is invalid");
     }
+
+    const path = url.pathname;
+
+    if (url.hostname.endsWith("makeup.com.ua") && /\/product\/\d+/.test(path)) {
+      return StoreName.Makeup;
+    }
+
+    if (url.hostname.endsWith("eva.ua") && /\/pr\d+/.test(path)) {
+      return StoreName.Eva;
+    }
+
+    if (
+      url.hostname.endsWith("notino.ua") &&
+      path.split("/").filter(Boolean).length >= 2
+    ) {
+      return StoreName.Notino;
+    }
+
+    throw new ValidationError("Provided link is not supported");
   }
 
-  async getProductByLink(link: string): Promise<ParseResult> {
-    const primaryStore = this.recognizeStoreName(link);
+  getStoreNameFromLink(link: string): StoreName {
+    return this.recognizeStoreName(link);
+  }
 
-    const primaryParser = this.parsers[primaryStore];
-    const primaryProduct = await primaryParser.parseByLink(link);
+  extractVariantIdFromLink(storeName: StoreName, link: string): string | null {
+    if (storeName === StoreName.Eva) {
+      return link.match(/\/pr(\d+)/)?.[1] ?? null;
+    }
 
-    if (!primaryProduct) {
+    if (storeName === StoreName.Notino) {
+      return link.match(/\/p-(\d+)/)?.[1] ?? null;
+    }
+
+    return null;
+  }
+
+  async getPrimaryProductByLink(
+    link: string,
+  ): Promise<{ storeName: StoreName; product: ParsedStoreProduct }> {
+    const storeName = this.recognizeStoreName(link);
+    const product = await this.parsers[storeName].parseByLink(link);
+
+    if (!product) {
       throw new BadGatewayError(
         "Could not parse product from the provided link",
       );
     }
 
-    const parsedProducts: Record<StoreName, ParsedProduct | null> = {
-      [StoreName.Eva]: null,
-      [StoreName.Notino]: null,
-      [StoreName.Makeup]: null,
-    };
-
-    parsedProducts[primaryStore] = primaryProduct;
-
-    const secondaryFetches = (Object.keys(parsedProducts) as StoreName[])
-      .filter((store) => !parsedProducts[store])
-      .map(async (store) => {
-        const secondaryParser = this.parsers[store];
-        const secondaryProduct = await secondaryParser.parseByNameAndBrand(
-          primaryProduct.name,
-          primaryProduct.brand,
-        );
-
-        parsedProducts[store] = secondaryProduct;
-      });
-    await Promise.allSettled(secondaryFetches);
-
-    return { primaryStore: primaryStore, products: parsedProducts };
+    return { storeName, product };
   }
 
-  async parseSingleProduct(link: string): Promise<ParsedProduct | null> {
+  async findVariantOffersInStore(
+    storeName: StoreName,
+    baseName: string,
+    brand: string,
+    selectedOptions: VariantOptions,
+  ): Promise<ParsedProduct[]> {
+    const searchName = stripCategorySuffix(baseName);
+    const preview = await this.parsers[storeName].parseByNameAndBrand(
+      searchName,
+      brand,
+    );
+
+    if (!preview) {
+      return [];
+    }
+
+    if (!preview.variants?.length) {
+      return this.productMatchesSelectedOptions(preview, selectedOptions)
+        ? [preview]
+        : [];
+    }
+
+    if (!selectedOptions.shade && !selectedOptions.size) {
+      return preview.variants.length === 1 ? preview.variants[0].offers : [];
+    }
+
+    const matchingOptions = preview.variants.filter((option) =>
+      this.optionMatchesSelectedOptions(option, selectedOptions),
+    );
+
+    if (matchingOptions.length !== 1) {
+      return [];
+    }
+
+    return matchingOptions[0].offers;
+  }
+
+  async parseSingleProduct(
+    link: string,
+    variantId?: string,
+  ): Promise<ParsedStoreProduct | null> {
     const storeName = this.recognizeStoreName(link);
-    return await this.parsers[storeName].parseByLink(link);
+    const product = await this.parsers[storeName].parseByLink(link);
+
+    if (!product || !variantId) {
+      return product;
+    }
+
+    return this.parsers[storeName].selectOffer(product, variantId);
+  }
+
+  selectOfferFromProduct(
+    storeName: StoreName,
+    product: ParsedStoreProduct,
+    variantId: string,
+  ): ParsedProduct | null {
+    return this.parsers[storeName].selectOffer(product, variantId);
   }
 
   async parseSpecificStoreByProductNameAndBrand(
     storeName: StoreName,
     productName: string,
     productBrand: string,
-  ): Promise<ParsedProduct | null> {
-    const product = await this.parsers[storeName].parseByNameAndBrand(productName, productBrand);
+  ): Promise<ParsedStoreProduct | null> {
+    const product = await this.parsers[storeName].parseByNameAndBrand(
+      productName,
+      productBrand,
+    );
     return product;
+  }
+
+  private optionMatchesSelectedOptions(
+    option: ParsedProductOption,
+    selectedOptions: VariantOptions,
+  ): boolean {
+    const offer = option.offers[0];
+    if (!offer) return false;
+
+    return this.productMatchesSelectedOptions(offer, selectedOptions);
+  }
+
+  private productMatchesSelectedOptions(
+    product: ParsedProduct,
+    selectedOptions: VariantOptions,
+  ): boolean {
+    if (
+      !this.variantValueMatches(
+        selectedOptions.shade,
+        product.options?.shade,
+        product.name,
+      )
+    ) {
+      return false;
+    }
+
+    if (
+      !this.variantValueMatches(
+        selectedOptions.size,
+        product.options?.size,
+        product.name,
+      )
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private variantValueMatches(
+    selectedValue: string | undefined,
+    candidateValue: string | undefined,
+    candidateName: string,
+  ): boolean {
+    if (!selectedValue) {
+      return true;
+    }
+
+    if (candidateValue) {
+      return (
+        normalizeVariantValue(candidateValue) ===
+        normalizeVariantValue(selectedValue)
+      );
+    }
+
+    return normalizeVariantValue(candidateName).includes(
+      normalizeVariantValue(selectedValue),
+    );
   }
 }

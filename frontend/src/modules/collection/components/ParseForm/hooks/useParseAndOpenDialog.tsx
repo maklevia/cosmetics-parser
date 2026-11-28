@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParserByLink } from "@fe/modules/collection/components/ParseForm/hooks/useParserByLink";
 import { useCheckLink } from "@fe/modules/collection/hooks/useCheckLink";
 import { addProductDialog } from "@fe/modules/collection/components/AddProductDialog";
+import { variantPickerDialog } from "@fe/modules/collection/components/VariantPickerDialog";
 
 interface Props {
   refreshProducts: () => void;
@@ -30,10 +31,20 @@ export function useParseAndOpenDialog({ refreshProducts }: Props): HookOutput {
 
     try {
       const response = await parse(productLink);
-      if (response) {
+
+      if (response?.status === "needs_variant") {
+        variantPickerDialog.open("a", {
+          needsVariant: response,
+          productLink,
+          refreshProducts,
+        });
+      } else if (response?.status === "parsed") {
         addProductDialog.open("a", {
           productId: response.productId,
-          parseResult: response.parsedResults,
+          parseResult: {
+            primaryStore: response.primaryStore,
+            products: response.products,
+          },
           refreshProducts,
         });
       }

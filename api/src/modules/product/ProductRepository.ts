@@ -9,6 +9,7 @@ import { ParsedProduct } from "@api/types/ProductTypes.js";
 import { ParseResult } from "@api/types/ProductTypes.js";
 import { StoreRecordWithLowestPrice } from "@api/types/ProductTypes.js";
 import { In } from "typeorm";
+import { ValidationError } from "@api/errors/AppError.js";
 
 interface CreateStoreRecordOptions {
   productId: number;
@@ -29,6 +30,22 @@ export class ProductRepository {
   async findStoreRecordByLink(link: string): Promise<StoreRecord | null> {
     const foundStoreRecord = await this.storeRecordRepo.findOne({
       where: { link: link },
+      relations: { product: true },
+    });
+    return foundStoreRecord;
+  }
+
+  async findStoreRecordByVariantIds(
+    storeName: StoreName,
+    variantIds: string[],
+  ): Promise<StoreRecord | null> {
+    if (variantIds.length === 0) return null;
+
+    const foundStoreRecord = await this.storeRecordRepo.findOne({
+      where: {
+        storeName,
+        variantId: In(variantIds),
+      },
       relations: { product: true },
     });
     return foundStoreRecord;
@@ -69,9 +86,14 @@ export class ProductRepository {
   }
 
   async saveParsedProduct(
-    primaryProduct: ParsedProduct,
+    primaryOffers: ParsedProduct[],
     parsedProducts: ParseResult,
   ): Promise<number> {
+    const primaryProduct = primaryOffers[0];
+    if (!primaryProduct) {
+      throw new ValidationError("Invalid parsing result");
+    }
+
     const newProduct = new Product();
     newProduct.name = primaryProduct.name;
     newProduct.brand = primaryProduct.brand;
@@ -80,18 +102,17 @@ export class ProductRepository {
 
     newProduct.storeRecords = [];
 
-    for (const [storeName, product] of Object.entries(
+    for (const [storeName, offers] of Object.entries(
       parsedProducts.products,
-    )) {
-      if (!product) continue;
+    ) as [StoreName, ParsedProduct[]][]) {
+      for (const offer of offers) {
+        const newStoreRecord = StoreRecord.fromParsedProduct(offer);
+        const newPriceHistory = PriceHistory.fromParsedProduct(offer);
 
-      const newStoreRecord = StoreRecord.fromParsedProduct(product);
+        newStoreRecord.priceHistory = [newPriceHistory];
 
-      const newPriceHistory = PriceHistory.fromParsedProduct(product);
-
-      newStoreRecord.priceHistory = [newPriceHistory];
-
-      newProduct.storeRecords.push(newStoreRecord);
+        newProduct.storeRecords.push(newStoreRecord);
+      }
     }
 
     const savedProduct = await this.productRepo.save(newProduct);
@@ -201,6 +222,7 @@ export class ProductRepository {
       name: string;
       brand: string;
       missingStore: StoreName;
+      options: StoreRecord["options"];
     }[]
   > {
     const productIds = await this.getProductsFromCollections();
@@ -217,10 +239,15 @@ export class ProductRepository {
       name: string;
       brand: string;
       missingStore: StoreName;
+      options: StoreRecord["options"];
     }[] = [];
 
     for (const product of products) {
       const existingStores = product.storeRecords.map((r) => r.storeName);
+      const primaryRecord = product.storeRecords.find(
+        (record) => record.storeName === product.primaryStoreName,
+      );
+
       for (const store of allStores) {
         if (!existingStores.includes(store)) {
           result.push({
@@ -228,6 +255,7 @@ export class ProductRepository {
             name: product.name,
             brand: product.brand,
             missingStore: store,
+            options: primaryRecord?.options ?? null,
           });
         }
       }

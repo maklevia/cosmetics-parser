@@ -11,11 +11,13 @@
     "migration:generate": "npm run typeorm -- -d src/config/data-source.ts migration:generate",
     "migration:run": "npm run typeorm -- -d src/config/data-source.ts migration:run",
     "migration:revert": "npm run typeorm -- -d src/config/data-source.ts migration:revert",
-    "migration:run:prod": "node ../node_modules/typeorm/cli.js -d dist/config/data-source.js migration:run"
+    "migration:run:prod": "node ../node_modules/typeorm/cli.js -d dist/config/data-source.js migration:run",
+    "test": "tsx --test tests/*.test.ts"
   },
   "dependencies": {
     "axios": "^1.18.1",
     "bcrypt-ts": "^8.0.1",
+    "cheerio": "^1.2.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "express": "^5.2.1",
